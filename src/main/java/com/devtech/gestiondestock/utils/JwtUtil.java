@@ -14,13 +14,10 @@ import java.util.function.Function;
 
 @Service
 public class JwtUtil {
-
     private String SECRET_KEY = "secret";
-
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
-
     public String extractIdEntreprise(String token) {
         final Claims claims = extractAllClaims(token);
         return claims.get("identreprise", String.class);
@@ -35,7 +32,6 @@ public class JwtUtil {
     private Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
-
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
@@ -44,7 +40,6 @@ public class JwtUtil {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails);
     }
-
     private String createToken(Map<String, Object> claims, ExtendedUser userDetails) {
         return Jwts.builder().setClaims(claims)
                 .setSubject(userDetails.getUsername())
@@ -53,7 +48,6 @@ public class JwtUtil {
                 .claim("identreprise", userDetails.getIdEntreprise().toString())
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
-
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));

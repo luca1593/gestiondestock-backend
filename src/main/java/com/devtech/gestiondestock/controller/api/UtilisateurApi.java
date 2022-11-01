@@ -13,7 +13,6 @@ import java.util.List;
 import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 @Api(APP_ROOT + "/utilisateur")
 public interface UtilisateurApi {
-
     @PostMapping(value = APP_ROOT + "/utilisateur/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Enregistrement d'un utilisateur",
             notes = "Cette methode permet d'enregidtre ou de modifier un utilisateur",
@@ -24,7 +23,6 @@ public interface UtilisateurApi {
             @ApiResponse(code = 404, message = "Erreur dans la creation de l'objet utilisateur")
     })
     UtilisateurDto save(@RequestBody UtilisateurDto dto);
-
     @GetMapping(value = APP_ROOT + "/utilisateur/{idUtilisateur}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Rechercher un utilisateur",
             notes = "Cette methode permet de rechercher un utilisateur par son ID",
@@ -35,7 +33,6 @@ public interface UtilisateurApi {
             @ApiResponse(code = 404, message = "Erreur l'objet utilisateur n'a pas ete trouver dans la BDD avec l'ID fournie")
     })
     UtilisateurDto findById(@PathVariable("idUtilisateur") Integer id);
-
     @GetMapping(value = APP_ROOT + "/utilisateur/nom/{nomUtilisateur}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Rechercher un utilisateur",
             notes = "Cette methode permet de rechercher un utilisateur par son nom",
@@ -46,7 +43,6 @@ public interface UtilisateurApi {
             @ApiResponse(code = 404, message = "Erreur l'objet utilisateur n'a pas ete trouver dans la BDD le code fournie")
     })
     UtilisateurDto findByNomUtilisateur(@PathVariable("nomUtilisateur") String nom);
-
     @GetMapping(value = APP_ROOT + "/utilisateur/email/{emailUtilisateur}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Rechercher un utilisateur",
             notes = "Cette methode permet de rechercher une utilisateur par son email",
@@ -57,7 +53,6 @@ public interface UtilisateurApi {
             @ApiResponse(code = 404, message = "Erreur l'objet utilisateur n'a pas ete trouver dans la BDD l'email fournie")
     })
     UtilisateurDto findByEmailUtilisateur(@PathVariable("emailUtilisateur") String email);
-
     @GetMapping(value = APP_ROOT + "/utilisateur/all", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Renvoie la liste des utilisateurs",
             notes = "Cette methode permet de rechercher toutes les utilisateurs dans la BDD",
@@ -67,7 +62,6 @@ public interface UtilisateurApi {
             @ApiResponse(code = 200, message = "La liste des clients / liste vide")
     })
     List<UtilisateurDto> findAll();
-
     @DeleteMapping(value = APP_ROOT +"/utilisateur/detele/{idUtilisateur}")
     @ApiOperation(value = "Supprimer un utilisateur",
             notes = "Cette methode permet de supprimer un utilisateur par son ID"
