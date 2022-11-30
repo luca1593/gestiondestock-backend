@@ -4,12 +4,6 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### binary file
-*.class
-/bin/mvnw.cmd
-/bin/mvnw
-/bin/.mvn/wrapper/maven-wrapper.properties
-
 ### STS ###
 .apt_generated
 .classpath

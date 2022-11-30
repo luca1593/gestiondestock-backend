@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/gestiondestock?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: luca
+    password: Just$Me12
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database: MYSQL
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        ejb:
+          interceptor: com.devtech.gestiondestock.interceptor.Interceptor
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+server:
+  port: 8181
+  error:
+      whitelabel:
+        enabled: true
+
+#logging:
+#  level:
+#    org.springframework: ERROR
+#    com.mkyong: DEBUG
+#  patter:
+#    console: "%d{HH:mm:ss.SSS} [%t] %-5logger{36} - %msg%n"
+#    file: "%d %p %c{1.} [%t] %m%n"
+#  file: app.log
+#    web: debug
+#    root: debug
+
+flickr:
+  apiKey: abc11f1e268d908eeee176297269c001
+  apiSecret: 50a8ae15b4224302
+  appKey: 72157720855398857-f67e55f056acdd0d
+  appSecret: 2ba345379070ffc8

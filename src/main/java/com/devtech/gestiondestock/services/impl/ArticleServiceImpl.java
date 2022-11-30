@@ -7,18 +7,16 @@ import com.devtech.gestiondestock.exception.InvalidEntityException;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.model.Article;
 import com.devtech.gestiondestock.model.Category;
-import com.devtech.gestiondestock.model.LigneCommandeClient;
-import com.devtech.gestiondestock.model.LigneCommandeFournisseur;
 import com.devtech.gestiondestock.repository.*;
 import com.devtech.gestiondestock.services.ArticleService;
 import com.devtech.gestiondestock.validator.ArticleValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -140,7 +138,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public void delete(Integer id) {
-        checkIdArticle(id);
+        checkArticleBeforDelete(id);
         articleRepository.deleteById(id);
     }
 
@@ -150,6 +148,31 @@ public class ArticleServiceImpl implements ArticleService {
             throw new EntityNotFoundException(
                     "L'id de l'article est null",
                     ErrorsCode.ID_NOT_VALID
+            );
+        }
+    }
+
+    private void checkArticleBeforDelete(Integer idArticle){
+        ArticleDto dto = findById(idArticle);
+
+        if (!CollectionUtils.isEmpty(dto.getLigneCommandeClients())) {
+            log.error("Article alredy used");
+            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande client existe deja pour cette article", 
+            ErrorsCode.ARTICLE_ALREADY_IN_USE
+            );
+        }
+
+        if (!CollectionUtils.isEmpty(dto.getLigneCommandeFournisseurs())) {
+            log.error("Article alredy used");
+            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande fournisseur existe deja pour cette article", 
+            ErrorsCode.ARTICLE_ALREADY_IN_USE
+            );
+        }
+
+        if (!CollectionUtils.isEmpty(dto.getLigneVentes())) {
+            log.error("Article alredy used");
+            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur vente existe deja pour cette article", 
+            ErrorsCode.ARTICLE_ALREADY_IN_USE
             );
         }
     }

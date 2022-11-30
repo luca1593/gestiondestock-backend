@@ -4,15 +4,20 @@ import com.devtech.gestiondestock.dto.CategoryDto;
 import com.devtech.gestiondestock.exception.EntityNotFoundException;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
+import com.devtech.gestiondestock.exception.InvalidOpperatioException;
+import com.devtech.gestiondestock.model.Article;
 import com.devtech.gestiondestock.model.Category;
+import com.devtech.gestiondestock.repository.ArticleRepository;
 import com.devtech.gestiondestock.repository.CategoryRepository;
 import com.devtech.gestiondestock.services.CategoryService;
 import com.devtech.gestiondestock.validator.CategoryValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,10 +27,12 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private CategoryRepository categoryRepository;
+    private ArticleRepository articleRepository;
 
     @Autowired
-    public  CategoryServiceImpl(CategoryRepository categoryRepository){
+    public  CategoryServiceImpl(CategoryRepository categoryRepository, ArticleRepository articleRepository){
         this.categoryRepository = categoryRepository;
+        this.articleRepository = articleRepository;
     }
 
     @Override
@@ -42,10 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto findById(Integer id) {
-        if (id == null){
-            log.error("Category ID is null");
-            return null;
-        }
+        checkId(id);
         Optional<Category> category = categoryRepository.findById(id);
         return Optional.of(CategoryDto.fromEntity(category.get())).orElseThrow(() ->
                 new EntityNotFoundException(
@@ -79,10 +83,28 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void delete(Integer id) {
+        validateIdBefortOperation(id);
+        categoryRepository.deleteById(id);
+    }
+
+    private void checkId(Integer id){
         if (id == null){
             log.error("Category ID is null");
-            return;
+            throw new EntityNotFoundException(
+                "L'ID du category est null", 
+                ErrorsCode.CATEGORY_NOT_FOUND
+            );
         }
-        categoryRepository.deleteById(id);
+    }
+
+    private void validateIdBefortOperation(Integer id){
+        checkId(id);
+        List<Article> articles = articleRepository.findAllByCategoryId(id);
+        if(!CollectionUtils.isEmpty(articles)){
+            log.error("Category alredy used");
+            throw new InvalidOpperatioException("La categorie est deja utilse", 
+            ErrorsCode.CATEGORY_ALREADY_IN_USE
+            );
+        }
     }
 }

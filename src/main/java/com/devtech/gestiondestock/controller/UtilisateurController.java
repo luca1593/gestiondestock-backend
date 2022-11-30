@@ -1,6 +1,7 @@
 package com.devtech.gestiondestock.controller;
 
 import com.devtech.gestiondestock.controller.api.UtilisateurApi;
+import com.devtech.gestiondestock.dto.ChangerMotDePasseUtilisateurDto;
 import com.devtech.gestiondestock.dto.UtilisateurDto;
 import com.devtech.gestiondestock.services.UtilisateurService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,13 @@ public class UtilisateurController implements UtilisateurApi {
     }
 
     @Override
+    public UtilisateurDto changerMotDePasse(ChangerMotDePasseUtilisateurDto dto) {
+        return utilisateurService.changerMotDePasse(dto);
+    }
+
+    @Override
     public void delete(Integer id) {
         utilisateurService.delete(id);
     }
+
 }
