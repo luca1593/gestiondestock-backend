@@ -1,9 +1,11 @@
 package com.devtech.gestiondestock.services.impl;
 
+import com.devtech.gestiondestock.dto.ClientDto;
 import com.devtech.gestiondestock.dto.FournisseurDto;
 import com.devtech.gestiondestock.exception.EntityNotFoundException;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
+import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.model.Fournisseur;
 import com.devtech.gestiondestock.repository.FournisseurRepository;
 import com.devtech.gestiondestock.services.FournisseurService;
@@ -11,6 +13,7 @@ import com.devtech.gestiondestock.validator.FournisseurValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -21,7 +24,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FournisseurServiceImpl implements FournisseurService {
 
-    private FournisseurRepository fournisseurRepository;
+    private final FournisseurRepository fournisseurRepository;
 
     @Autowired
     public FournisseurServiceImpl(FournisseurRepository fournisseurRepository){
@@ -94,11 +97,17 @@ public class FournisseurServiceImpl implements FournisseurService {
 
     @Override
     public void delete(Integer id) {
-        if (id == null){
-            log.error("Fournisseur ID is null");
-            return;
-        }
+        checkIdFournisseurBeforeDelete(id);
         fournisseurRepository.deleteById(id);
+    }
 
+    private void checkIdFournisseurBeforeDelete(Integer idFournisseur){
+        FournisseurDto dto = findById(idFournisseur);
+        if (!CollectionUtils.isEmpty(dto.getCommandeFournisseurs())) {
+            log.error("Fournisseur alredy used");
+            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande fournisseur existe deja pour ce fournisseur",
+                    ErrorsCode.FOURNISSEUR_ALREADY_IN_USE
+            );
+        }
     }
 }

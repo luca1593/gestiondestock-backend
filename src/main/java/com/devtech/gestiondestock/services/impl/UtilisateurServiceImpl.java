@@ -7,6 +7,7 @@ import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.model.Utilisateur;
+import com.devtech.gestiondestock.repository.RoleRepository;
 import com.devtech.gestiondestock.repository.UtilisateurRepository;
 import com.devtech.gestiondestock.services.UtilisateurService;
 import com.devtech.gestiondestock.validator.UtilisateurValidator;
@@ -24,11 +25,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UtilisateurServiceImpl implements UtilisateurService {
 
-    private UtilisateurRepository utilisateurRepository;
+    private final UtilisateurRepository utilisateurRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public UtilisateurServiceImpl(UtilisateurRepository utilisateurRepository){
+    public UtilisateurServiceImpl(UtilisateurRepository utilisateurRepository, RoleRepository roleRepository){
         this.utilisateurRepository = utilisateurRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -120,6 +123,14 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             log.error("Utilisateur ID is null");
             return;
         }
+        Optional<Utilisateur> optional = utilisateurRepository.findById(id);
+        Utilisateur utilisateur = null;
+        if (optional.isPresent()){
+            utilisateur = optional.get();
+        }
+        utilisateur.getRoles().forEach( r -> {
+            roleRepository.deleteById(r.getId());
+        });
         utilisateurRepository.deleteById(id);
     }
 

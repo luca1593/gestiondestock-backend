@@ -4,6 +4,7 @@ import com.devtech.gestiondestock.dto.ClientDto;
 import com.devtech.gestiondestock.exception.EntityNotFoundException;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
+import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.model.Client;
 import com.devtech.gestiondestock.repository.ClientRepository;
 import com.devtech.gestiondestock.services.ClientService;
@@ -11,6 +12,7 @@ import com.devtech.gestiondestock.validator.ClientValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ClientServiceImpl implements ClientService {
 
-    private ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
 
     @Autowired
     public ClientServiceImpl(ClientRepository clientRepository){
@@ -94,10 +96,16 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void delete(Integer id) {
-        if (id == null){
-            log.error("Client ID is null");
-            return;
-        }
+        checkIdClientBeforeDelete(id);
         clientRepository.deleteById(id);
+    }
+    private void checkIdClientBeforeDelete(Integer idClient){
+        ClientDto dto = findById(idClient);
+        if (!CollectionUtils.isEmpty(dto.getCommandeClients())) {
+            log.error("Client alredy used");
+            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande client existe deja pour ce client",
+                    ErrorsCode.CLIENT_ALREADY_IN_USE
+            );
+        }
     }
 }

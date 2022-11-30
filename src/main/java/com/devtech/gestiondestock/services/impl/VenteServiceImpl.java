@@ -1,12 +1,10 @@
 package com.devtech.gestiondestock.services.impl;
 
-import com.devtech.gestiondestock.dto.ArticleDto;
-import com.devtech.gestiondestock.dto.LigneVenteDto;
-import com.devtech.gestiondestock.dto.MvtStkDto;
-import com.devtech.gestiondestock.dto.VenteDto;
+import com.devtech.gestiondestock.dto.*;
 import com.devtech.gestiondestock.exception.EntityNotFoundException;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
+import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.model.*;
 import com.devtech.gestiondestock.repository.ArticleRepository;
 import com.devtech.gestiondestock.repository.LigneVenteRepository;
@@ -17,6 +15,7 @@ import com.devtech.gestiondestock.validator.VenteValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
@@ -28,12 +27,10 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class VenteServiceImpl implements VenteService {
-    private VenteRepository venteRepository;
-    private LigneVenteRepository ligneVenteRepository;
-    private ArticleRepository articleRepository;
-
-    private MvtStkService mvtStkService;
-
+    private final VenteRepository venteRepository;
+    private final LigneVenteRepository ligneVenteRepository;
+    private final ArticleRepository articleRepository;
+    private final MvtStkService mvtStkService;
 
     @Autowired
     public VenteServiceImpl(VenteRepository venteRepository,
@@ -136,10 +133,7 @@ public class VenteServiceImpl implements VenteService {
 
     @Override
     public void delete(Integer id) {
-        if (id == null){
-            log.error("Vente ID is null");
-            return;
-        }
+        checkIdVenteBeforeDelete(id);
         venteRepository.deleteById(id);
     }
 
@@ -153,5 +147,15 @@ public class VenteServiceImpl implements VenteService {
                     .identreprise(ligneVente.getIdentreprise())
                     .build();
             mvtStkService.sortieMvtStk(mvtStkDto);
+    }
+
+    private void checkIdVenteBeforeDelete(Integer idVente){
+        VenteDto dto = findById(idVente);
+        if (!CollectionUtils.isEmpty(dto.getLigneVentes())) {
+            log.error("Vente alredy used");
+            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur line de vente existe deja pour ce vente",
+                    ErrorsCode.FOURNISSEUR_ALREADY_IN_USE
+            );
+        }
     }
 }
