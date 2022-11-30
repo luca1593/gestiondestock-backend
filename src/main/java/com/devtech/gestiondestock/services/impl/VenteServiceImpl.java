@@ -31,9 +31,7 @@ public class VenteServiceImpl implements VenteService {
     private VenteRepository venteRepository;
     private LigneVenteRepository ligneVenteRepository;
     private ArticleRepository articleRepository;
-
     private MvtStkService mvtStkService;
-
 
     @Autowired
     public VenteServiceImpl(VenteRepository venteRepository,

@@ -8,7 +8,6 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
-
 @Builder
 @Data
 public class ArticleDto {
@@ -28,6 +27,7 @@ public class ArticleDto {
     private List<LigneCommandeFournisseurDto> ligneCommandeFournisseurs;
     @JsonIgnore
     private List<MvtStkDto> mvtStks;
+    private EntrepriseDto entreprise;
 
 
     public static ArticleDto fromEntity(Article article){
@@ -71,6 +71,7 @@ public class ArticleDto {
                                         .map(MvtStkDto::fromEntity)
                                         .collect(Collectors.toList()) : null
                 )
+                .entreprise(EntrepriseDto.fromEntity(article.getEntreprise()))
                 .build();
     }
 
@@ -110,6 +111,8 @@ public class ArticleDto {
                                 .map(MvtStkDto::toEntity)
                                 .collect(Collectors.toList()) : null
         );
+
+        article.setEntreprise(EntrepriseDto.toEntity(articleDto.getEntreprise()));
 
         return article;
     }

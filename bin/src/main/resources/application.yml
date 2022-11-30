@@ -22,6 +22,18 @@ server:
   error:
       whitelabel:
         enabled: true
+
+#logging:
+#  level:
+#    org.springframework: ERROR
+#    com.mkyong: DEBUG
+#  patter:
+#    console: "%d{HH:mm:ss.SSS} [%t] %-5logger{36} - %msg%n"
+#    file: "%d %p %c{1.} [%t] %m%n"
+#  file: app.log
+#    web: debug
+#    root: debug
+
 flickr:
   apiKey: abc11f1e268d908eeee176297269c001
   apiSecret: 50a8ae15b4224302

@@ -99,6 +99,5 @@ public class FournisseurServiceImpl implements FournisseurService {
             return;
         }
         fournisseurRepository.deleteById(id);
-
     }
 }

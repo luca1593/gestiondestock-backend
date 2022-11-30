@@ -1,10 +1,12 @@
 package com.devtech.gestiondestock.dto.auth;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthenticationRequest {
 
     private String login;

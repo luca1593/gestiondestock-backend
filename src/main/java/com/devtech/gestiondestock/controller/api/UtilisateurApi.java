@@ -1,5 +1,6 @@
 package com.devtech.gestiondestock.controller.api;
 
+import com.devtech.gestiondestock.dto.ChangerMotDePasseUtilisateurDto;
 import com.devtech.gestiondestock.dto.UtilisateurDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -62,12 +63,24 @@ public interface UtilisateurApi {
             @ApiResponse(code = 200, message = "La liste des clients / liste vide")
     })
     List<UtilisateurDto> findAll();
+
+    @PostMapping(value = APP_ROOT + "/utilisateur/changer-mot-de-passe", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Renvoie un profil utilisateur",
+            notes = "Cette methode permet de changer le mot de passe de l'utilisateurs dans la BDD",
+            response = UtilisateurDto.class
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Mot de passe changer avec succes"),
+            @ApiResponse(code = 404, message = "Erreur : Le mot de passe ne peut pas etre modifier")
+    })
+    UtilisateurDto changerMotDePasse(@RequestBody ChangerMotDePasseUtilisateurDto dto);
+
     @DeleteMapping(value = APP_ROOT +"/utilisateur/detele/{idUtilisateur}")
     @ApiOperation(value = "Supprimer un utilisateur",
             notes = "Cette methode permet de supprimer un utilisateur par son ID"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "L'utilisateur a ete supprimer dans la BDD")
+            @ApiResponse(code = 200, message = "Utilisateur supprimer avec success")
     })
     void delete(@PathVariable("idUtilisateur") Integer id);
 }

@@ -12,6 +12,7 @@ import com.devtech.gestiondestock.services.UtilisateurService;
 import com.devtech.gestiondestock.validator.UtilisateurValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -106,7 +107,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             );
         }
         Utilisateur utilisateur = utilisateurOptional.get();
-        utilisateur.setMotDePasse(dto.getMotDePasse());
+        utilisateur.setMotDePasse(generateEncodedPassword(dto.getMotDePasse()));
 
         return UtilisateurDto.fromEntity(
                 utilisateurRepository.save(utilisateur)
@@ -143,5 +144,10 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             throw new InvalidOpperatioException("Mot de passe utilisateur non coforme :: impossible de modifier le mot de passe",
                     ErrorsCode.UTILISATEUR_CHANGE_PASSWORD_NOT_VALID);
         }
+    }
+
+    private String generateEncodedPassword(String motDePasse){
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        return bCryptPasswordEncoder.encode(motDePasse);
     }
 }

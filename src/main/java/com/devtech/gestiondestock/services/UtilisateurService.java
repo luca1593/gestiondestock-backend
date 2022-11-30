@@ -13,6 +13,4 @@ public interface UtilisateurService {
     List<UtilisateurDto> findAll();
     UtilisateurDto changerMotDePasse(ChangerMotDePasseUtilisateurDto dto);
     void delete(Integer id);
-
-
 }

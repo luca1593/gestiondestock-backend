@@ -34,7 +34,7 @@ public class ApplicationRequestFilter extends OncePerRequestFilter {
         String jwt = null;
         String idEntreprise = null;
 
-        if (authHeader !=null && authHeader.startsWith("Baarer ")){
+        if (authHeader !=null && authHeader.startsWith("Bearer ")){
             jwt = authHeader.substring(7);
             userEmail = jwtUtil.extractUsername(jwt);
             idEntreprise = jwtUtil.extractIdEntreprise(jwt);
