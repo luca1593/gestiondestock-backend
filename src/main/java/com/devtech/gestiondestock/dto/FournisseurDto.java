@@ -18,6 +18,7 @@ public class FournisseurDto {
     private String email;
     private String numTel;
     private List<CommandeFournisseurDto> commandeFournisseurs;
+    private Integer identreprise;
 
     public static FournisseurDto fromEntity(Fournisseur fournisseur){
         if (fournisseur == null){
@@ -39,6 +40,7 @@ public class FournisseurDto {
                                         .map(CommandeFournisseurDto::fromEntity)
                                         .collect(Collectors.toList()) : null
                 )
+                .identreprise(fournisseur.getIdentreprise())
                 .build();
     }
 
@@ -61,6 +63,7 @@ public class FournisseurDto {
                                 .map(CommandeFournisseurDto::toEntity)
                                 .collect(Collectors.toList()) : null
         );
+        fournisseur.setIdentreprise(fournisseurDto.getIdentreprise());
 
         return fournisseur;
     }

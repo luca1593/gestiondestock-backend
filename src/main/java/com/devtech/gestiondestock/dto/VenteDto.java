@@ -1,6 +1,5 @@
 package com.devtech.gestiondestock.dto;
 
-import com.devtech.gestiondestock.model.LigneVente;
 import com.devtech.gestiondestock.model.Vente;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +16,7 @@ public class VenteDto {
     private Instant dateVente;
     private String commentaire;
     private List<LigneVenteDto> ligneVentes;
+    private Integer identreprise;
 
     public static VenteDto fromEntity(Vente vente){
         if (vente == null){
@@ -32,6 +32,7 @@ public class VenteDto {
                                 .map(LigneVenteDto::fromEntity)
                                 .collect(Collectors.toList()) : null
                 )
+                .identreprise(vente.getIdentreprise())
                 .build();
     }
 
@@ -51,6 +52,7 @@ public class VenteDto {
                         .map(LigneVenteDto::toEntity)
                         .collect(Collectors.toList()) : null
         );
+        vente.setIdentreprise(venteDto.getIdentreprise());
 
         return vente;
     }

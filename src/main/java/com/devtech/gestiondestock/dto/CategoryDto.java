@@ -1,13 +1,11 @@
 package com.devtech.gestiondestock.dto;
 
 import com.devtech.gestiondestock.model.Category;
-import com.devtech.gestiondestock.model.Entreprise;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 @Data
