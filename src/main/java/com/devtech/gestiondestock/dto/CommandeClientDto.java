@@ -1,13 +1,11 @@
 package com.devtech.gestiondestock.dto;
 
-import com.devtech.gestiondestock.model.Client;
 import com.devtech.gestiondestock.model.CommandeClient;
 import com.devtech.gestiondestock.model.EtatCommande;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.persistence.Column;
 import java.time.Instant;
 import java.util.List;
 

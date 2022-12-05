@@ -18,6 +18,7 @@ public class ClientDto {
     private String email;
     private String numTel;
     private List<CommandeClientDto> commandeClients;
+    private Integer identreprise;
 
     public static ClientDto fromEntity(Client client){
         if (client == null){
@@ -39,6 +40,7 @@ public class ClientDto {
                                         .map(CommandeClientDto::fromEntity)
                                         .collect(Collectors.toList()) : null
                 )
+                .identreprise(client.getIdentreprise())
                 .build();
     }
 
@@ -61,6 +63,7 @@ public class ClientDto {
                                 .map(CommandeClientDto::toEntity)
                                 .collect(Collectors.toList()) : null
         );
+        client.setIdentreprise(clientDto.getIdentreprise());
         return client;
     }
 }

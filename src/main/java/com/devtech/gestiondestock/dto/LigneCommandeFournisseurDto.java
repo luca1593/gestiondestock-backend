@@ -14,6 +14,7 @@ public class LigneCommandeFournisseurDto {
     private CommandeFournisseurDto commandefournisseur;
     private BigDecimal quantite;
     private BigDecimal prixUnitaire;
+    private Integer identreprise;
 
     public static LigneCommandeFournisseurDto fromEntity(LigneCommandeFournisseur ligneCommandeFournisseur){
         if (ligneCommandeFournisseur == null){
@@ -28,6 +29,7 @@ public class LigneCommandeFournisseurDto {
                 )
                 .quantite(ligneCommandeFournisseur.getQuantite())
                 .prixUnitaire(ligneCommandeFournisseur.getPrixUnitaire())
+                .identreprise(ligneCommandeFournisseur.getIdentreprise())
                 .build();
     }
 
@@ -47,6 +49,7 @@ public class LigneCommandeFournisseurDto {
         ));
         ligneCommandeFournisseur.setQuantite(ligneCommandeFournisseurDto.getQuantite());
         ligneCommandeFournisseur.setPrixUnitaire(ligneCommandeFournisseurDto.getPrixUnitaire());
+        ligneCommandeFournisseur.setIdentreprise(ligneCommandeFournisseurDto.getIdentreprise());
 
         return ligneCommandeFournisseur;
     }

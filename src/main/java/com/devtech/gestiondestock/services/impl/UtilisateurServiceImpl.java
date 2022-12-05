@@ -124,7 +124,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             return;
         }
         Optional<Utilisateur> optional = utilisateurRepository.findById(id);
-        Utilisateur utilisateur = null;
+        Utilisateur utilisateur = new Utilisateur();
         if (optional.isPresent()){
             utilisateur = optional.get();
         }
