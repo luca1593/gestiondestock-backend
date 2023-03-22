@@ -153,23 +153,22 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     private void checkArticleBeforDelete(Integer idArticle){
-        ArticleDto dto = findById(idArticle);
 
-        if (!CollectionUtils.isEmpty(dto.getLigneCommandeClients())) {
+        if (!CollectionUtils.isEmpty(findHistoriqueCommandeClient(idArticle))) {
             log.error("Article alredy used");
             throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande client existe deja pour cette article", 
             ErrorsCode.ARTICLE_ALREADY_IN_USE
             );
         }
 
-        if (!CollectionUtils.isEmpty(dto.getLigneCommandeFournisseurs())) {
+        if (!CollectionUtils.isEmpty(findHistoriqueCommandeFournisseur(idArticle))) {
             log.error("Article alredy used");
             throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande fournisseur existe deja pour cette article", 
             ErrorsCode.ARTICLE_ALREADY_IN_USE
             );
         }
 
-        if (!CollectionUtils.isEmpty(dto.getLigneVentes())) {
+        if (!CollectionUtils.isEmpty(findHistoriqueVente(idArticle))) {
             log.error("Article alredy used");
             throw new InvalidOpperatioException("Operaton impossible : une ou plusieur vente existe deja pour cette article", 
             ErrorsCode.ARTICLE_ALREADY_IN_USE

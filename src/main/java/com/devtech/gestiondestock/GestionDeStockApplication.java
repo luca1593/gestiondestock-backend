@@ -18,4 +18,5 @@ public class GestionDeStockApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 	}
+
 }

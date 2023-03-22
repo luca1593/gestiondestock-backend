@@ -1,7 +1,6 @@
 package com.devtech.gestiondestock.dto;
 
 import com.devtech.gestiondestock.model.Utilisateur;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 

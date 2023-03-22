@@ -1,6 +1,8 @@
 package com.devtech.gestiondestock.dto;
 
 import com.devtech.gestiondestock.model.Fournisseur;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,6 +19,7 @@ public class FournisseurDto {
     private String photo;
     private String email;
     private String numTel;
+    @JsonIgnore
     private List<CommandeFournisseurDto> commandeFournisseurs;
     private Integer identreprise;
 
@@ -33,13 +36,6 @@ public class FournisseurDto {
                 .photo(fournisseur.getPhoto())
                 .email(fournisseur.getEmail())
                 .numTel(fournisseur.getNumTel())
-                .commandeFournisseurs(
-                        fournisseur.getCommandeFournisseurs() != null ?
-                                fournisseur.getCommandeFournisseurs()
-                                        .stream()
-                                        .map(CommandeFournisseurDto::fromEntity)
-                                        .collect(Collectors.toList()) : null
-                )
                 .identreprise(fournisseur.getIdentreprise())
                 .build();
     }
@@ -56,15 +52,7 @@ public class FournisseurDto {
         fournisseur.setPhoto(fournisseurDto.getPhoto());
         fournisseur.setEmail(fournisseurDto.getEmail());
         fournisseur.setNumTel(fournisseurDto.getNumTel());
-        fournisseur.setCommandeFournisseurs(
-                fournisseurDto.getCommandeFournisseurs() !=null ?
-                        fournisseurDto.getCommandeFournisseurs()
-                                .stream()
-                                .map(CommandeFournisseurDto::toEntity)
-                                .collect(Collectors.toList()) : null
-        );
         fournisseur.setIdentreprise(fournisseurDto.getIdentreprise());
-
         return fournisseur;
     }
 

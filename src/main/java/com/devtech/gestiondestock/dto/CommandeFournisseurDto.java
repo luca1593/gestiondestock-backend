@@ -2,7 +2,6 @@ package com.devtech.gestiondestock.dto;
 
 import com.devtech.gestiondestock.model.CommandeFournisseur;
 import com.devtech.gestiondestock.model.EtatCommande;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,7 +16,6 @@ public class CommandeFournisseurDto {
     private Instant dateCommande;
     private EtatCommande etatcommande;
     private FournisseurDto fournisseur;
-    @JsonIgnore
     private List<LigneCommandeFournisseurDto> ligneCommandeFournisseurs;
     private Integer identreprise;
 
@@ -45,7 +43,7 @@ public class CommandeFournisseurDto {
         commandeFournisseur.setDateCommande(commandeFournisseurDto.getDateCommande());
         commandeFournisseur.setEtatcommande(commandeFournisseurDto.getEtatcommande());
         commandeFournisseur.setFournisseur(FournisseurDto.toEntity(commandeFournisseurDto.getFournisseur()));
-        commandeFournisseur.setIdentreprise(commandeFournisseur.getIdentreprise());
+        commandeFournisseur.setIdentreprise(commandeFournisseurDto.getIdentreprise());
         return commandeFournisseur;
     }
 

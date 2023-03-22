@@ -42,14 +42,55 @@
 		-->
 
 		<!-- https://mvnrepository.com/artifact/com.github.fabienbarbero/flickr-api -->
+
 		<dependency>
 			<groupId>com.flickr4java</groupId>
 			<artifactId>flickr4java</artifactId>
 			<version>3.0.6</version>
 		</dependency>
+		<!-- DROPBOX DEPENDENCIE
+		<dependency>
+			<groupId>com.dropbox.core</groupId>
+			<artifactId>dropbox-core-sdk</artifactId>
+			<version>5.4.4</version>
+		</dependency>
+		-->
+		<!-- DRIVE DEPENDENCIE -->
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-dns</artifactId>
+			<version>1.1.5</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.apis/google-api-services-drive -->
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-drive</artifactId>
+			<version>v3-rev197-1.25.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client-java6 -->
+		<dependency>
+			<groupId>com.google.oauth-client</groupId>
+			<artifactId>google-oauth-client-java6</artifactId>
+			<version>1.34.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.oauth-client/google-oauth-client-jetty -->
+		<dependency>
+			<groupId>com.google.oauth-client</groupId>
+			<artifactId>google-oauth-client-jetty</artifactId>
+			<version>1.34.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2</version>
+		</dependency>
 
 		<!-- Swgger -->
-
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-boot-starter</artifactId>

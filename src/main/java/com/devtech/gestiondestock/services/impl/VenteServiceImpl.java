@@ -75,6 +75,7 @@ public class VenteServiceImpl implements VenteService {
         dto.getLigneVentes().forEach(ligneVnt ->{
             LigneVente ligneVente = LigneVenteDto.toEntity(ligneVnt);
             ligneVente.setVente(vente);
+            ligneVente.setIdentreprise(dto.getIdentreprise());
             ligneVenteRepository.save(ligneVente);
             updateMvtStk(ligneVente);
         });

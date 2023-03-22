@@ -2,7 +2,6 @@ package com.devtech.gestiondestock.services.strategy;
 
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
-import com.flickr4java.flickr.FlickrException;
 import lombok.Setter;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +22,15 @@ public class StrategyProtoContext {
         this.beanFactory = beanFactory;
     }
 
-    public Object savePhoto(String context, Integer id, InputStream photo, String title) throws FlickrException {
+    public Object savePhoto(String context, Integer id, String title, InputStream photo) throws Exception {
         determineContext(context);
+        context += context;
         return strategy.savePhoto(id, photo, title);
     }
 
+
     private void determineContext(String context){
-        final String beansname = context + "StrategyPhoto";
+        final String beansname = context + "Strategy";
         switch (context){
             case "article" :
                 strategy = beanFactory.getBean(beansname, SaveArticlePhoto.class);

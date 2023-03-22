@@ -24,9 +24,6 @@ public class LigneCommandeFournisseurDto {
         return LigneCommandeFournisseurDto.builder()
                 .id(ligneCommandeFournisseur.getId())
                 .article(ArticleDto.fromEntity(ligneCommandeFournisseur.getArticle()))
-                .commandefournisseur(CommandeFournisseurDto.fromEntity(
-                        ligneCommandeFournisseur.getCommandeFournisseur())
-                )
                 .quantite(ligneCommandeFournisseur.getQuantite())
                 .prixUnitaire(ligneCommandeFournisseur.getPrixUnitaire())
                 .identreprise(ligneCommandeFournisseur.getIdentreprise())
@@ -39,13 +36,9 @@ public class LigneCommandeFournisseurDto {
         }
 
         LigneCommandeFournisseur ligneCommandeFournisseur =new LigneCommandeFournisseur();
-
         ligneCommandeFournisseur.setId(ligneCommandeFournisseurDto.getId());
         ligneCommandeFournisseur.setArticle(ArticleDto.toEntity(
                 ligneCommandeFournisseurDto.getArticle()
-        ));
-        ligneCommandeFournisseur.setCommandeFournisseur(CommandeFournisseurDto.toEntity(
-                ligneCommandeFournisseurDto.getCommandefournisseur()
         ));
         ligneCommandeFournisseur.setQuantite(ligneCommandeFournisseurDto.getQuantite());
         ligneCommandeFournisseur.setPrixUnitaire(ligneCommandeFournisseurDto.getPrixUnitaire());

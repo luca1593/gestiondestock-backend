@@ -27,7 +27,10 @@ public interface CommandeFournisseurApi {
             @ApiResponse(code = 200, message = "L'objet commande fournisseur creer ou modifier"),
             @ApiResponse(code = 404, message = "Erreur dans la creation de l'objet commande fournisseur")
     })
-    CommandeFournisseurDto save(@RequestBody CommandeFournisseurDto dto);
+    CommandeFournisseurDto save(
+        @RequestBody CommandeFournisseurDto dto, 
+        @PathVariable("dateCommandeFournisseur") Long dateCommandeFournisseur
+    );
 
     @GetMapping(value = FIND_COMMANDE_FOURNISSEUR_BY_ID_ENDPOINT, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Rechercher une commande fournisseur",

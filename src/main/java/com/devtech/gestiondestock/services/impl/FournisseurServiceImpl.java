@@ -1,6 +1,5 @@
 package com.devtech.gestiondestock.services.impl;
 
-import com.devtech.gestiondestock.dto.ClientDto;
 import com.devtech.gestiondestock.dto.FournisseurDto;
 import com.devtech.gestiondestock.exception.EntityNotFoundException;
 import com.devtech.gestiondestock.exception.ErrorsCode;

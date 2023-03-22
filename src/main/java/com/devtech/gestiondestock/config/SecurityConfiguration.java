@@ -80,9 +80,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public CorsConfigurationSource configurationSource(){
 		CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-		configuration.setAllowedMethods(List.of(CorsConfiguration.ALL));
+        List<String> allowedMethods = new java.util.ArrayList<>();
+        allowedMethods.add(CorsConfiguration.ALL);
+        configuration.setAllowedMethods(allowedMethods);
         //configuration.addAllowedOriginPattern(CorsConfiguration.ALL);
-        configuration.setAllowedHeaders(List.of(CorsConfiguration.ALL));
+        configuration.setAllowedHeaders(allowedMethods);
         configuration.addAllowedOrigin("http://localhost:4200");
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);

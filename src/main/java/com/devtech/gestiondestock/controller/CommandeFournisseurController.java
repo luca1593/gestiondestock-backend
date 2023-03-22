@@ -23,7 +23,9 @@ public class CommandeFournisseurController implements CommandeFournisseurApi {
     }
 
     @Override
-    public CommandeFournisseurDto save(CommandeFournisseurDto dto) {
+    public CommandeFournisseurDto save(CommandeFournisseurDto dto, Long dateCommandeFournisseur) {
+        Instant dateCmd = Instant.ofEpochMilli(dateCommandeFournisseur);
+        dto.setDateCommande(dateCmd);
         return commandeFournisseurService.save(dto);
     }
 

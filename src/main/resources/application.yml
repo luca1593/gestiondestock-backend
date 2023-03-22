@@ -34,6 +34,11 @@ server:
 #    web: debug
 #    root: debug
 
+#dropbox:
+ # appKey: 3hvfmcz71tcogz8
+ # appSecret: ibrx1ga8e2u9dyx
+ # accessToken: sl.BZD0MZxRT_gO2RhBcWNucyppAsvcGOxe2u-dvKNYdLtHrE_unRrdnGJXgvL2b9D6Lw9q-B064LcBIOgWbJ9DB5bwS1XfgTW96FiQ_Kw7XKQ9dZsNaXsbndBpXuxwaUqvxxEpDbo
+
 flickr:
   apiKey: abc11f1e268d908eeee176297269c001
   apiSecret: 50a8ae15b4224302

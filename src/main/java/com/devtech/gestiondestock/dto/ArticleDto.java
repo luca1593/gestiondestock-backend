@@ -6,8 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
+
 @Builder
 @Data
 public class ArticleDto {
@@ -19,6 +20,8 @@ public class ArticleDto {
     private BigDecimal prixTtc;
     private String photo;
     private CategoryDto category;
+    private Instant creationDate;
+    private Instant lastModifiedDate;
     @JsonIgnore
     private List<LigneVenteDto> ligneVentes;
     @JsonIgnore
@@ -42,35 +45,9 @@ public class ArticleDto {
                 .tauxTva(article.getTauxTva())
                 .prixTtc(article.getPrixTtc())
                 .photo(article.getPhoto())
+                .creationDate(article.getCreationDate())
+                .lastModifiedDate(article.getLastModifiedDate())
                 .category(CategoryDto.fromEntity(article.getCategory()))
-                .ligneVentes(
-                        article.getLigneVentes() != null ?
-                                article.getLigneVentes()
-                                        .stream()
-                                        .map(LigneVenteDto::fromEntity)
-                                        .collect(Collectors.toList()) : null
-                )
-                .ligneCommandeClients(
-                        article.getLigneCommandeClients() != null ?
-                                article.getLigneCommandeClients()
-                                        .stream()
-                                        .map(LigneCommandeClientDto::fromEntity)
-                                        .collect(Collectors.toList()) : null
-                )
-                .ligneCommandeFournisseurs(
-                        article.getLigneCommandeFournisseurs() != null ?
-                                article.getLigneCommandeFournisseurs()
-                                        .stream()
-                                        .map(LigneCommandeFournisseurDto::fromEntity)
-                                        .collect(Collectors.toList()) : null
-                )
-                .mvtStks(
-                        article.getMvtStks() != null ?
-                                article.getMvtStks()
-                                        .stream()
-                                        .map(MvtStkDto::fromEntity)
-                                        .collect(Collectors.toList()) : null
-                )
                 .entreprise(EntrepriseDto.fromEntity(article.getEntreprise()))
                 .build();
     }
@@ -88,30 +65,6 @@ public class ArticleDto {
         article.setPrixTtc(articleDto.getPrixTtc());
         article.setPhoto(articleDto.getPhoto());
         article.setCategory(CategoryDto.toEntity(articleDto.getCategory()));
-
-        article.setLigneVentes(
-                articleDto.getLigneVentes() != null ?
-                        articleDto.getLigneVentes()
-                                .stream()
-                                .map(LigneVenteDto::toEntity)
-                                .collect(Collectors.toList()) : null
-        );
-        article.setLigneCommandeClients(
-                articleDto.getLigneCommandeClients() != null ?
-                        articleDto.getLigneCommandeClients()
-                                .stream()
-                                .map(LigneCommandeClientDto::toEntity)
-                                .collect(Collectors.toList()) : null
-        );
-
-        article.setMvtStks(
-                articleDto.getMvtStks() != null ?
-                        articleDto.getMvtStks()
-                                .stream()
-                                .map(MvtStkDto::toEntity)
-                                .collect(Collectors.toList()) : null
-        );
-
         article.setEntreprise(EntrepriseDto.toEntity(articleDto.getEntreprise()));
 
         return article;

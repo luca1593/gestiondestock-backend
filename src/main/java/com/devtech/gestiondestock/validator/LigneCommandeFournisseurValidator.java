@@ -2,6 +2,7 @@ package com.devtech.gestiondestock.validator;
 
 import com.devtech.gestiondestock.dto.LigneCommandeFournisseurDto;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,8 @@ public class LigneCommandeFournisseurValidator {
             return errors;
         }
 
-        if (ligneCommandeFournisseurDto.getQuantite() == null) {
+        if (ligneCommandeFournisseurDto.getQuantite() == null ||
+            ligneCommandeFournisseurDto.getQuantite().compareTo(BigDecimal.ZERO) < 1) {
             errors.add("Veuillez renseigner la quantite de la commande");
         }
 

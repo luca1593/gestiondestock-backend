@@ -4,8 +4,6 @@ import com.devtech.gestiondestock.dto.ArticleDto;
 import com.devtech.gestiondestock.dto.LigneCommandeClientDto;
 import com.devtech.gestiondestock.dto.LigneCommandeFournisseurDto;
 import com.devtech.gestiondestock.dto.LigneVenteDto;
-import com.devtech.gestiondestock.model.LigneCommandeClient;
-import com.devtech.gestiondestock.model.LigneCommandeFournisseur;
 
 import java.util.List;
 
