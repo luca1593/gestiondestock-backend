@@ -1,5 +1,6 @@
 package com.devtech.gestiondestock.services.impl;
 
+import com.devtech.gestiondestock.dto.CommandeFournisseurDto;
 import com.devtech.gestiondestock.dto.FournisseurDto;
 import com.devtech.gestiondestock.exception.EntityNotFoundException;
 import com.devtech.gestiondestock.exception.ErrorsCode;
@@ -7,6 +8,7 @@ import com.devtech.gestiondestock.exception.InvalidEntityException;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.model.Fournisseur;
 import com.devtech.gestiondestock.repository.FournisseurRepository;
+import com.devtech.gestiondestock.services.CommandeFournisseurService;
 import com.devtech.gestiondestock.services.FournisseurService;
 import com.devtech.gestiondestock.validator.FournisseurValidator;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +26,12 @@ import java.util.stream.Collectors;
 public class FournisseurServiceImpl implements FournisseurService {
 
     private final FournisseurRepository fournisseurRepository;
+    private final CommandeFournisseurService cmdFournisseur;
 
     @Autowired
-    public FournisseurServiceImpl(FournisseurRepository fournisseurRepository){
+    public FournisseurServiceImpl(FournisseurRepository fournisseurRepository, CommandeFournisseurService cmdFournisseur){
         this.fournisseurRepository = fournisseurRepository;
+        this.cmdFournisseur = cmdFournisseur;
     }
 
     @Override
@@ -102,7 +106,8 @@ public class FournisseurServiceImpl implements FournisseurService {
 
     private void checkIdFournisseurBeforeDelete(Integer idFournisseur){
         FournisseurDto dto = findById(idFournisseur);
-        if (!CollectionUtils.isEmpty(dto.getCommandeFournisseurs())) {
+        List<CommandeFournisseurDto> commandeFournisseurDtos = cmdFournisseur.findAllByFournisseurDto(dto);
+        if (!CollectionUtils.isEmpty(commandeFournisseurDtos)) {
             log.error("Fournisseur alredy used");
             throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande fournisseur existe deja pour ce fournisseur",
                     ErrorsCode.FOURNISSEUR_ALREADY_IN_USE

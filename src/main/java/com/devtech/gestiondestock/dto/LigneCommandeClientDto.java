@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 public class LigneCommandeClientDto {
     private Integer id;
     private ArticleDto article;
-    @JsonIgnore
     private CommandeClientDto commandeClient;
     private BigDecimal quantite;
     private BigDecimal prixUnitaire;
@@ -29,6 +28,7 @@ public class LigneCommandeClientDto {
                 .quantite(ligneCommandeClient.getQuantite())
                 .prixUnitaire(ligneCommandeClient.getPrixUnitaire())
                 .identreprise(ligneCommandeClient.getIdentreprise())
+                .commandeClient(CommandeClientDto.fromEntity(ligneCommandeClient.getCommandeClient()))
                 .build();
     }
 

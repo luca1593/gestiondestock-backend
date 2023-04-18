@@ -1,6 +1,7 @@
 package com.devtech.gestiondestock.controller;
 
 import com.devtech.gestiondestock.controller.api.CommandeClientApi;
+import com.devtech.gestiondestock.dto.ClientDto;
 import com.devtech.gestiondestock.dto.CommandeClientDto;
 import com.devtech.gestiondestock.dto.LigneCommandeClientDto;
 import com.devtech.gestiondestock.model.EtatCommande;
@@ -86,6 +87,11 @@ public class CommandeClientController implements CommandeClientApi {
     @Override
     public ResponseEntity<List<CommandeClientDto>> findAll() {
         return ResponseEntity.ok(commandeClientService.findAll());
+    }
+
+    @Override
+    public ResponseEntity<List<CommandeClientDto>> findAllByClient(ClientDto dto){
+        return ResponseEntity.ok(commandeClientService.findAllByClientDto(dto));
     }
 
     @Override

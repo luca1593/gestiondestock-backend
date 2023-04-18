@@ -2,6 +2,7 @@ package com.devtech.gestiondestock.controller;
 
 import com.devtech.gestiondestock.controller.api.CommandeFournisseurApi;
 import com.devtech.gestiondestock.dto.CommandeFournisseurDto;
+import com.devtech.gestiondestock.dto.FournisseurDto;
 import com.devtech.gestiondestock.dto.LigneCommandeFournisseurDto;
 import com.devtech.gestiondestock.model.EtatCommande;
 import com.devtech.gestiondestock.services.CommandeFournisseurService;
@@ -77,6 +78,11 @@ public class CommandeFournisseurController implements CommandeFournisseurApi {
     @Override
     public List<CommandeFournisseurDto> findAll() {
         return commandeFournisseurService.findAll();
+    }
+
+    @Override
+    public List<CommandeFournisseurDto> findAllByFournisseur(FournisseurDto dto) {
+        return commandeFournisseurService.findAllByFournisseurDto(dto);
     }
 
     @Override

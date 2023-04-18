@@ -1,13 +1,16 @@
 package com.devtech.gestiondestock.services.impl;
 
 import com.devtech.gestiondestock.dto.ClientDto;
+import com.devtech.gestiondestock.dto.CommandeClientDto;
 import com.devtech.gestiondestock.exception.EntityNotFoundException;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.model.Client;
+import com.devtech.gestiondestock.model.CommandeClient;
 import com.devtech.gestiondestock.repository.ClientRepository;
 import com.devtech.gestiondestock.services.ClientService;
+import com.devtech.gestiondestock.services.CommandeClientService;
 import com.devtech.gestiondestock.validator.ClientValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +27,12 @@ import java.util.stream.Collectors;
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
+    private final CommandeClientService commandeClientService;
 
     @Autowired
-    public ClientServiceImpl(ClientRepository clientRepository){
+    public ClientServiceImpl(ClientRepository clientRepository, CommandeClientService commandeClientService){
         this.clientRepository = clientRepository;
+        this.commandeClientService = commandeClientService;
     }
 
     @Override
@@ -99,9 +104,11 @@ public class ClientServiceImpl implements ClientService {
         checkIdClientBeforeDelete(id);
         clientRepository.deleteById(id);
     }
+
     private void checkIdClientBeforeDelete(Integer idClient){
         ClientDto dto = findById(idClient);
-        if (!CollectionUtils.isEmpty(dto.getCommandeClients())) {
+        List<CommandeClientDto> commandeClients = commandeClientService.findAllByClientDto(dto);
+        if (!CollectionUtils.isEmpty(commandeClients)) {
             log.error("Client alredy used");
             throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande client existe deja pour ce client",
                     ErrorsCode.CLIENT_ALREADY_IN_USE

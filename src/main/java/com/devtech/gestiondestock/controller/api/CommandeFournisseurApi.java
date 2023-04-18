@@ -1,6 +1,7 @@
 package com.devtech.gestiondestock.controller.api;
 
 import com.devtech.gestiondestock.dto.CommandeFournisseurDto;
+import com.devtech.gestiondestock.dto.FournisseurDto;
 import com.devtech.gestiondestock.dto.LigneCommandeFournisseurDto;
 import com.devtech.gestiondestock.model.EtatCommande;
 import io.swagger.annotations.Api;
@@ -147,6 +148,16 @@ public interface CommandeFournisseurApi {
             @ApiResponse(code = 200, message = "La liste des commandes fournisseur / liste vide")
     })
     List<CommandeFournisseurDto> findAll();
+
+    @PostMapping(value = COMMANDE_FOURNISSEUR_ENDPOINT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Renvoie la liste des commandes fournisseur selon le fournisseur",
+            notes = "Cette methode permet de rechercher toutes les commandes fournisseur selon le fournisseur",
+            responseContainer = "List<CommandeFournisseurDto>"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "La liste des commandes fournisseur selon le fournisseur / liste vide")
+    })
+    List<CommandeFournisseurDto> findAllByFournisseur(@RequestBody FournisseurDto dto);
 
     @DeleteMapping(value = DELETE_COMMANDE_FOURNISSEUR_BY_ID_ENDPOINT)
     @ApiOperation(value = "Supprimer une commande client",

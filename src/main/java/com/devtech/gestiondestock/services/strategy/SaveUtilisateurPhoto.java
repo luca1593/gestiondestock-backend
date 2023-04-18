@@ -4,7 +4,6 @@ import com.devtech.gestiondestock.dto.UtilisateurDto;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.services.FlickrService;
-import com.devtech.gestiondestock.services.GoogleDriveService;
 import com.devtech.gestiondestock.services.UtilisateurService;
 import com.flickr4java.flickr.FlickrException;
 
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 @Service("utilisateurStrategy")

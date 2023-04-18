@@ -13,6 +13,7 @@ import com.devtech.gestiondestock.repository.LigneCommandeClientRepository;
 import com.devtech.gestiondestock.services.CommandeClientService;
 import com.devtech.gestiondestock.services.MvtStkService;
 import com.devtech.gestiondestock.validator.ArticleValidator;
+import com.devtech.gestiondestock.validator.ClientValidator;
 import com.devtech.gestiondestock.validator.CommandeClientValidator;
 import com.devtech.gestiondestock.validator.LigneCommandeClientValidator;
 
@@ -59,9 +60,9 @@ public class CommandeClientServiceImpl implements CommandeClientService {
     public CommandeClientDto save(CommandeClientDto dto) {
         List<String> errors = CommandeClientValidator.validate(dto);
         if(!CollectionUtils.isEmpty(errors)){
-            log.error("Commande Client is not invalid", dto);
+            log.error("Commande Client is not valid", dto);
             throw new InvalidEntityException(
-                "La commande client n'est pas valid", 
+                "La commande client n'est pas valide", 
                 ErrorsCode.COMMANDE_CLIENT_NON_MODIFIABLE, errors
             );
         }
@@ -112,9 +113,9 @@ public class CommandeClientServiceImpl implements CommandeClientService {
     }
 
     if (!CollectionUtils.isEmpty(ligneCmdErrors)) {
-        log.error("Commande Client is not invalid", dto);
+        log.error("Commande Client is not valid", dto);
         throw new InvalidEntityException(
-            "La commande client n'est pas valid",
+            "La commande client n'est pas valide",
             ErrorsCode.COMMANDE_CLIENT_NON_MODIFIABLE, ligneCmdErrors
         );
     }
@@ -267,6 +268,22 @@ public class CommandeClientServiceImpl implements CommandeClientService {
     @Override
     public List<CommandeClientDto> findAll() {
         return commandeClientRepository.findAll().stream()
+                .map(CommandeClientDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CommandeClientDto> findAllByClientDto(ClientDto clientDto){
+        List<String> errors = ClientValidator.validate(clientDto);
+        if(!CollectionUtils.isEmpty(errors)){
+            log.error("Client is not valid", clientDto);
+            throw new InvalidEntityException(
+                "Le client n'est pas valide ou n'existe pas pour cette recherche", 
+                ErrorsCode.CLIENT_NOT_FOUND, errors
+            );
+        }
+        
+        return commandeClientRepository.findAllByClient(ClientDto.toEntity(clientDto)).stream()
                 .map(CommandeClientDto::fromEntity)
                 .collect(Collectors.toList());
     }

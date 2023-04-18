@@ -1,5 +1,6 @@
 package com.devtech.gestiondestock.controller.api;
 
+import com.devtech.gestiondestock.dto.ClientDto;
 import com.devtech.gestiondestock.dto.CommandeClientDto;
 import com.devtech.gestiondestock.dto.LigneCommandeClientDto;
 import com.devtech.gestiondestock.model.EtatCommande;
@@ -106,7 +107,9 @@ public interface CommandeClientApi {
 
         @GetMapping(value = APP_ROOT
                         + "/commande-client/date/{dateCommandeClient}", produces = MediaType.APPLICATION_JSON_VALUE)
-        @ApiOperation(value = "Rechercher liste des commandes client par date", notes = "Cette methode permet de rechercher liste des commandes client par date", responseContainer = "List<CommandeClientDto>")
+        @ApiOperation(value = "Rechercher liste des commandes client par date", 
+                                notes = "Cette methode permet de rechercher liste des commandes client par date", 
+                                responseContainer = "List<CommandeClientDto>")
         @ApiResponses(value = {
                         @ApiResponse(code = 200, message = "Aucune commande client n'a ete trouver dans la BDD"),
                         @ApiResponse(code = 404, message = "Erreur aucune commande client n'a pas ete trouver dans la BDD pendant la date fournie")
@@ -115,11 +118,22 @@ public interface CommandeClientApi {
                         @PathVariable("dateCommandeClient") Instant dateCommande);
 
         @GetMapping(value = APP_ROOT + "/commande-client/all")
-        @ApiOperation(value = "Renvoie la liste des commandes client", notes = "Cette methode permet de rechercher toutes les commandes client dans la BDD", responseContainer = "List<CommandeClientDto>")
+        @ApiOperation(value = "Renvoie la liste des commandes client", 
+                                notes = "Cette methode permet de rechercher toutes les commandes client dans la BDD", 
+                                responseContainer = "List<CommandeClientDto>")
         @ApiResponses(value = {
                         @ApiResponse(code = 200, message = "La liste des commandes client / liste vide")
         })
         ResponseEntity<List<CommandeClientDto>> findAll();
+
+        @PostMapping(value = APP_ROOT + "/commande-client", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+        @ApiOperation(value = "Renvoie la liste des commandes client selon le client", 
+                                notes = "Cette methode permet de rechercher toutes les commandes client selon le client", 
+                                responseContainer = "List<CommandeClientDto>")
+        @ApiResponses(value = {
+                        @ApiResponse(code = 200, message = "La liste des commandes client selon le client / liste vide")
+        })
+        ResponseEntity<List<CommandeClientDto>> findAllByClient(@RequestBody ClientDto dto);
 
         @DeleteMapping(value = APP_ROOT + "/commande-client/delete/{idCommandeClient}")
         @ApiOperation(value = "Supprimer une commande client", notes = "Cette methode permet de supprimer une commande client par son ID")

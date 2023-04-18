@@ -156,21 +156,21 @@ public class ArticleServiceImpl implements ArticleService {
 
         if (!CollectionUtils.isEmpty(findHistoriqueCommandeClient(idArticle))) {
             log.error("Article alredy used");
-            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande client existe deja pour cette article", 
+            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande / vente existe deja pour cette article", 
             ErrorsCode.ARTICLE_ALREADY_IN_USE
             );
         }
 
         if (!CollectionUtils.isEmpty(findHistoriqueCommandeFournisseur(idArticle))) {
             log.error("Article alredy used");
-            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande fournisseur existe deja pour cette article", 
+            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande / vente existe deja pour cette article", 
             ErrorsCode.ARTICLE_ALREADY_IN_USE
             );
         }
 
         if (!CollectionUtils.isEmpty(findHistoriqueVente(idArticle))) {
             log.error("Article alredy used");
-            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur vente existe deja pour cette article", 
+            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande / vente existe deja pour cette article", 
             ErrorsCode.ARTICLE_ALREADY_IN_USE
             );
         }

@@ -11,6 +11,7 @@ import com.devtech.gestiondestock.services.CommandeFournisseurService;
 import com.devtech.gestiondestock.services.MvtStkService;
 import com.devtech.gestiondestock.validator.ArticleValidator;
 import com.devtech.gestiondestock.validator.CommandeFournisseurValidator;
+import com.devtech.gestiondestock.validator.FournisseurValidator;
 import com.devtech.gestiondestock.validator.LigneCommandeFournisseurValidator;
 
 import lombok.extern.slf4j.Slf4j;
@@ -129,6 +130,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
                         , ErrorsCode.COMMANDE_FOURNISSEUR_NOT_FOUND
                 ));
     }
+
     @Override
     public CommandeFournisseurDto updateEtatCommande(Integer id, EtatCommande etatCommande) {
         checkIdCommande(id, ErrorsCode.COMMANDE_FOURNISSEUR_NON_MODIFIABLE);
@@ -148,6 +150,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
         }
         return CommandeFournisseurDto.fromEntity(savedCommande);
     }
+
     @Override
     public CommandeFournisseurDto updateQuantiterCommande(Integer idCommande, Integer idLigneCommande, BigDecimal quantite) {
         checkIdCommande(idCommande, ErrorsCode.COMMANDE_FOURNISSEUR_NON_MODIFIABLE);
@@ -164,6 +167,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
         ligneCommandeFournisseurRepository.save(ligneCommandeFournisseur);
         return commandeFournisseurDto;
     }
+
     @Override
     public CommandeFournisseurDto updateFournisseur(Integer idCommande, Integer idFournisseur) {
         checkIdCommande(idCommande, ErrorsCode.COMMANDE_FOURNISSEUR_NON_MODIFIABLE);
@@ -189,6 +193,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
                 )
         );
     }
+
     @Override
     public CommandeFournisseurDto updateArticle(Integer idCommande, Integer idLigneCommande, Integer newIdArticle) {
         checkIdCommande(idCommande, ErrorsCode.COMMANDE_FOURNISSEUR_NON_MODIFIABLE);
@@ -199,6 +204,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
         ligneCommandeFournisseurRepository.save(ligneCommandeFournisseur);
         return commandeFournisseurDto;
     }
+
     @Override
     public CommandeFournisseurDto deleteArticle(Integer idCommande, Integer idLigneCommande) {
         checkIdCommande(idCommande, ErrorsCode.COMMANDE_FOURNISSEUR_NON_MODIFIABLE);
@@ -208,6 +214,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
         ligneCommandeFournisseurRepository.deleteById(idLigneCommande);
         return commandeFournisseurDto;
     }
+
     @Override
     public List<LigneCommandeFournisseurDto> findAllByCommandeFournisseur(Integer idCommande) {
         checkIdCommande(idCommande, ErrorsCode.COMMANDE_FOURNISSEUR_NOT_FOUND);
@@ -216,6 +223,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
                         .map(LigneCommandeFournisseurDto::fromEntity)
                         .collect(Collectors.toList()) : null;
     }
+
     @Override
     public CommandeFournisseurDto findByCodeCommande(String code) {
         if (!StringUtils.hasLength(code)){
@@ -229,6 +237,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
                         ErrorsCode.COMMANDE_FOURNISSEUR_NOT_FOUND
                 ));
     }
+
     @Override
     public List<CommandeFournisseurDto> findByDateCommande(Instant dateCommande) {
         if (dateCommande == null){
@@ -240,12 +249,31 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
                         .map(CommandeFournisseurDto::fromEntity)
                         .collect(Collectors.toList()) : null;
     }
+
     @Override
     public List<CommandeFournisseurDto> findAll() {
         return commandeFournisseurRepository.findAll().stream()
                 .map(CommandeFournisseurDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<CommandeFournisseurDto> findAllByFournisseurDto(FournisseurDto fournisseurDto){
+        List<String> errors = FournisseurValidator.validate(fournisseurDto);
+        if(!CollectionUtils.isEmpty(errors)){
+            log.error("Fournisseur is not valid", fournisseurDto);
+            throw new InvalidEntityException(
+                "Le fournisseur n'est pas valide ou n'existe pas pour cette recherche", 
+                ErrorsCode.FOURNISSEUR_NOT_VALID, errors
+            );
+        }
+
+        return commandeFournisseurRepository.findAllByFournisseur(
+                FournisseurDto.toEntity(fournisseurDto)).stream()
+                    .map(CommandeFournisseurDto::fromEntity)
+                    .collect(Collectors.toList());
+    }
+
     @Override
     public void delete(Integer id) {
         if (id == null){
@@ -254,6 +282,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
         }
         commandeFournisseurRepository.deleteById(id);
     }
+
     private void checkIdCommande(Integer id, ErrorsCode errorsCode) {
         if (id == null){
             log.error("Commande fournisseur ID is null");
@@ -265,7 +294,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
     private CommandeFournisseurDto getCommandeFournisseurDto(Integer id, ErrorsCode errorsCode) {
         CommandeFournisseurDto commandeFournisseurDto = findById(id);
         if (commandeFournisseurDto.isCommandeLivree()){
-            throw new InvalidOpperatioException("La commande fournisseur est livree et ne peut plus etre modifier",
+            throw new InvalidOpperatioException("La commande fournisseur est livrée et ne peut plus etre modifier",
                     errorsCode
             );
         }

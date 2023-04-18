@@ -1,5 +1,6 @@
 package com.devtech.gestiondestock.services;
 
+import com.devtech.gestiondestock.dto.ClientDto;
 import com.devtech.gestiondestock.dto.CommandeClientDto;
 import com.devtech.gestiondestock.dto.LigneCommandeClientDto;
 import com.devtech.gestiondestock.model.EtatCommande;
@@ -21,6 +22,7 @@ public interface CommandeClientService {
     CommandeClientDto findByCodeCommande(String code);
     List<CommandeClientDto> findByDateCommande(Instant dateCommande);
     List<CommandeClientDto> findAll();
+    List<CommandeClientDto> findAllByClientDto(ClientDto clientDto);
     void delete(Integer id);
 
 }

@@ -5,7 +5,6 @@ import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.services.ClientService;
 import com.devtech.gestiondestock.services.FlickrService;
-import com.devtech.gestiondestock.services.GoogleDriveService;
 import com.flickr4java.flickr.FlickrException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 @Service("clientStrategy")

@@ -27,6 +27,8 @@ public class LigneCommandeFournisseurDto {
                 .quantite(ligneCommandeFournisseur.getQuantite())
                 .prixUnitaire(ligneCommandeFournisseur.getPrixUnitaire())
                 .identreprise(ligneCommandeFournisseur.getIdentreprise())
+                .commandefournisseur(CommandeFournisseurDto.fromEntity(
+                    ligneCommandeFournisseur.getCommandeFournisseur()))
                 .build();
     }
 

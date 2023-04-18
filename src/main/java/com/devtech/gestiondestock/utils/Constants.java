@@ -1,7 +1,7 @@
 package com.devtech.gestiondestock.utils;
 
 public interface Constants {
-    String APP_ROOT = "gestiondestock/v1";
+    String APP_ROOT = "v1";
     String CREATE_ENDPOINT = "/create";
     String CODE_ENDPOINT = "/code/";
     String DATE_ENDPOINT = "/date/";
