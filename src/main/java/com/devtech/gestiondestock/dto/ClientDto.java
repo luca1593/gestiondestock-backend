@@ -1,6 +1,7 @@
 package com.devtech.gestiondestock.dto;
 
 import com.devtech.gestiondestock.model.Client;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,6 +18,7 @@ public class ClientDto {
     private String photo;
     private String email;
     private String numTel;
+    @JsonIgnore
     private List<CommandeClientDto> commandeClients;
     private Integer identreprise;
 
@@ -33,13 +35,6 @@ public class ClientDto {
                 .photo(client.getPhoto())
                 .email(client.getEmail())
                 .numTel(client.getNumTel())
-                .commandeClients(
-                        client.getCommandeclients() != null ?
-                                client.getCommandeclients()
-                                        .stream()
-                                        .map(CommandeClientDto::fromEntity)
-                                        .collect(Collectors.toList()) : null
-                )
                 .identreprise(client.getIdentreprise())
                 .build();
     }
@@ -56,13 +51,6 @@ public class ClientDto {
         client.setPhoto(clientDto.getPhoto());
         client.setEmail(clientDto.getEmail());
         client.setNumTel(clientDto.getNumTel());
-        client.setCommandeclients(
-                clientDto.getCommandeClients() != null ?
-                        clientDto.getCommandeClients()
-                                .stream()
-                                .map(CommandeClientDto::toEntity)
-                                .collect(Collectors.toList()) : null
-        );
         client.setIdentreprise(clientDto.getIdentreprise());
         return client;
     }

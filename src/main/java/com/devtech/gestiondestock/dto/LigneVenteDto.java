@@ -27,6 +27,7 @@ public class LigneVenteDto {
                 .quantite(ligneVente.getQuantite())
                 .prixUnitaire(ligneVente.getPrixUnitaire())
                 .identreprise(ligneVente.getIdentreprise())
+                .vente(VenteDto.fromEntity(ligneVente.getVente()))
                 .build();
     }
 

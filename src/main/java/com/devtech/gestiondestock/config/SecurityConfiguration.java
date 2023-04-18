@@ -50,8 +50,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/swagger-ui",
                         "/configuration/security",
                         "/configuration/ui",
-                        "/swagger-ui.html",
+                        "/**/swagger-ui.html",
                         "/webjars/**",
+                        "/**/springfox-swagger-ui.html",
+                        "/**/springfox-swagger-ui/**",
                         "/v3/api-docs/**",
                         "/swagger-ui/**").permitAll()
                 .anyRequest().authenticated()
@@ -64,18 +66,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 
-
 	public CorsConfigurationSource configurationSource(){
 		CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-		configuration.setAllowedMethods(List.of(CorsConfiguration.ALL));
-        configuration.setAllowedHeaders(List.of(CorsConfiguration.ALL));
+        List<String> allowedMethods = new java.util.ArrayList<>();
+        allowedMethods.add(CorsConfiguration.ALL);
+        configuration.setAllowedMethods(allowedMethods);
+        configuration.setAllowedHeaders(allowedMethods);
         configuration.addAllowedOrigin("http://localhost:4200");
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);

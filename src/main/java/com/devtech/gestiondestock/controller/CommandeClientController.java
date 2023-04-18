@@ -1,6 +1,7 @@
 package com.devtech.gestiondestock.controller;
 
 import com.devtech.gestiondestock.controller.api.CommandeClientApi;
+import com.devtech.gestiondestock.dto.ClientDto;
 import com.devtech.gestiondestock.dto.CommandeClientDto;
 import com.devtech.gestiondestock.dto.LigneCommandeClientDto;
 import com.devtech.gestiondestock.model.EtatCommande;
@@ -24,7 +25,9 @@ public class CommandeClientController implements CommandeClientApi {
     }
 
     @Override
-    public ResponseEntity<CommandeClientDto> save(CommandeClientDto dto) {
+    public ResponseEntity<CommandeClientDto> save(CommandeClientDto dto, Long dateCommandeClient) {
+        Instant dateCmd = Instant.ofEpochMilli(dateCommandeClient);
+        dto.setDateCommande(dateCmd);
         return ResponseEntity.ok(commandeClientService.save(dto));
     }
 
@@ -87,8 +90,18 @@ public class CommandeClientController implements CommandeClientApi {
     }
 
     @Override
+    public ResponseEntity<List<CommandeClientDto>> findAllByClient(ClientDto dto){
+        return ResponseEntity.ok(commandeClientService.findAllByClientDto(dto));
+    }
+
+    @Override
     public ResponseEntity delete(Integer id) {
         commandeClientService.delete(id);
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<List<LigneCommandeClientDto>> findAllLigneCommandeClient(Integer icCommade) {
+        return ResponseEntity.ok(commandeClientService.findAllByCommandeClient(icCommade));
     }
 }

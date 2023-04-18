@@ -4,7 +4,6 @@ import com.devtech.gestiondestock.dto.MvtStkDto;
 import com.devtech.gestiondestock.exception.EntityNotFoundException;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
-import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.model.MvtStk;
 import com.devtech.gestiondestock.model.TypeMvt;
 import com.devtech.gestiondestock.repository.MvtStkRepository;
@@ -18,7 +17,6 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

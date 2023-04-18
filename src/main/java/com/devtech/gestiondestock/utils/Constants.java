@@ -1,7 +1,7 @@
 package com.devtech.gestiondestock.utils;
 
 public interface Constants {
-    String APP_ROOT = "gestiondestock/v1";
+    String APP_ROOT = "v1";
     String CREATE_ENDPOINT = "/create";
     String CODE_ENDPOINT = "/code/";
     String DATE_ENDPOINT = "/date/";
@@ -12,7 +12,7 @@ public interface Constants {
     String UPDATE_ENDPOINT = "/update";
 
     String COMMANDE_FOURNISSEUR_ENDPOINT = APP_ROOT + "/commande-fournisseur";
-    String CREATE_COMMANDE_FOURNISSEUR = COMMANDE_FOURNISSEUR_ENDPOINT + CREATE_ENDPOINT;
+    String CREATE_COMMANDE_FOURNISSEUR = COMMANDE_FOURNISSEUR_ENDPOINT + CREATE_ENDPOINT + "/{dateCommandeFournisseur}";
     String UPDATE_COMMANDE_FOURNISSEUR_ENDPOINT = COMMANDE_FOURNISSEUR_ENDPOINT + UPDATE_ENDPOINT;
     String FIND_COMMANDE_FOURNISSEUR_BY_ID_ENDPOINT = COMMANDE_FOURNISSEUR_ENDPOINT + "/{idCommandeFournisseur}";
     String FIND_COMMANDE_FOURNISSEUR_BY_CODE_ENDPOINT = COMMANDE_FOURNISSEUR_ENDPOINT + CODE_ENDPOINT + "/{codeCommandeFournisseur}";

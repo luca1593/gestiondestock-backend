@@ -1,6 +1,8 @@
 package com.devtech.gestiondestock.validator;
 
 import com.devtech.gestiondestock.dto.CommandeClientDto;
+
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ public class CommandeClientValidator {
             errors.add("Veuillez renseigner la date de la commande");
             errors.add("Veuillez renseigner l'etat de la commande");
             errors.add("Veuillez renseigner le client pour la commande");
+            errors.add("Veuillez ajouter au moins un article pour la commande");
             return errors;
         }
         if (!StringUtils.hasLength(commandeClientDto.getCode())) {
@@ -28,6 +31,10 @@ public class CommandeClientValidator {
         if (commandeClientDto.getClient() == null || commandeClientDto.getClient().getId() == null){
             errors.add("Veuillez renseigner le client pour la commande");
         }
+        if (CollectionUtils.isEmpty(commandeClientDto.getLigneCommandeClients())) {
+            errors.add("Veuillez ajouter au moins un article pour la commande");
+        }
+
         return errors;
     }
 }

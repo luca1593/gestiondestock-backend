@@ -13,7 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Gestion de stock</name>
 	<description>API Rest de l&apos;application de gestion de stock</description>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
@@ -32,16 +32,21 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-<!--
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web-services -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web-services</artifactId>
+            <version>3.0.5</version>
+        </dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
 		</dependency>
-		-->
 
-		<!-- https://mvnrepository.com/artifact/com.github.fabienbarbero/flickr-api -->
+        <!-- https://mvnrepository.com/artifact/com.github.fabienbarbero/flickr-api -->
 		<dependency>
 			<groupId>com.flickr4java</groupId>
 			<artifactId>flickr4java</artifactId>
@@ -49,7 +54,6 @@
 		</dependency>
 
 		<!-- Swgger -->
-
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-boot-starter</artifactId>
@@ -120,6 +124,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>${project.artifactId}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -132,6 +137,17 @@
 						</exclude>
 					</excludes>
 				</configuration>
+				<executions>
+					<execution>
+						<id>repackage</id>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<skip>${skip.repackage}</skip>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>com.github.kongchen</groupId>
@@ -144,7 +160,7 @@
 							<locations>
 								<location>com.devtech.gestiondestock.controller</location>
 							</locations>
-							<basePath>http://localhost:8181/</basePath>
+							<basePath>${profil-path}</basePath>
 							<info>
 								<title>Swagger documentation for API gestion de stock</title>
 								<version>${project.version}</version>
@@ -159,7 +175,7 @@
 							<outputFormats>json</outputFormats>
 							<swaggerApiReader>com.github.kongchen.swagger.docgen.reader.SpringMvcApiReader</swaggerApiReader>
 							<swaggerDirectory>${project.build.directory}</swaggerDirectory>
-							<operationIdFormat>{{className}}_{{methodName}}_{{httpMethod}}</operationIdFormat>
+							<operationIdFormat>{{methodName}}_{{httpMethod}}</operationIdFormat>
 						</apiSource>
 					</apiSources>
 				</configuration>
@@ -175,4 +191,23 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<skip.repackage>false</skip.repackage>
+				<profil-path>http://localhost:8181/</profil-path>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<skip.repackage>true</skip.repackage>
+				<profil-path>http://localhost:8080/</profil-path>
+			</properties>
+		</profile>
+	</profiles>
 </project>

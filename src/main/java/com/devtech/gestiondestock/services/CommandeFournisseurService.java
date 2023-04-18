@@ -1,8 +1,10 @@
 package com.devtech.gestiondestock.services;
 
 import com.devtech.gestiondestock.dto.CommandeFournisseurDto;
+import com.devtech.gestiondestock.dto.FournisseurDto;
 import com.devtech.gestiondestock.dto.LigneCommandeFournisseurDto;
 import com.devtech.gestiondestock.model.EtatCommande;
+import com.devtech.gestiondestock.model.Fournisseur;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -20,5 +22,6 @@ public interface CommandeFournisseurService {
     List<LigneCommandeFournisseurDto> findAllByCommandeFournisseur(Integer idCommande);
     List<CommandeFournisseurDto> findByDateCommande(Instant dateCommande);
     List<CommandeFournisseurDto> findAll();
+    List<CommandeFournisseurDto> findAllByFournisseurDto(FournisseurDto fournisseurDto);
     void delete(Integer id);
 }

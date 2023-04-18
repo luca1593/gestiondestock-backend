@@ -2,7 +2,6 @@ package com.devtech.gestiondestock.dto;
 
 import com.devtech.gestiondestock.model.CommandeClient;
 import com.devtech.gestiondestock.model.EtatCommande;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,7 +16,6 @@ public class CommandeClientDto {
     private Instant dateCommande;
     private EtatCommande etatcommande;
     private ClientDto client;
-    @JsonIgnore
     private List<LigneCommandeClientDto> ligneCommandeClients;
     private Integer identreprise;
 
@@ -31,6 +29,7 @@ public class CommandeClientDto {
                 .dateCommande(commandeClient.getDateCommande())
                 .etatcommande(commandeClient.getEtatcommande())
                 .etatcommande(commandeClient.getEtatcommande())
+                .client(ClientDto.fromEntity(commandeClient.getClient()))
                 .identreprise(commandeClient.getIdentreprise())
                 .build();
     }
@@ -45,6 +44,7 @@ public class CommandeClientDto {
         commandeClient.setDateCommande(commandeClientDto.getDateCommande());
         commandeClient.setEtatcommande(commandeClientDto.getEtatcommande());
         commandeClient.setEtatcommande(commandeClientDto.getEtatcommande());
+        commandeClient.setClient(ClientDto.toEntity(commandeClientDto.getClient()));
         commandeClient.setIdentreprise(commandeClientDto.getIdentreprise());
         return commandeClient;
     }

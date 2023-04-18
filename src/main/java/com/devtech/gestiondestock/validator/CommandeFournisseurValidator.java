@@ -1,7 +1,8 @@
 package com.devtech.gestiondestock.validator;
 
-import com.devtech.gestiondestock.dto.CommandeClientDto;
 import com.devtech.gestiondestock.dto.CommandeFournisseurDto;
+
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class CommandeFournisseurValidator {
             errors.add("Veuillez renseigner la date de la commande");
             errors.add("Veuillez renseigner l'etat de la commande");
             errors.add("Veuillez renseigner le fournisseur pour la commande");
+            errors.add("Veuillez ajouter au moins un article pour la commande");
             return errors;
         }
 
@@ -30,6 +32,10 @@ public class CommandeFournisseurValidator {
         }
         if (commandeFournisseurDto.getFournisseur() == null || commandeFournisseurDto.getFournisseur().getId() == null){
             errors.add("Veuillez renseigner le fournisseur pour la commande");
+        }
+
+        if (CollectionUtils.isEmpty(commandeFournisseurDto.getLigneCommandeFournisseurs())) {
+            errors.add("Veuillez ajouter au moins un article pour la commande");
         }
 
         return errors;

@@ -7,15 +7,9 @@ import com.devtech.gestiondestock.dto.LigneCommandeFournisseurDto;
 import com.devtech.gestiondestock.dto.LigneVenteDto;
 import com.devtech.gestiondestock.services.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
-import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 
 @RestController
 public class ArticleController implements ArticleApi {
