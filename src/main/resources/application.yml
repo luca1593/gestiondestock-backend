@@ -17,6 +17,14 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+    dispatch-options-request: true
+# Autoriser toutes les requêtes CORS
+cors:
+  allowed-origins: *
+  allowed-methods: GET, POST, PUT, DELETE, OPTIONS
+  allowed-headers: Authorization, Content-Type
+  exposed-headers: Authorization, Content-Type
+  allow-credentials: true
 server:
   error:
       whitelabel:
