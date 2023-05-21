@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CategoryServiceImpl implements CategoryService {
 
-    private CategoryRepository categoryRepository;
-    private ArticleRepository articleRepository;
+    private final CategoryRepository categoryRepository;
+    private final ArticleRepository articleRepository;
 
     @Autowired
     public  CategoryServiceImpl(CategoryRepository categoryRepository, ArticleRepository articleRepository){
@@ -42,14 +42,14 @@ public class CategoryServiceImpl implements CategoryService {
             throw new InvalidEntityException("Le category n'est pas valide", ErrorsCode.CATEGORY_NOT_VALID, errors);
         }
         return CategoryDto.fromEntity(
-                categoryRepository.save(CategoryDto.toEntity(dto))
+                this.categoryRepository.save(CategoryDto.toEntity(dto))
         );
     }
 
     @Override
     public CategoryDto findById(Integer id) {
         checkId(id);
-        Optional<Category> category = categoryRepository.findById(id);
+        Optional<Category> category = this.categoryRepository.findById(id);
         return Optional.of(CategoryDto.fromEntity(category.get())).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucun categorie avec l'ID = " + id + " n'a ete trouver dans la base de donnee",
@@ -64,7 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
             log.error("Category code is null");
             return null;
         }
-        Optional<Category> category = categoryRepository.findCategoryByCode(code);
+        Optional<Category> category = this.categoryRepository.findCategoryByCode(code);
         return Optional.of(CategoryDto.fromEntity(category.get())).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucun category trouver avec le code = " + code + " dans la BDD",
@@ -75,7 +75,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> findAll() {
-        return categoryRepository.findAll().stream()
+        return this.categoryRepository.findAll().stream()
                 .map(CategoryDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -83,7 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void delete(Integer id) {
         validateIdBefortOperation(id);
-        categoryRepository.deleteById(id);
+        this.categoryRepository.deleteById(id);
     }
 
     private void checkId(Integer id){
@@ -98,7 +98,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private void validateIdBefortOperation(Integer id){
         checkId(id);
-        List<Article> articles = articleRepository.findAllByCategoryId(id);
+        List<Article> articles = this.articleRepository.findAllByCategoryId(id);
         if(!CollectionUtils.isEmpty(articles)){
             log.error("Category alredy used");
             throw new InvalidOpperatioException("La categorie est deja utilse", 

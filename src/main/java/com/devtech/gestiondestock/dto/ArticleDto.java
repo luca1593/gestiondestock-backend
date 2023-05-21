@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -18,6 +19,7 @@ public class ArticleDto {
     private BigDecimal prixUnitaireht;
     private BigDecimal tauxTva;
     private BigDecimal prixTtc;
+    private BigDecimal stock;
     private String photo;
     private CategoryDto category;
     private Instant creationDate;
@@ -44,6 +46,7 @@ public class ArticleDto {
                 .prixUnitaireht(article.getPrixUnitaireht())
                 .tauxTva(article.getTauxTva())
                 .prixTtc(article.getPrixTtc())
+                .stock(article.getStock())
                 .photo(article.getPhoto())
                 .creationDate(article.getCreationDate())
                 .lastModifiedDate(article.getLastModifiedDate())
@@ -63,6 +66,7 @@ public class ArticleDto {
         article.setPrixUnitaireht(articleDto.getPrixUnitaireht());
         article.setTauxTva(articleDto.getTauxTva());
         article.setPrixTtc(articleDto.getPrixTtc());
+        article.setStock(articleDto.getStock());
         article.setPhoto(articleDto.getPhoto());
         article.setCategory(CategoryDto.toEntity(articleDto.getCategory()));
         article.setEntreprise(EntrepriseDto.toEntity(articleDto.getEntreprise()));

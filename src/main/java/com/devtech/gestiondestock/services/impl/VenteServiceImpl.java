@@ -53,7 +53,7 @@ public class VenteServiceImpl implements VenteService {
         List<String> venteErrors = new ArrayList<>();
 
         dto.getLigneVentes().forEach( ligneVente -> {
-            Optional<Article> article = articleRepository.findById(
+            Optional<Article> article = this.articleRepository.findById(
                     ligneVente.getArticle().getId()
             );
             if(!article.isPresent()){
@@ -71,12 +71,12 @@ public class VenteServiceImpl implements VenteService {
                     ErrorsCode.VENTE_NOT_VALID, venteErrors);
         }
 
-        Vente vente = venteRepository.save(VenteDto.toEntity(dto));
+        Vente vente = this.venteRepository.save(VenteDto.toEntity(dto));
         dto.getLigneVentes().forEach(ligneVnt ->{
             LigneVente ligneVente = LigneVenteDto.toEntity(ligneVnt);
             ligneVente.setVente(vente);
             ligneVente.setIdentreprise(dto.getIdentreprise());
-            ligneVenteRepository.save(ligneVente);
+            this.ligneVenteRepository.save(ligneVente);
             updateMvtStk(ligneVente);
         });
 
@@ -89,7 +89,7 @@ public class VenteServiceImpl implements VenteService {
             log.error("Vente ID is null");
             return null;
         }
-        Optional<Vente> vente = venteRepository.findById(id);
+        Optional<Vente> vente = this.venteRepository.findById(id);
         return Optional.of(VenteDto.fromEntity(vente.get())).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucune vente avec l'ID = " + id + " n'a ete trouver dans la base de donnee",
@@ -104,7 +104,7 @@ public class VenteServiceImpl implements VenteService {
             log.error("Category code is null");
             return null;
         }
-        Optional<Vente> vente = venteRepository.findVenteByCode(code);
+        Optional<Vente> vente = this.venteRepository.findVenteByCode(code);
         return Optional.of(VenteDto.fromEntity(vente.get())).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucune vente trouver avec le code = " + code + " dans la BDD",
@@ -119,15 +119,15 @@ public class VenteServiceImpl implements VenteService {
             log.error("Vente date is null");
             return null;
         }
-        return venteRepository.findVenteByDateVente(dateVente) != null ?
-                venteRepository.findVenteByDateVente(dateVente).stream()
+        return this.venteRepository.findVenteByDateVente(dateVente) != null ?
+                this.venteRepository.findVenteByDateVente(dateVente).stream()
                         .map(VenteDto::fromEntity)
                         .collect(Collectors.toList()) : null;
     }
 
     @Override
     public List<VenteDto> findAll() {
-        return venteRepository.findAll().stream()
+        return this.venteRepository.findAll().stream()
                 .map(VenteDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -135,7 +135,7 @@ public class VenteServiceImpl implements VenteService {
     @Override
     public void delete(Integer id) {
         checkIdVenteBeforeDelete(id);
-        venteRepository.deleteById(id);
+        this.venteRepository.deleteById(id);
     }
 
     private void updateMvtStk(LigneVente ligneVente){
@@ -147,14 +147,14 @@ public class VenteServiceImpl implements VenteService {
                     .quantite(ligneVente.getQuantite())
                     .identreprise(ligneVente.getIdentreprise())
                     .build();
-            mvtStkService.sortieMvtStk(mvtStkDto);
+        this.mvtStkService.sortieMvtStk(mvtStkDto);
     }
 
     private void checkIdVenteBeforeDelete(Integer idVente){
         VenteDto dto = findById(idVente);
         if (!CollectionUtils.isEmpty(dto.getLigneVentes())) {
             log.error("Vente alredy used");
-            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur line de vente existe deja pour ce vente",
+            throw new InvalidOpperatioException("Operation impossible : une ou plusieur line de vente existe deja pour ce vente",
                     ErrorsCode.FOURNISSEUR_ALREADY_IN_USE
             );
         }
