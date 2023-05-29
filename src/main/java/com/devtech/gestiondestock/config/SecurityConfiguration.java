@@ -32,7 +32,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(applicationUserDetailsService)
+        auth.userDetailsService(this.applicationUserDetailsService)
                 .passwordEncoder(passwordEncoder());
     }
 
@@ -58,7 +58,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/swagger-ui/**").permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.addFilterBefore(applicationRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(this.applicationRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
@@ -80,6 +80,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         configuration.setAllowedMethods(allowedMethods);
         configuration.setAllowedHeaders(allowedMethods);
         configuration.addAllowedOrigin("http://localhost:4200");
+        configuration.addAllowedOrigin("http://localhost:4200/**");
         configuration.addAllowedOrigin("http://www.gestion-stock.mg");
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
