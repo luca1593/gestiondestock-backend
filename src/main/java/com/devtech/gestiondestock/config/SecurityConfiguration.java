@@ -76,6 +76,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         configuration.setAllowCredentials(true);
         List<String> allowedMethods = new java.util.ArrayList<>();
         allowedMethods.add(CorsConfiguration.ALL);
+        configuration.addAllowedOriginPattern(CorsConfiguration.ALL);
         configuration.setAllowedMethods(allowedMethods);
         configuration.setAllowedHeaders(allowedMethods);
         configuration.addAllowedOrigin("http://localhost:4200");

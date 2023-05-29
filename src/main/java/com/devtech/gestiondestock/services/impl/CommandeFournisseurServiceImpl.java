@@ -64,8 +64,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
         if (!fournisseur.isPresent()){
             log.warn("Founisseur with ID {} was not found in the DB", dto.getFournisseur().getId());
             throw new EntityNotFoundException(
-                    "Le Fournisseur avec l'Id = "
-                            + dto.getFournisseur().getCommandeFournisseurs() +
+                    "Le Fournisseur avec l'Id = "  + dto.getFournisseur().getId() +
                             " n'existe pas dans la BDD",
                     ErrorsCode.FOURNISSEUR_NOT_FOUND
             );
