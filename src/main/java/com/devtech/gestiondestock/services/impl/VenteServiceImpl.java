@@ -147,6 +147,12 @@ public class VenteServiceImpl implements VenteService {
                     .quantite(ligneVente.getQuantite())
                     .identreprise(ligneVente.getIdentreprise())
                     .build();
+        Optional<Article> article = articleRepository.findById(ligneVente.getArticle().getId());
+        if(article.isPresent()){
+            Article art = article.get();
+            //art.setStock(art.getStock() - ligneVente.getQuantite());
+            //articleRepository.save(art);
+        }
         this.mvtStkService.sortieMvtStk(mvtStkDto);
     }
 

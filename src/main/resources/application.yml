@@ -20,7 +20,7 @@ spring:
     dispatch-options-request: true
 # Autoriser toutes les requêtes CORS
 cors:
-  allowed-origins: http://localhost:4200, http://www.gestion-stock.mg
+  allowed-origins: *
   allowed-methods: GET, POST, PUT, DELETE, OPTIONS
   allowed-headers: Authorization, Content-Type
   exposed-headers: Authorization, Content-Type
