@@ -45,6 +45,7 @@ public class VenteServiceImpl implements VenteService {
 
     @Override
     public VenteDto save(VenteDto dto) {
+        dto.setDateVente(Instant.now());
         List<String> errors = VenteValidator.validate(dto);
         if (!errors.isEmpty()){
             log.error("Vente is not valide {}", dto);
@@ -147,7 +148,7 @@ public class VenteServiceImpl implements VenteService {
                     .quantite(ligneVente.getQuantite())
                     .identreprise(ligneVente.getIdentreprise())
                     .build();
-        Optional<Article> article = articleRepository.findById(ligneVente.getArticle().getId());
+        Optional<Article> article = this.articleRepository.findById(ligneVente.getArticle().getId());
         if(article.isPresent()){
             Article art = article.get();
             //art.setStock(art.getStock() - ligneVente.getQuantite());
