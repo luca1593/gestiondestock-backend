@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,8 +152,9 @@ public class VenteServiceImpl implements VenteService {
         Optional<Article> article = this.articleRepository.findById(ligneVente.getArticle().getId());
         if(article.isPresent()){
             Article art = article.get();
-            //art.setStock(art.getStock() - ligneVente.getQuantite());
-            //articleRepository.save(art);
+            BigDecimal newStock = art.getStock().subtract(ligneVente.getQuantite());
+            art.setStock(newStock);
+            this.articleRepository.save(art);
         }
         this.mvtStkService.sortieMvtStk(mvtStkDto);
     }
