@@ -1,6 +1,7 @@
 package com.devtech.gestiondestock.controller;
 
 import com.devtech.gestiondestock.controller.api.VenteApi;
+import com.devtech.gestiondestock.dto.LigneVenteDto;
 import com.devtech.gestiondestock.dto.VenteDto;
 import com.devtech.gestiondestock.services.VenteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,31 +22,36 @@ public class VenteController implements VenteApi {
 
     @Override
     public VenteDto save(VenteDto dto) {
-        return venteService.save(dto);
+        return this.venteService.save(dto);
     }
 
     @Override
     public VenteDto findById(Integer id) {
-        return venteService.findById(id);
+        return this.venteService.findById(id);
     }
 
     @Override
     public VenteDto findByCodeVente(String code) {
-        return venteService.findByCodeVente(code);
+        return this.venteService.findByCodeVente(code);
     }
 
     @Override
     public List<VenteDto> findByDateVente(Instant dateVente) {
-        return venteService.findByDateVente(dateVente);
+        return this.venteService.findByDateVente(dateVente);
     }
 
     @Override
     public List<VenteDto> findAll() {
-        return venteService.findAll();
+        return this.venteService.findAll();
     }
 
     @Override
     public void delete(Integer id) {
-        venteService.delete(id);
+        this.venteService.delete(id);
+    }
+
+    @Override
+    public List<LigneVenteDto> findAllByVente(Integer idVente) {
+        return this.venteService.findAllLigneVenteByVente(idVente);
     }
 }
