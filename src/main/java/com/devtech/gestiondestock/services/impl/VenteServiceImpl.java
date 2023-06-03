@@ -1,6 +1,9 @@
 package com.devtech.gestiondestock.services.impl;
 
-import com.devtech.gestiondestock.dto.*;
+import com.devtech.gestiondestock.dto.ArticleDto;
+import com.devtech.gestiondestock.dto.LigneVenteDto;
+import com.devtech.gestiondestock.dto.MvtStkDto;
+import com.devtech.gestiondestock.dto.VenteDto;
 import com.devtech.gestiondestock.exception.EntityNotFoundException;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
@@ -21,6 +24,7 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -123,7 +127,7 @@ public class VenteServiceImpl implements VenteService {
     public List<VenteDto> findByDateVente(Instant dateVente) {
         if (dateVente == null){
             log.error("Vente date is null");
-            return null;
+            return Collections.emptyList();
         }
         return this.venteRepository.findVenteByDateVente(dateVente) != null ?
                 this.venteRepository.findVenteByDateVente(dateVente).stream()
