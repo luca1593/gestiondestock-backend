@@ -1,5 +1,6 @@
 package com.devtech.gestiondestock.services;
 
+import com.devtech.gestiondestock.dto.LigneVenteDto;
 import com.devtech.gestiondestock.dto.VenteDto;
 
 import java.time.Instant;
@@ -18,5 +19,7 @@ public interface VenteService {
     List<VenteDto> findAll();
 
     void delete(Integer id);
+
+    List<LigneVenteDto> findAllLigneVenteByVente(Integer idVente);
 
 }

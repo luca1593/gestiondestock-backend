@@ -1,5 +1,6 @@
 package com.devtech.gestiondestock.controller.api;
 
+import com.devtech.gestiondestock.dto.LigneVenteDto;
 import com.devtech.gestiondestock.dto.VenteDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -78,4 +79,13 @@ public interface VenteApi {
     })
     void delete(@PathVariable("idVente") Integer id);
 
+    @GetMapping(value = APP_ROOT + "/vente/list/ligne-vente/{idVente}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Renvoie la liste des ventes",
+            notes = "Cette methode permet de rechercher toutes les lignes de vente par l'id de la vente  dans la BDD",
+            responseContainer = "List<LigneVenteDto>"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "La liste des lignes de vente par l'id de la vente / liste vide")
+    })
+    List<LigneVenteDto> findAllByVente(@PathVariable("idVente") Integer idVente);
 }

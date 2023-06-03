@@ -92,12 +92,14 @@ public class VenteServiceImpl implements VenteService {
             return null;
         }
         Optional<Vente> vente = this.venteRepository.findById(id);
-        return Optional.of(VenteDto.fromEntity(vente.get())).orElseThrow(() ->
-                new EntityNotFoundException(
-                        "Aucune vente avec l'ID = " + id + " n'a ete trouver dans la base de donnee",
-                        ErrorsCode.VENTE_NOT_FOUND
-                )
-        );
+        if (vente.isPresent()){
+            return VenteDto.fromEntity(vente.get());
+        }else {
+            throw new EntityNotFoundException(
+                    "Aucune vente avec l'ID = " + id + " n'a ete trouver dans la base de donnee",
+                    ErrorsCode.VENTE_NOT_FOUND
+            );
+        }
     }
 
     @Override
@@ -107,12 +109,14 @@ public class VenteServiceImpl implements VenteService {
             return null;
         }
         Optional<Vente> vente = this.venteRepository.findVenteByCode(code);
-        return Optional.of(VenteDto.fromEntity(vente.get())).orElseThrow(() ->
-                new EntityNotFoundException(
-                        "Aucune vente trouver avec le code = " + code + " dans la BDD",
-                        ErrorsCode.VENTE_NOT_FOUND
-                )
-        );
+        if (vente.isPresent()){
+            return VenteDto.fromEntity(vente.get());
+        }else {
+            throw new EntityNotFoundException(
+                    "Aucune vente trouver avec le code = " + code + " n'a ete trouver dans la base de donnee",
+                    ErrorsCode.VENTE_NOT_FOUND
+            );
+        }
     }
 
     @Override
@@ -138,6 +142,14 @@ public class VenteServiceImpl implements VenteService {
     public void delete(Integer id) {
         checkIdVenteBeforeDelete(id);
         this.venteRepository.deleteById(id);
+    }
+
+    @Override
+    public List<LigneVenteDto> findAllLigneVenteByVente(Integer idVente) {
+        checkIdVenteBeforeDelete(idVente);
+        return this.ligneVenteRepository.findAllByVenteId(idVente) != null ?
+                this.ligneVenteRepository.findAllByVenteId(idVente).stream()
+                        .map(LigneVenteDto::fromEntity).collect(Collectors.toList()) :  new ArrayList<>();
     }
 
     private void updateMvtStk(LigneVente ligneVente){
