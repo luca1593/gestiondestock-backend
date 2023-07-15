@@ -4,6 +4,10 @@ spring:
     username: luca
     password: Just$Me12
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  main:
+    allow-circular-references: true
+
   jpa:
     database: MYSQL
     show-sql: false
@@ -27,8 +31,13 @@ cors:
   allow-credentials: true
 server:
   error:
-      whitelabel:
-        enabled: true
+    whitelabel:
+      enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
 flickr:
   apiKey: abc11f1e268d908eeee176297269c001
   apiSecret: 50a8ae15b4224302

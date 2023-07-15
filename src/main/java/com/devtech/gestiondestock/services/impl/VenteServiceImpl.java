@@ -15,8 +15,8 @@ import com.devtech.gestiondestock.repository.VenteRepository;
 import com.devtech.gestiondestock.services.MvtStkService;
 import com.devtech.gestiondestock.services.VenteService;
 import com.devtech.gestiondestock.validator.VenteValidator;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -31,22 +31,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class VenteServiceImpl implements VenteService {
     private final VenteRepository venteRepository;
     private final LigneVenteRepository ligneVenteRepository;
     private final ArticleRepository articleRepository;
     private final MvtStkService mvtStkService;
-
-    @Autowired
-    public VenteServiceImpl(VenteRepository venteRepository,
-                            LigneVenteRepository ligneVenteRepository,
-                            ArticleRepository articleRepository,
-                            MvtStkService mvtStkService) {
-        this.venteRepository = venteRepository;
-        this.ligneVenteRepository = ligneVenteRepository;
-        this.articleRepository = articleRepository;
-        this.mvtStkService = mvtStkService;
-    }
 
     @Override
     public VenteDto save(VenteDto dto) {

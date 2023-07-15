@@ -34,13 +34,6 @@ public class EntrepriseDto {
                 .email(entreprise.getEmail())
                 .numTel(entreprise.getNumTel())
                 .siteWeb(entreprise.getSiteWeb())
-                /*.utilisateurs(
-                        entreprise.getUtilisateurs() !=null ?
-                                entreprise.getUtilisateurs()
-                                        .stream()
-                                        .map(UtilisateurDto::fromEntity)
-                                        .collect(Collectors.toList()) : null
-                )*/
                 .build();
     }
 
@@ -59,13 +52,6 @@ public class EntrepriseDto {
         entreprise.setEmail(entrepriseDto.getEmail());
         entreprise.setNumTel(entreprise.getNumTel());
         entreprise.setSiteWeb(entreprise.getSiteWeb());
-        /*entreprise.setUtilisateurs(
-                entrepriseDto.getUtilisateurs() != null ?
-                        entrepriseDto.getUtilisateurs()
-                                .stream()
-                                .map(UtilisateurDto::toEntity)
-                                .collect(Collectors.toList()) : null
-        );*/
 
         return entreprise;
 

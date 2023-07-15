@@ -6,11 +6,19 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author luca
+ */
 public class ArticleValidator {
+
+    private ArticleValidator() {
+        // Not implemented
+    }
+
     public static List<String> validate(ArticleDto articleDto) {
         List<String> errors = new ArrayList<>();
 
-        if (articleDto == null){
+        if (articleDto == null) {
             errors.add("Veuillez renseigner le code de l'article");
             errors.add("Veuillez renseigner la designation de l'article");
             errors.add("Veuillez renseigner le prix unitaire de l'article");

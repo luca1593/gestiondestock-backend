@@ -6,7 +6,6 @@ import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.services.ArticleService;
 import com.devtech.gestiondestock.services.FlickrService;
 import com.flickr4java.flickr.FlickrException;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +17,8 @@ import java.io.InputStream;
 @Slf4j
 public class SaveArticlePhoto implements Strategy<ArticleDto> {
 
-    private ArticleService articleService;
-    private FlickrService flickrService;
+    private final ArticleService articleService;
+    private final FlickrService flickrService;
 
     @Autowired
     public SaveArticlePhoto(ArticleService articleService, FlickrService flickrService) {
@@ -29,13 +28,13 @@ public class SaveArticlePhoto implements Strategy<ArticleDto> {
 
     @Override
     public ArticleDto savePhoto(Integer id, InputStream photo, String titre) throws FlickrException {
-        ArticleDto article = articleService.findById(id);
-        String urlPhoto = flickrService.savePhoto(photo, titre, id);
-        if (!StringUtils.hasLength(urlPhoto)){
+        ArticleDto article = this.articleService.findById(id);
+        String urlPhoto = this.flickrService.savePhoto(photo, titre, id);
+        if (!StringUtils.hasLength(urlPhoto)) {
             throw new InvalidOpperatioException("Impossible de mettre a jour la photo de l'article", ErrorsCode.UPDATE_PHOTO_EXEPTION);
         }
-        
+
         article.setPhoto(urlPhoto);
-        return articleService.save(article);
+        return this.articleService.save(article);
     }
 }

@@ -1,7 +1,5 @@
 package com.devtech.gestiondestock.controller.api;
 
-import io.swagger.annotations.Api;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,7 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 
-@Api(APP_ROOT + "/photos")
+/**
+ * @author luca
+ */
 public interface PhotoApi {
     
     @PostMapping(value = APP_ROOT + "/photos/{context}/{id}/{title}", consumes = {

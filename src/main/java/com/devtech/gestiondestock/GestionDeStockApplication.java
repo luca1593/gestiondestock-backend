@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+/**
+ * @author luca
+ */
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration

@@ -1,17 +1,24 @@
 package com.devtech.gestiondestock.validator;
 
 import com.devtech.gestiondestock.dto.AdresseDto;
-import com.devtech.gestiondestock.dto.CategoryDto;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author luca
+ */
 public class AdresseValidator {
-    public static List<String> validate(AdresseDto adresseDto){
+
+    private AdresseValidator() {
+        // Not implement
+    }
+
+    public static List<String> validate(AdresseDto adresseDto) {
         List<String> errors = new ArrayList<>();
 
-        if (adresseDto == null){
+        if (adresseDto == null) {
             errors.add("Veuillez renseigner un addresse valide");
             errors.add("L'adresse 1 est obligatoir");
             errors.add("La ville est obligatoir");

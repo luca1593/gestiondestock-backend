@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MvtStkServiceImpl implements MvtStkService {
 
-    private MvtStkRepository mvtStkRepository;
-    private ArticleService articleService;
+    private final MvtStkRepository mvtStkRepository;
+    private final ArticleService articleService;
 
     @Autowired
     public MvtStkServiceImpl(MvtStkRepository mvtStkRepository, ArticleService articleService) {
@@ -42,7 +42,7 @@ public class MvtStkServiceImpl implements MvtStkService {
             throw new InvalidEntityException("Le mouvement n'est pas valide", ErrorsCode.MOUVEMENT_STOCK_NOT_VALID, errors);
         }
         return MvtStkDto.fromEntity(
-                mvtStkRepository.save(MvtStkDto.toEntity(dto))
+                this.mvtStkRepository.save(MvtStkDto.toEntity(dto))
         );
     }
 
@@ -52,7 +52,7 @@ public class MvtStkServiceImpl implements MvtStkService {
             log.error("Mouvement ID is null");
             return null;
         }
-        Optional<MvtStk> mvtStk = mvtStkRepository.findById(id);
+        Optional<MvtStk> mvtStk = this.mvtStkRepository.findById(id);
         return Optional.of(MvtStkDto.fromEntity(mvtStk.get())).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucun mouvement trouver avec l'id = " + id + " dans la BDD",
@@ -63,12 +63,12 @@ public class MvtStkServiceImpl implements MvtStkService {
 
     @Override
     public List<MvtStkDto> findMvtStkByDateMvt(Instant dateMvt) {
-        if (dateMvt == null){
+        if (dateMvt == null) {
             log.error("Mouvement Date is not null");
             return null;
         }
-        return mvtStkRepository.findMvtStkByDateMvt(dateMvt) != null ?
-                mvtStkRepository.findMvtStkByDateMvt(dateMvt)
+        return this.mvtStkRepository.findMvtStkByDateMvt(dateMvt) != null ?
+                this.mvtStkRepository.findMvtStkByDateMvt(dateMvt)
                         .stream()
                         .map(MvtStkDto::fromEntity)
                         .collect(Collectors.toList()) : null;
@@ -76,12 +76,12 @@ public class MvtStkServiceImpl implements MvtStkService {
 
     @Override
     public List<MvtStkDto> findMvtStkByType(String typeMvt) {
-        if (!StringUtils.hasLength(typeMvt)){
+        if (!StringUtils.hasLength(typeMvt)) {
             log.error("Mouvement Type is not null");
             return null;
         }
-        return mvtStkRepository.findMvtStkByTypeMvt(typeMvt) != null ?
-                mvtStkRepository.findMvtStkByTypeMvt(typeMvt)
+        return this.mvtStkRepository.findMvtStkByTypeMvt(typeMvt) != null ?
+                this.mvtStkRepository.findMvtStkByTypeMvt(typeMvt)
                         .stream()
                         .map(MvtStkDto::fromEntity)
                         .collect(Collectors.toList()) : null;
@@ -89,27 +89,27 @@ public class MvtStkServiceImpl implements MvtStkService {
 
     @Override
     public List<MvtStkDto> findAll() {
-        return mvtStkRepository.findAll()
+        return this.mvtStkRepository.findAll()
                 .stream().map(MvtStkDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
     public BigDecimal stockReelArticle(Integer idArticle) {
-        if (!checkIdArticle(idArticle)){
+        if (!checkIdArticle(idArticle)) {
             return BigDecimal.valueOf(-1);
         }
-        articleService.findById(idArticle);
-        return mvtStkRepository.stockReelArticle(idArticle);
+        this.articleService.findById(idArticle);
+        return this.mvtStkRepository.stockReelArticle(idArticle);
     }
 
     @Override
     public List<MvtStkDto> mvtStkArticle(Integer idArticle) {
-        if (!checkIdArticle(idArticle)){
+        if (!checkIdArticle(idArticle)) {
             return null;
         }
-        return mvtStkRepository.findAllByArticleId(idArticle) != null ?
-                mvtStkRepository.findAllByArticleId(idArticle)
+        return this.mvtStkRepository.findAllByArticleId(idArticle) != null ?
+                this.mvtStkRepository.findAllByArticleId(idArticle)
                         .stream().map(MvtStkDto::fromEntity)
                         .collect(Collectors.toList()) : null;
     }
@@ -148,7 +148,7 @@ public class MvtStkServiceImpl implements MvtStkService {
             log.error("Mouvement ID is null");
             return;
         }
-        mvtStkRepository.deleteById(id);
+        this.mvtStkRepository.deleteById(id);
     }
 
     private Boolean checkIdArticle(Integer idArticle) {
@@ -169,7 +169,7 @@ public class MvtStkServiceImpl implements MvtStkService {
         dto.setQuantite(BigDecimal.valueOf(quantite));
         dto.setTypeMvt(typeMvt);
         return MvtStkDto.fromEntity(
-                mvtStkRepository.save(MvtStkDto.toEntity(dto))
+                this.mvtStkRepository.save(MvtStkDto.toEntity(dto))
         );
     }
 }

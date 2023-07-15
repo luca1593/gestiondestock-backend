@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EntrepriseServiceImpl implements EntrepriseService {
 
-    private EntrepriseRepository entrepriseRepository;
-    private UtilisateurService utilisateurService;
-    private RoleRepository roleRepository;
+    private final EntrepriseRepository entrepriseRepository;
+    private final UtilisateurService utilisateurService;
+    private final RoleRepository roleRepository;
 
     @Autowired
     public EntrepriseServiceImpl(EntrepriseRepository entrepriseRepository, UtilisateurService utilisateurService, RoleRepository roleRepository) {
@@ -46,19 +46,19 @@ public class EntrepriseServiceImpl implements EntrepriseService {
             throw new InvalidEntityException("L'entreprise n'est pas valide", ErrorsCode.ENTREPRISE_NOT_VALID, errors);
         }
         EntrepriseDto savedEntreprise =  EntrepriseDto.fromEntity(
-                entrepriseRepository.save(EntrepriseDto.toEntity(dto))
+                this.entrepriseRepository.save(EntrepriseDto.toEntity(dto))
         );
 
         UtilisateurDto utilisateur = fromEntreprise(savedEntreprise);
         utilisateur.setEntreprise(savedEntreprise);
-        UtilisateurDto savedUtilisateur = utilisateurService.save(utilisateur);
+        UtilisateurDto savedUtilisateur = this.utilisateurService.save(utilisateur);
 
         RoleDto roleDto = RoleDto.builder()
                 .roleNom("Admin")
                 .utilisateur(savedUtilisateur)
                 .build();
 
-        roleRepository.save(RoleDto.toEntity(roleDto));
+        this.roleRepository.save(RoleDto.toEntity(roleDto));
 
         return savedEntreprise;
     }
@@ -87,7 +87,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
             log.error("Entreprise ID is null");
             return null;
         }
-        Optional<Entreprise> entreprise = entrepriseRepository.findById(id);
+        Optional<Entreprise> entreprise = this.entrepriseRepository.findById(id);
         return Optional.of(EntrepriseDto.fromEntity(entreprise.get())).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucun Entreprise trouver avec l'id = " + id + " dans la BDD",
@@ -102,7 +102,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
             log.error("Entreprise nom is null");
             return null;
         }
-        Optional<Entreprise> entreprise = entrepriseRepository.findEntrepriseByNom(nom);
+        Optional<Entreprise> entreprise = this.entrepriseRepository.findEntrepriseByNom(nom);
         return Optional.of(EntrepriseDto.fromEntity(entreprise.get())).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucun entreprise trouver avec le nom  = " + nom + " dans la BDD",
@@ -117,7 +117,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
             log.error("Entreprise email is null");
             return null;
         }
-        Optional<Entreprise> entreprise = entrepriseRepository.findEntrepriseByEmail(email);
+        Optional<Entreprise> entreprise = this.entrepriseRepository.findEntrepriseByEmail(email);
         return Optional.of(EntrepriseDto.fromEntity(entreprise.get())).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucun entreprise trouver avec l'email  = " + email + " dans la BDD",
@@ -128,7 +128,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
     @Override
     public List<EntrepriseDto> findAll() {
-        return entrepriseRepository.findAll().stream()
+        return this.entrepriseRepository.findAll().stream()
                 .map(EntrepriseDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -139,6 +139,6 @@ public class EntrepriseServiceImpl implements EntrepriseService {
             log.error("Entreprise ID is null");
             return;
         }
-        entrepriseRepository.deleteById(id);
+        this.entrepriseRepository.deleteById(id);
     }
 }

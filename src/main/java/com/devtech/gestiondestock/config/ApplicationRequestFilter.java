@@ -17,6 +17,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * @author luca
+ */
 @Component
 public class ApplicationRequestFilter extends OncePerRequestFilter {
 
@@ -34,17 +37,17 @@ public class ApplicationRequestFilter extends OncePerRequestFilter {
         String jwt = null;
         String idEntreprise = null;
 
-        if (authHeader !=null && authHeader.startsWith("Bearer ")){
+        if (authHeader !=null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
-            userEmail = jwtUtil.extractUsername(jwt);
-            idEntreprise = jwtUtil.extractIdEntreprise(jwt);
+            userEmail = this.jwtUtil.extractUsername(jwt);
+            idEntreprise = this.jwtUtil.extractIdEntreprise(jwt);
         }
 
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-            if (jwtUtil.validateToken(jwt, userDetails)){
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+            if (this.jwtUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                      userDetails, null, userDetails.getAuthorities()
+                        userDetails, null, userDetails.getAuthorities()
                 );
                 usernamePasswordAuthenticationToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)

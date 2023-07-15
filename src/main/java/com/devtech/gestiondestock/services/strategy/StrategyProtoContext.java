@@ -12,7 +12,7 @@ import java.io.InputStream;
 @Service
 public class StrategyProtoContext {
 
-    private BeanFactory beanFactory;
+    private final BeanFactory beanFactory;
     private Strategy strategy;
     @Setter
     private String context;
@@ -25,7 +25,7 @@ public class StrategyProtoContext {
     public Object savePhoto(String context, Integer id, String title, InputStream photo) throws Exception {
         determineContext(context);
         context += context;
-        return strategy.savePhoto(id, photo, title);
+        return this.strategy.savePhoto(id, photo, title);
     }
 
 
@@ -33,19 +33,19 @@ public class StrategyProtoContext {
         final String beansname = context + "Strategy";
         switch (context){
             case "article" :
-                strategy = beanFactory.getBean(beansname, SaveArticlePhoto.class);
+                this.strategy = this.beanFactory.getBean(beansname, SaveArticlePhoto.class);
                 break;
             case "client" :
-                strategy = beanFactory.getBean(beansname, SaveClientPhoto.class);
+                this.strategy = this.beanFactory.getBean(beansname, SaveClientPhoto.class);
                 break;
             case "entreprise" :
-                strategy = beanFactory.getBean(beansname, SaveEntreprisePhoto.class);
+                this.strategy = this.beanFactory.getBean(beansname, SaveEntreprisePhoto.class);
                 break;
             case "fournisseur" :
-                strategy = beanFactory.getBean(beansname, SaveFournisseurPhoto.class);
+                this.strategy = this.beanFactory.getBean(beansname, SaveFournisseurPhoto.class);
                 break;
             case "utilisateur" :
-                strategy = beanFactory.getBean(beansname, SaveUtilisateurPhoto.class);
+                this.strategy = this.beanFactory.getBean(beansname, SaveUtilisateurPhoto.class);
                 break;
             default: throw new InvalidOpperatioException("Context inconue pour l'enregistrement de la photo",
                     ErrorsCode.UNKNOWN_CONTEXT);

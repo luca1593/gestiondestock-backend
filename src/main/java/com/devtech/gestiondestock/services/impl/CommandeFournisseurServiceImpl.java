@@ -6,14 +6,16 @@ import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.model.*;
-import com.devtech.gestiondestock.repository.*;
+import com.devtech.gestiondestock.repository.ArticleRepository;
+import com.devtech.gestiondestock.repository.CommandeFournisseurRepository;
+import com.devtech.gestiondestock.repository.FournisseurRepository;
+import com.devtech.gestiondestock.repository.LigneCommandeFournisseurRepository;
 import com.devtech.gestiondestock.services.CommandeFournisseurService;
 import com.devtech.gestiondestock.services.MvtStkService;
 import com.devtech.gestiondestock.validator.ArticleValidator;
 import com.devtech.gestiondestock.validator.CommandeFournisseurValidator;
 import com.devtech.gestiondestock.validator.FournisseurValidator;
 import com.devtech.gestiondestock.validator.LigneCommandeFournisseurValidator;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,11 +34,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CommandeFournisseurServiceImpl implements CommandeFournisseurService {
 
-    private CommandeFournisseurRepository commandeFournisseurRepository;
-    private LigneCommandeFournisseurRepository ligneCommandeFournisseurRepository;
-    private FournisseurRepository fournisseurRepository;
-    private ArticleRepository articleRepository;
-    private MvtStkService mvtStkService;
+    private final CommandeFournisseurRepository commandeFournisseurRepository;
+    private final LigneCommandeFournisseurRepository ligneCommandeFournisseurRepository;
+    private final FournisseurRepository fournisseurRepository;
+    private final ArticleRepository articleRepository;
+    private final MvtStkService mvtStkService;
 
     @Autowired
     public CommandeFournisseurServiceImpl(CommandeFournisseurRepository commandeFournisseurRepository,

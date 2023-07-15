@@ -16,7 +16,6 @@ import com.devtech.gestiondestock.validator.ArticleValidator;
 import com.devtech.gestiondestock.validator.ClientValidator;
 import com.devtech.gestiondestock.validator.CommandeClientValidator;
 import com.devtech.gestiondestock.validator.LigneCommandeClientValidator;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,20 +34,20 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CommandeClientServiceImpl implements CommandeClientService {
 
-    private String msgIdCommandNull = "Commande client ID is null";
+    private final String msgIdCommandNull = "Commande client ID is null";
 
-    private CommandeClientRepository commandeClientRepository;
-    private LigneCommandeClientRepository ligneCommandeClientRepository;
-    private ClientRepository clientRepository;
-    private ArticleRepository articleRepository;
-    private MvtStkService mvtStkService;
+    private final CommandeClientRepository commandeClientRepository;
+    private final LigneCommandeClientRepository ligneCommandeClientRepository;
+    private final ClientRepository clientRepository;
+    private final ArticleRepository articleRepository;
+    private final MvtStkService mvtStkService;
 
     @Autowired
     public CommandeClientServiceImpl(CommandeClientRepository commandeClientRepository,
-            ClientRepository clientRepository,
-            ArticleRepository articleRepository,
-            LigneCommandeClientRepository ligneCommandeClientRepository,
-            MvtStkService mvtStkService) {
+                                     ClientRepository clientRepository,
+                                     ArticleRepository articleRepository,
+                                     LigneCommandeClientRepository ligneCommandeClientRepository,
+                                     MvtStkService mvtStkService) {
         this.commandeClientRepository = commandeClientRepository;
         this.ligneCommandeClientRepository = ligneCommandeClientRepository;
         this.clientRepository = clientRepository;

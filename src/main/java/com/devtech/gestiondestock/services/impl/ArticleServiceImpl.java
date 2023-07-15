@@ -10,8 +10,8 @@ import com.devtech.gestiondestock.model.Category;
 import com.devtech.gestiondestock.repository.*;
 import com.devtech.gestiondestock.services.ArticleService;
 import com.devtech.gestiondestock.validator.ArticleValidator;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -20,8 +20,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * @author luca
+ */
 @Service
 @Slf4j
+@AllArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
 
     private ArticleRepository articleRepository;
@@ -30,18 +34,6 @@ public class ArticleServiceImpl implements ArticleService {
     private LigneCommandeFournisseurRepository commandeFournisseurRepository;
     private CategoryRepository categoryRepository;
 
-    @Autowired
-    public ArticleServiceImpl(ArticleRepository articleRepository,
-                              LigneVenteRepository venteRepository,
-                              LigneCommandeClientRepository commandeClientRepository,
-                              LigneCommandeFournisseurRepository commandeFournisseurRepository,
-                              CategoryRepository categoryRepository) {
-        this.articleRepository = articleRepository;
-        this.venteRepository = venteRepository;
-        this.commandeClientRepository = commandeClientRepository;
-        this.commandeFournisseurRepository = commandeFournisseurRepository;
-        this.categoryRepository = categoryRepository;
-    }
 
     @Override
     public ArticleDto save(ArticleDto dto) {
@@ -50,7 +42,7 @@ public class ArticleServiceImpl implements ArticleService {
             log.error("Article is not valide {}", dto);
             throw new InvalidEntityException("L'article n'est pas valide", ErrorsCode.ARTICLE_NOT_VALID, errors);
         }
-        Optional<Category> category = categoryRepository.findById(dto.getCategory().getId());
+        Optional<Category> category = this.categoryRepository.findById(dto.getCategory().getId());
         if (!category.isPresent()){
             log.warn("Catehory with ID {} was not found in the DB", dto.getCategory().getId());
             throw new EntityNotFoundException(
@@ -62,13 +54,14 @@ public class ArticleServiceImpl implements ArticleService {
         }
         dto.setCategory(CategoryDto.fromEntity(category.get()));
         return ArticleDto.fromEntity(
-                articleRepository.save(ArticleDto.toEntity(dto))
+                this.articleRepository.save(ArticleDto.toEntity(dto))
         );
     }
+
     @Override
     public ArticleDto findById(Integer id) {
         checkIdArticle(id);
-        Optional<Article> article = articleRepository.findById(id);
+        Optional<Article> article = this.articleRepository.findById(id);
         return Optional.of(ArticleDto.fromEntity(article.get())).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucun article avec l'ID = " + id + " n'a ete trouver dans la base de donnee",
@@ -83,7 +76,7 @@ public class ArticleServiceImpl implements ArticleService {
             log.error("Article code is null");
             return null;
         }
-        Optional<Article> article = articleRepository.findArticleByCodeArticle(code);
+        Optional<Article> article = this.articleRepository.findArticleByCodeArticle(code);
         return Optional.of(ArticleDto.fromEntity(article.get())).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucun article avec le code = " + code + " n'a ete trouver dans la base de donnee",
@@ -94,7 +87,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<ArticleDto> findAll() {
-        return articleRepository.findAll().stream()
+        return this.articleRepository.findAll().stream()
                 .map(ArticleDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -102,7 +95,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<LigneVenteDto> findHistoriqueVente(Integer idArticle) {
         checkIdArticle(idArticle);
-        return venteRepository.findAllByArticleId(idArticle)
+        return this.venteRepository.findAllByArticleId(idArticle)
                 .stream().map(LigneVenteDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -110,7 +103,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<LigneCommandeClientDto> findHistoriqueCommandeClient(Integer idArticle) {
         checkIdArticle(idArticle);
-        return commandeClientRepository.findAllByArticleId(idArticle)
+        return this.commandeClientRepository.findAllByArticleId(idArticle)
                 .stream().map(LigneCommandeClientDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -118,7 +111,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<LigneCommandeFournisseurDto> findHistoriqueCommandeFournisseur(Integer idArticle) {
         checkIdArticle(idArticle);
-        return commandeFournisseurRepository.findAllByArticleId(idArticle)
+        return this.commandeFournisseurRepository.findAllByArticleId(idArticle)
                 .stream().map(LigneCommandeFournisseurDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -131,7 +124,7 @@ public class ArticleServiceImpl implements ArticleService {
                     ErrorsCode.CATEGORY_NOT_FOUND
             );
         }
-        return articleRepository.findAllByCategoryId(idCategorie)
+        return this.articleRepository.findAllByCategoryId(idCategorie)
                 .stream().map(ArticleDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -139,7 +132,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public void delete(Integer id) {
         checkArticleBeforDelete(id);
-        articleRepository.deleteById(id);
+        this.articleRepository.deleteById(id);
     }
 
     private void checkIdArticle(Integer id) {
@@ -156,22 +149,22 @@ public class ArticleServiceImpl implements ArticleService {
 
         if (!CollectionUtils.isEmpty(findHistoriqueCommandeClient(idArticle))) {
             log.error("Article alredy used");
-            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande / vente existe deja pour cette article", 
-            ErrorsCode.ARTICLE_ALREADY_IN_USE
+            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande / vente existe deja pour cette article",
+                    ErrorsCode.ARTICLE_ALREADY_IN_USE
             );
         }
 
         if (!CollectionUtils.isEmpty(findHistoriqueCommandeFournisseur(idArticle))) {
             log.error("Article alredy used");
-            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande / vente existe deja pour cette article", 
-            ErrorsCode.ARTICLE_ALREADY_IN_USE
+            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande / vente existe deja pour cette article",
+                    ErrorsCode.ARTICLE_ALREADY_IN_USE
             );
         }
 
         if (!CollectionUtils.isEmpty(findHistoriqueVente(idArticle))) {
             log.error("Article alredy used");
-            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande / vente existe deja pour cette article", 
-            ErrorsCode.ARTICLE_ALREADY_IN_USE
+            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande / vente existe deja pour cette article",
+                    ErrorsCode.ARTICLE_ALREADY_IN_USE
             );
         }
     }

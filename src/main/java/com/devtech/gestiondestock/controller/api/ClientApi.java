@@ -1,79 +1,86 @@
 package com.devtech.gestiondestock.controller.api;
 
 import com.devtech.gestiondestock.dto.ClientDto;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
-@Api(APP_ROOT + "/client")
+
 public interface ClientApi {
 
     @PostMapping(value = APP_ROOT + "/client/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Enregistrement d'un client",
-            notes = "Cette methode permet d'enregidtre ou de modifier un client",
-            response = ClientDto.class
+    @Operation(summary = "Enregistrement d'un client",
+            description = "Cette methode permet d'enregidtre ou de modifier un client"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "L'objet client creer ou modifier"),
-            @ApiResponse(code = 404, message = "Erreur dans la creation de l'objet client")
+            @ApiResponse(responseCode = "200", description = "L'objet client creer ou modifier",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDto.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Erreur dans la creation de l'objet client")
     })
     ClientDto save(@RequestBody ClientDto dto);
 
     @GetMapping(value = APP_ROOT + "/client/{idClient}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Rechercher un client",
-            notes = "Cette methode permet de rechercher un client par son ID",
-            response = ClientDto.class
+    @Operation(summary = "Rechercher un client",
+            description = "Cette methode permet de rechercher un client par son ID"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "L'objet client a ete trouver dans la BDD"),
-            @ApiResponse(code = 404, message = "Erreur l'objet client n'a pas ete trouver dans la BDD avec l'ID fournie")
+            @ApiResponse(responseCode = "200", description = "L'objet client a ete trouver dans la BDD",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDto.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Erreur l'objet client n'a pas ete trouver dans la BDD avec l'ID fournie")
     })
     ClientDto findById(@PathVariable("idClient") Integer id);
 
     @GetMapping(value = APP_ROOT + "/client/nom/{nomClient}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Rechercher un client",
-            notes = "Cette methode permet de rechercher un client par son nom",
-            response = ClientDto.class
+    @Operation(summary = "Rechercher un client",
+            description = "Cette methode permet de rechercher un client par son nom"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "L'objet client a ete trouver dans la BDD"),
-            @ApiResponse(code = 404, message = "Erreur l'objet client n'a pas ete trouver dans la BDD le code fournie")
+            @ApiResponse(responseCode = "200", description = "L'objet client a ete trouver dans la BDD",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDto.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Erreur l'objet client n'a pas ete trouver dans la BDD le code fournie")
     })
     ClientDto findbyNomClient(@PathVariable("nomClient") String nom);
 
     @GetMapping(value = APP_ROOT + "/client/email/{emailClient}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Rechercher un client",
-            notes = "Cette methode permet de rechercher un client par son email",
-            response = ClientDto.class
+    @Operation(summary = "Rechercher un client",
+            description = "Cette methode permet de rechercher un client par son email"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "L'objet client a ete trouver dans la BDD"),
-            @ApiResponse(code = 404, message = "Erreur l'objet client n'a pas ete trouver dans la BDD l'email fournie")
+            @ApiResponse(responseCode = "200", description = "L'objet client a ete trouver dans la BDD",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDto.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Erreur l'objet client n'a pas ete trouver dans la BDD l'email fournie")
     })
     ClientDto findbyEmailClient(@PathVariable("emailClient") String email);
 
     @GetMapping(value = APP_ROOT + "/client/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Renvoie la liste des clients",
-            notes = "Cette methode permet de rechercher toutes les clients dans la BDD",
-            responseContainer = "List<ClientDto>"
+    @Operation(summary = "Renvoie la liste des clients",
+            description = "Cette methode permet de rechercher toutes les clients dans la BDD"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "La liste des clients / liste vide")
+            @ApiResponse(responseCode = "200", description = "La liste des clients / liste vide",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(schema = @Schema(implementation = ClientDto.class)))
+            )
     })
     List<ClientDto> findAll();
 
-    @DeleteMapping(value = APP_ROOT +"/client/detele/{idClient}")
-    @ApiOperation(value = "Supprimer un client",
-            notes = "Cette methode permet de supprimer un client par son ID"
+    @DeleteMapping(value = APP_ROOT + "/client/detele/{idClient}")
+    @Operation(summary = "Supprimer un client",
+            description = "Cette methode permet de supprimer un client par son ID"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Le client a ete supprimen dans la BDD")
+            @ApiResponse(responseCode = "200", description = "Le client a ete supprimen dans la BDD")
     })
     void delete(@PathVariable("idClient") Integer id);
 

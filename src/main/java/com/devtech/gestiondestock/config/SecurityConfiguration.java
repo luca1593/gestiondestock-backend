@@ -1,9 +1,6 @@
 package com.devtech.gestiondestock.config;
 
 import com.devtech.gestiondestock.services.auth.ApplicationUserDetailsService;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +17,11 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
+
+/**
+ * @author luca
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -39,8 +41,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().configurationSource(configurationSource())
-        .and()
-        .csrf().disable()
+                .and()
+                .csrf().disable()
                 .authorizeRequests().antMatchers(
                         "/**/authenticate",
                         "/**/entreprise/create",
@@ -66,13 +68,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 
-	public CorsConfigurationSource configurationSource(){
-		CorsConfiguration configuration = new CorsConfiguration();
+    public CorsConfigurationSource configurationSource(){
+        CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
         List<String> allowedMethods = new java.util.ArrayList<>();
         allowedMethods.add(CorsConfiguration.ALL);
@@ -82,9 +85,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         configuration.addAllowedOrigin("http://localhost:4200");
         configuration.addAllowedOrigin("http://localhost:4200/**");
         configuration.addAllowedOrigin("http://www.gestion-stock.mg");
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }
 

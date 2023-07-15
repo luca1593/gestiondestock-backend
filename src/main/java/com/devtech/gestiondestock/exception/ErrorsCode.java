@@ -42,13 +42,13 @@ public enum ErrorsCode {
     UPDATE_PHOTO_EXEPTION(16000),
     UNKNOWN_CONTEXT(16001);
 
-    private int code;
+    private final int code;
 
     ErrorsCode(int code){
         this.code = code;
     }
 
     public int getCode() {
-        return code;
+        return this.code;
     }
 }

@@ -2,85 +2,81 @@ package com.devtech.gestiondestock.controller.api;
 
 import com.devtech.gestiondestock.dto.ChangerMotDePasseUtilisateurDto;
 import com.devtech.gestiondestock.dto.UtilisateurDto;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
-@Api(APP_ROOT + "/utilisateur")
+
+/**
+ * @author luca
+ */
 public interface UtilisateurApi {
     @PostMapping(value = APP_ROOT + "/utilisateur/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Enregistrement d'un utilisateur",
-            notes = "Cette methode permet d'enregidtre ou de modifier un utilisateur",
-            response = UtilisateurDto.class
-    )
+    @Operation(summary = "Enregistrement d'un utilisateur", description = "Cette methode permet d'enregidtre ou de modifier un utilisateur")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "L'objet utilisateur creer ou modifier"),
-            @ApiResponse(code = 404, message = "Erreur dans la creation de l'objet utilisateur")
+            @ApiResponse(responseCode = "200", description = "L'objet utilisateur creer ou modifier",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UtilisateurDto.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Erreur dans la creation de l'objet utilisateur")
     })
     UtilisateurDto save(@RequestBody UtilisateurDto dto);
+
     @GetMapping(value = APP_ROOT + "/utilisateur/{idUtilisateur}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Rechercher un utilisateur",
-            notes = "Cette methode permet de rechercher un utilisateur par son ID",
-            response = UtilisateurDto.class
-    )
+    @Operation(summary = "Rechercher un utilisateur", description = "Cette methode permet de rechercher un utilisateur par son ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "L'objet utilisateur a ete trouver dans la BDD"),
-            @ApiResponse(code = 404, message = "Erreur l'objet utilisateur n'a pas ete trouver dans la BDD avec l'ID fournie")
+            @ApiResponse(responseCode = "200", description = "L'objet utilisateur a ete trouver dans la BDD",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UtilisateurDto.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Erreur l'objet utilisateur n'a pas ete trouver dans la BDD avec l'ID fournie")
     })
     UtilisateurDto findById(@PathVariable("idUtilisateur") Integer id);
+
     @GetMapping(value = APP_ROOT + "/utilisateur/nom/{nomUtilisateur}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Rechercher un utilisateur",
-            notes = "Cette methode permet de rechercher un utilisateur par son nom",
-            response = UtilisateurDto.class
-    )
+    @Operation(summary = "Rechercher un utilisateur", description = "Cette methode permet de rechercher un utilisateur par son nom")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "L'objet utilisateur a ete trouver dans la BDD"),
-            @ApiResponse(code = 404, message = "Erreur l'objet utilisateur n'a pas ete trouver dans la BDD le code fournie")
+            @ApiResponse(responseCode = "200", description = "L'objet utilisateur a ete trouver dans la BDD",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UtilisateurDto.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Erreur l'objet utilisateur n'a pas ete trouver dans la BDD le code fournie")
     })
     UtilisateurDto findByNomUtilisateur(@PathVariable("nomUtilisateur") String nom);
+
     @GetMapping(value = APP_ROOT + "/utilisateur/email/{emailUtilisateur}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Rechercher un utilisateur",
-            notes = "Cette methode permet de rechercher une utilisateur par son email",
-            response = UtilisateurDto.class
-    )
+    @Operation(summary = "Rechercher un utilisateur", description = "Cette methode permet de rechercher une utilisateur par son email")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "L'objet utilisateur a ete trouver dans la BDD"),
-            @ApiResponse(code = 404, message = "Erreur l'objet utilisateur n'a pas ete trouver dans la BDD l'email fournie")
+            @ApiResponse(responseCode = "200", description = "L'objet utilisateur a ete trouver dans la BDD",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UtilisateurDto.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Erreur l'objet utilisateur n'a pas ete trouver dans la BDD l'email fournie")
     })
     UtilisateurDto findByEmailUtilisateur(@PathVariable("emailUtilisateur") String email);
+
     @GetMapping(value = APP_ROOT + "/utilisateur/all", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Renvoie la liste des utilisateurs",
-            notes = "Cette methode permet de rechercher toutes les utilisateurs dans la BDD",
-            responseContainer = "List<UtilisateurDto>"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "La liste des clients / liste vide")
-    })
+    @Operation(summary = "Renvoie la liste des utilisateurs", description = "Cette methode permet de rechercher toutes les utilisateurs dans la BDD")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "La liste des clients / liste vide",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(schema = @Schema(implementation = UtilisateurDto.class))))})
     List<UtilisateurDto> findAll();
 
     @PostMapping(value = APP_ROOT + "/utilisateur/changer-mot-de-passe", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Renvoie un profil utilisateur",
-            notes = "Cette methode permet de changer le mot de passe de l'utilisateurs dans la BDD",
-            response = UtilisateurDto.class
-    )
+    @Operation(summary = "Renvoie un profil utilisateur", description = "Cette methode permet de changer le mot de passe de l'utilisateurs dans la BDD")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Mot de passe changer avec succes"),
-            @ApiResponse(code = 404, message = "Erreur : Le mot de passe ne peut pas etre modifier")
+            @ApiResponse(responseCode = "200", description = "Mot de passe changer avec succes",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UtilisateurDto.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Erreur : Le mot de passe ne peut pas etre modifier")
     })
     UtilisateurDto changerMotDePasse(@RequestBody ChangerMotDePasseUtilisateurDto dto);
 
-    @DeleteMapping(value = APP_ROOT +"/utilisateur/detele/{idUtilisateur}")
-    @ApiOperation(value = "Supprimer un utilisateur",
-            notes = "Cette methode permet de supprimer un utilisateur par son ID"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Utilisateur supprimer avec success")
-    })
+    @DeleteMapping(value = APP_ROOT + "/utilisateur/detele/{idUtilisateur}")
+    @Operation(summary = "Supprimer un utilisateur", description = "Cette methode permet de supprimer un utilisateur par son ID")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Utilisateur supprimer avec success")})
     void delete(@PathVariable("idUtilisateur") Integer id);
 }
