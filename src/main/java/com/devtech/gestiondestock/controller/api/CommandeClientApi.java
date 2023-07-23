@@ -20,7 +20,9 @@ import java.util.List;
 
 import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 
-//@Api(APP_ROOT + "/commande-client")
+/**
+ * @author luca
+ */ //@Api(APP_ROOT + "/commande-client")
 public interface CommandeClientApi {
         @PostMapping(value = APP_ROOT
                 + "/commande-client/create/{dateCommandeClient}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

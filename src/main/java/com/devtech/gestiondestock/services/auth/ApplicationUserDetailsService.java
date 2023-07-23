@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author luca
+ */
 @Service("authentication")
 @Slf4j
 public class ApplicationUserDetailsService implements UserDetailsService {
@@ -23,7 +26,7 @@ public class ApplicationUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        UtilisateurDto utilisateurDto = service.findByEmailUtilisateur(email);
+        UtilisateurDto utilisateurDto = this.service.findByEmailUtilisateur(email);
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         utilisateurDto.getRoles().forEach(role -> authorities.add(

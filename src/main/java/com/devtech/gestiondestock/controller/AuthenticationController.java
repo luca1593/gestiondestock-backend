@@ -14,6 +14,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RestController;
 
 
+/**
+ * @author luca
+ */
 @RestController
 public class AuthenticationController implements AuthenticationApi {
     @Autowired
@@ -24,15 +27,15 @@ public class AuthenticationController implements AuthenticationApi {
     private JwtUtil jwtUtil;
 
     @Override
-    public ResponseEntity<AuthenticationResponse> authenticate(AuthenticationRequest request){
-        authenticationManager.authenticate(
+    public ResponseEntity<AuthenticationResponse> authenticate(AuthenticationRequest request) {
+        this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getLogin(),
                         request.getPassword()
                 )
         );
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getLogin());
-        final String jwt = jwtUtil.generateToken((ExtendedUser) userDetails);
+        final UserDetails userDetails = this.userDetailsService.loadUserByUsername(request.getLogin());
+        final String jwt = this.jwtUtil.generateToken((ExtendedUser) userDetails);
         return ResponseEntity.ok(AuthenticationResponse.builder().accessTokeen(jwt).build());
     }
 }

@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * @author luca
+ */
 @RestController
 public class CategoryController implements CategoryApi {
 
@@ -20,26 +23,26 @@ public class CategoryController implements CategoryApi {
 
     @Override
     public CategoryDto save(CategoryDto dto) {
-        return categoryService.save(dto);
+        return this.categoryService.save(dto);
     }
 
     @Override
     public CategoryDto findById(Integer id) {
-        return categoryService.findById(id);
+        return this.categoryService.findById(id);
     }
 
     @Override
     public CategoryDto findByCodeCategory(String code) {
-        return categoryService.findByCodeCategory(code);
+        return this.categoryService.findByCodeCategory(code);
     }
 
     @Override
     public List<CategoryDto> findAll() {
-        return categoryService.findAll();
+        return this.categoryService.findAll();
     }
 
     @Override
     public void delete(Integer id) {
-        categoryService.delete(id);
+        this.categoryService.delete(id);
     }
 }

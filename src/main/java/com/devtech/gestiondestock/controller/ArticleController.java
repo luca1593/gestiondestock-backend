@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * @author luca
+ */
 @RestController
 public class ArticleController implements ArticleApi {
     private ArticleService articleService;
@@ -22,46 +25,46 @@ public class ArticleController implements ArticleApi {
 
     @Override
     public ArticleDto save(ArticleDto dto) {
-        return articleService.save(dto);
+        return this.articleService.save(dto);
     }
 
     @Override
     public ArticleDto findById(Integer id) {
-        return articleService.findById(id);
+        return this.articleService.findById(id);
     }
 
     @Override
     public ArticleDto findByCodeArticle(String code) {
-        return articleService.findByCodeArticle(code);
+        return this.articleService.findByCodeArticle(code);
     }
 
     @Override
     public List<ArticleDto> findAll() {
-        return articleService.findAll();
+        return this.articleService.findAll();
     }
 
     @Override
     public List<LigneVenteDto> findHistoriqueVente(Integer idArticle) {
-        return articleService.findHistoriqueVente(idArticle);
+        return this.articleService.findHistoriqueVente(idArticle);
     }
 
     @Override
     public List<LigneCommandeClientDto> findHistoriqueCommandeClient(Integer idArticle) {
-        return articleService.findHistoriqueCommandeClient(idArticle);
+        return this.articleService.findHistoriqueCommandeClient(idArticle);
     }
 
     @Override
     public List<LigneCommandeFournisseurDto> findHistoriqueCommandeFournisseur(Integer idArticle) {
-        return articleService.findHistoriqueCommandeFournisseur(idArticle);
+        return this.articleService.findHistoriqueCommandeFournisseur(idArticle);
     }
 
     @Override
     public List<ArticleDto> findAllByCategorie(Integer idCategorie) {
-        return articleService.findAllByCategorie(idCategorie);
+        return this.articleService.findAllByCategorie(idCategorie);
     }
 
     @Override
     public void delete(Integer id) {
-        articleService.delete(id);
+        this.articleService.delete(id);
     }
 }

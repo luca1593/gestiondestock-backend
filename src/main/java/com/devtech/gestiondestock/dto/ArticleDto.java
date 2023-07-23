@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;

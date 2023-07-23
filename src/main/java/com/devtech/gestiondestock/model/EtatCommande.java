@@ -1,7 +1,11 @@
 package com.devtech.gestiondestock.model;
 
+/**
+ * @author luca
+ */
+
 public enum EtatCommande {
-    EN_PREPARATIOM,
+    EN_PREPARATION,
     VALIDEE,
     LIVREE;
 }

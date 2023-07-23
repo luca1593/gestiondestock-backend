@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * @author luca
+ */
 @RestController
 public class EntrepriseController implements EntrepriseApi {
 
@@ -20,32 +23,32 @@ public class EntrepriseController implements EntrepriseApi {
 
     @Override
     public EntrepriseDto save(EntrepriseDto dto) {
-        return entrepriseService.save(dto);
+        return this.entrepriseService.save(dto);
     }
 
     @Override
     public EntrepriseDto findById(Integer id) {
-        return entrepriseService.findById(id);
+        return this.entrepriseService.findById(id);
     }
 
     @Override
     public EntrepriseDto findByNomEntreprise(String nom) {
-        return entrepriseService.findbyNomEntreprise(nom);
+        return this.entrepriseService.findbyNomEntreprise(nom);
     }
 
     @Override
     public EntrepriseDto findByEmailEntreprise(String email) {
-        return entrepriseService.findbyEmailEntreprise(email);
+        return this.entrepriseService.findbyEmailEntreprise(email);
     }
 
     @Override
     public List<EntrepriseDto> findAll() {
-        return entrepriseService.findAll();
+        return this.entrepriseService.findAll();
     }
 
     @Override
     public void delete(Integer id) {
-        entrepriseService.delete(id);
+        this.entrepriseService.delete(id);
 
     }
 }

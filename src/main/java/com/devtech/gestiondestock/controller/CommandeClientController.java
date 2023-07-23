@@ -14,6 +14,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * @author luca
+ */
 @RestController
 public class CommandeClientController implements CommandeClientApi {
 
@@ -28,12 +31,12 @@ public class CommandeClientController implements CommandeClientApi {
     public ResponseEntity<CommandeClientDto> save(CommandeClientDto dto, Long dateCommandeClient) {
         Instant dateCmd = Instant.ofEpochMilli(dateCommandeClient);
         dto.setDateCommande(dateCmd);
-        return ResponseEntity.ok(commandeClientService.save(dto));
+        return ResponseEntity.ok(this.commandeClientService.save(dto));
     }
 
     @Override
     public ResponseEntity<CommandeClientDto> updateEtatCommande(Integer id, EtatCommande etatCommande) {
-        return ResponseEntity.ok(commandeClientService.updateEtatCommande(id, etatCommande));
+        return ResponseEntity.ok(this.commandeClientService.updateEtatCommande(id, etatCommande));
     }
 
     @Override
@@ -41,13 +44,13 @@ public class CommandeClientController implements CommandeClientApi {
                                                                      Integer idLigneCommande,
                                                                      BigDecimal quantite) {
         return ResponseEntity.ok(
-                commandeClientService.updateQuantiterCommande(idCommande, idLigneCommande, quantite)
+                this.commandeClientService.updateQuantiterCommande(idCommande, idLigneCommande, quantite)
         );
     }
 
     @Override
     public ResponseEntity<CommandeClientDto> updateClient(Integer idCommande, Integer idClient) {
-        return ResponseEntity.ok(commandeClientService.updateClient(idCommande, idClient));
+        return ResponseEntity.ok(this.commandeClientService.updateClient(idCommande, idClient));
     }
 
     @Override
@@ -55,53 +58,53 @@ public class CommandeClientController implements CommandeClientApi {
                                                            Integer idLigneCommande,
                                                            Integer newIdArticle) {
         return ResponseEntity.ok(
-                commandeClientService.updateArticle(idCommande, idLigneCommande, newIdArticle)
+                this.commandeClientService.updateArticle(idCommande, idLigneCommande, newIdArticle)
         );
     }
 
     @Override
     public ResponseEntity<CommandeClientDto> deleteArticle(Integer idCommande, Integer idLigneCommande) {
-        return ResponseEntity.ok(commandeClientService.deleteArticle(idCommande, idLigneCommande));
+        return ResponseEntity.ok(this.commandeClientService.deleteArticle(idCommande, idLigneCommande));
     }
 
     @Override
     public ResponseEntity<List<LigneCommandeClientDto>> findAllByCommandeClient(Integer idCommande) {
-        return ResponseEntity.ok(commandeClientService.findAllByCommandeClient(idCommande));
+        return ResponseEntity.ok(this.commandeClientService.findAllByCommandeClient(idCommande));
     }
 
     @Override
     public ResponseEntity<CommandeClientDto> findById(Integer id) {
-        return ResponseEntity.ok(commandeClientService.findById(id));
+        return ResponseEntity.ok(this.commandeClientService.findById(id));
     }
 
     @Override
     public ResponseEntity<CommandeClientDto> findByCodeCommande(String code) {
-        return ResponseEntity.ok(commandeClientService.findByCodeCommande(code));
+        return ResponseEntity.ok(this.commandeClientService.findByCodeCommande(code));
     }
 
     @Override
     public ResponseEntity<List<CommandeClientDto>> findByDateCommande(Instant dateCommande) {
-        return ResponseEntity.ok(commandeClientService.findByDateCommande(dateCommande));
+        return ResponseEntity.ok(this.commandeClientService.findByDateCommande(dateCommande));
     }
 
     @Override
     public ResponseEntity<List<CommandeClientDto>> findAll() {
-        return ResponseEntity.ok(commandeClientService.findAll());
+        return ResponseEntity.ok(this.commandeClientService.findAll());
     }
 
     @Override
     public ResponseEntity<List<CommandeClientDto>> findAllByClient(ClientDto dto){
-        return ResponseEntity.ok(commandeClientService.findAllByClientDto(dto));
+        return ResponseEntity.ok(this.commandeClientService.findAllByClientDto(dto));
     }
 
     @Override
     public ResponseEntity delete(Integer id) {
-        commandeClientService.delete(id);
+        this.commandeClientService.delete(id);
         return ResponseEntity.ok().build();
     }
 
     @Override
     public ResponseEntity<List<LigneCommandeClientDto>> findAllLigneCommandeClient(Integer icCommade) {
-        return ResponseEntity.ok(commandeClientService.findAllByCommandeClient(icCommade));
+        return ResponseEntity.ok(this.commandeClientService.findAllByCommandeClient(icCommade));
     }
 }

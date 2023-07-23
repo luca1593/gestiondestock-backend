@@ -1,16 +1,21 @@
 package com.devtech.gestiondestock.model;
 
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-
+/**
+ * @author luca
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "role")
-public class Role extends AbstractEntity{
+public class Role extends AbstractEntity {
     @Column(name = "roleNom")
     private String roleNom;
     @ManyToOne

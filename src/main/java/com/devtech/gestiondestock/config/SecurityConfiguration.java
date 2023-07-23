@@ -5,13 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration {
 
     @Autowired
     private ApplicationUserDetailsService applicationUserDetailsService;
@@ -32,41 +32,48 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private ApplicationRequestFilter applicationRequestFilter;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(this.applicationUserDetailsService)
-                .passwordEncoder(passwordEncoder());
-    }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.cors().configurationSource(configurationSource())
-                .and()
-                .csrf().disable()
-                .authorizeRequests().antMatchers(
-                        "/**/authenticate",
-                        "/**/entreprise/create",
-                        "/v2/api-docs",
-                        "/swagger-resources",
-                        "/swagger-resources/**",
-                        "/swagger-ui",
-                        "/configuration/security",
-                        "/configuration/ui",
-                        "/**/swagger-ui.html",
-                        "/webjars/**",
-                        "/**/springfox-swagger-ui.html",
-                        "/**/springfox-swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/swagger-ui/**").permitAll()
-                .anyRequest().authenticated()
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.addFilterBefore(this.applicationRequestFilter, UsernamePasswordAuthenticationFilter.class);
-    }
+//    @Bean
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.userDetailsService(this.applicationUserDetailsService)
+//                .passwordEncoder(passwordEncoder());
+//    }
 
-    @Override
     @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(cors -> cors.configurationSource(configurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers(
+                                "/**/authenticate",
+                                "/**/entreprise/create",
+                                "/v2/api-docs",
+                                "/swagger-resources",
+                                "/swagger-resources/**",
+                                "/swagger-ui",
+                                "/configuration/security",
+                                "/configuration/ui",
+                                "/**/swagger-ui.html",
+                                "/webjars/**",
+                                "/**/springfox-swagger-ui.html",
+                                "/**/springfox-swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**"
+                        ).permitAll()
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http.addFilterBefore(this.applicationRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            final AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean

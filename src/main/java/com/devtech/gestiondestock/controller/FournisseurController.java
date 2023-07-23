@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * @author luca
+ */
 @RestController
 public class FournisseurController implements FournisseurApi {
 
@@ -20,31 +23,31 @@ public class FournisseurController implements FournisseurApi {
 
     @Override
     public FournisseurDto save(FournisseurDto dto) {
-        return fournisseurService.save(dto);
+        return this.fournisseurService.save(dto);
     }
 
     @Override
     public FournisseurDto findById(Integer id) {
-        return fournisseurService.findById(id);
+        return this.fournisseurService.findById(id);
     }
 
     @Override
     public FournisseurDto findByNomFournisseur(String nom) {
-        return fournisseurService.findByNomFournisseur(nom);
+        return this.fournisseurService.findByNomFournisseur(nom);
     }
 
     @Override
     public FournisseurDto findByEmailFournisseur(String email) {
-        return fournisseurService.findByEmailFournisseur(email);
+        return this.fournisseurService.findByEmailFournisseur(email);
     }
 
     @Override
     public List<FournisseurDto> findAll() {
-        return fournisseurService.findAll();
+        return this.fournisseurService.findAll();
     }
 
     @Override
     public void delete(Integer id) {
-        fournisseurService.delete(id);
+        this.fournisseurService.delete(id);
     }
 }

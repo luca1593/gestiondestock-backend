@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * @author luca
+ */
 @RestController
 public class ClientController implements ClientApi {
 
@@ -20,31 +23,31 @@ public class ClientController implements ClientApi {
 
     @Override
     public ClientDto save(ClientDto dto) {
-        return clientService.save(dto);
+        return this.clientService.save(dto);
     }
 
     @Override
     public ClientDto findById(Integer id) {
-        return clientService.findById(id);
+        return this.clientService.findById(id);
     }
 
     @Override
     public ClientDto findbyNomClient(String nom) {
-        return clientService.findByNomClient(nom);
+        return this.clientService.findByNomClient(nom);
     }
 
     @Override
     public ClientDto findbyEmailClient(String email) {
-        return clientService.findByEmailClient(email);
+        return this.clientService.findByEmailClient(email);
     }
 
     @Override
     public List<ClientDto> findAll() {
-        return clientService.findAll();
+        return this.clientService.findAll();
     }
 
     @Override
     public void delete(Integer id) {
-        clientService.delete(id);
+        this.clientService.delete(id);
     }
 }

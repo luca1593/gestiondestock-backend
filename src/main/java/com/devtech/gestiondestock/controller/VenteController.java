@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * @author luca
+ */
 @RestController
 public class VenteController implements VenteApi {
 

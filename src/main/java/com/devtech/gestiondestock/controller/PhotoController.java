@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * @author luca
+ */
 @RestController
 public class PhotoController implements PhotoApi {
 
@@ -18,11 +21,11 @@ public class PhotoController implements PhotoApi {
 
     @Override
     public Object savePhoto(
-        String context,
-        Integer id,
-        String title,
-        MultipartFile photo) throws Exception {
-        return strategyProtoContext.savePhoto(
-            context, id, title, photo.getInputStream());
+            String context,
+            Integer id,
+            String title,
+            MultipartFile photo) throws Exception {
+        return this.strategyProtoContext.savePhoto(
+                context, id, title, photo.getInputStream());
     }
 }

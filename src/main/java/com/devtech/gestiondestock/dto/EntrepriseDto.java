@@ -6,6 +6,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * @author luca
+ */
 @Data
 @Builder
 public class EntrepriseDto {

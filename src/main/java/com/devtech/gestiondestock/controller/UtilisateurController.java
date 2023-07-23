@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * @author luca
+ */
 @RestController
 public class UtilisateurController implements UtilisateurApi {
 
@@ -21,37 +24,37 @@ public class UtilisateurController implements UtilisateurApi {
 
     @Override
     public UtilisateurDto save(UtilisateurDto dto) {
-        return utilisateurService.save(dto);
+        return this.utilisateurService.save(dto);
     }
 
     @Override
     public UtilisateurDto findById(Integer id) {
-        return utilisateurService.findById(id);
+        return this.utilisateurService.findById(id);
     }
 
     @Override
     public UtilisateurDto findByNomUtilisateur(String nom) {
-        return utilisateurService.findByNomUtilisateur(nom);
+        return this.utilisateurService.findByNomUtilisateur(nom);
     }
 
     @Override
     public UtilisateurDto findByEmailUtilisateur(String email) {
-        return utilisateurService.findByEmailUtilisateur(email);
+        return this.utilisateurService.findByEmailUtilisateur(email);
     }
 
     @Override
     public List<UtilisateurDto> findAll() {
-        return utilisateurService.findAll();
+        return this.utilisateurService.findAll();
     }
 
     @Override
     public UtilisateurDto changerMotDePasse(ChangerMotDePasseUtilisateurDto dto) {
-        return utilisateurService.changerMotDePasse(dto);
+        return this.utilisateurService.changerMotDePasse(dto);
     }
 
     @Override
     public void delete(Integer id) {
-        utilisateurService.delete(id);
+        this.utilisateurService.delete(id);
     }
 
 }
