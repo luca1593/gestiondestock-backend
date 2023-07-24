@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -32,19 +33,14 @@ public class SecurityConfiguration {
     @Autowired
     private ApplicationRequestFilter applicationRequestFilter;
 
-
-//    @Bean
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(this.applicationUserDetailsService)
-//                .passwordEncoder(passwordEncoder());
-//    }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(cors -> cors.configurationSource(configurationSource()))
+        http.getSharedObject(AuthenticationManagerBuilder.class)
+                .userDetailsService(this.applicationUserDetailsService)
+                .passwordEncoder(passwordEncoder());
+        http.cors(cors -> cors.configurationSource(configurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests((requests) -> requests
+                .authorizeHttpRequests(requests -> requests
                         .requestMatchers(
                                 "/**/authenticate",
                                 "/**/entreprise/create",
