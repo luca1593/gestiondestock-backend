@@ -35,9 +35,10 @@ server:
       enabled: true
 
 springdoc:
+  api-docs:
+    path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
-
 flickr:
   apiKey: abc11f1e268d908eeee176297269c001
   apiSecret: 50a8ae15b4224302
