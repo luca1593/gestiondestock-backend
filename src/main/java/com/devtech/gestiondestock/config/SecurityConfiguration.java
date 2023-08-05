@@ -17,6 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
@@ -34,28 +36,31 @@ public class SecurityConfiguration {
     private ApplicationRequestFilter applicationRequestFilter;
 
     @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins("http://localhost:4200");
+                registry.addMapping("/**").allowedOrigins("http://localhost:4200/**");
+                registry.addMapping("/**").allowedOrigins("http://www.gestion-stock.mg");
+            }
+        };
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.getSharedObject(AuthenticationManagerBuilder.class)
                 .userDetailsService(this.applicationUserDetailsService)
                 .passwordEncoder(passwordEncoder());
-        http.cors(cors -> cors.configurationSource(configurationSource()))
-                .csrf(csrf -> csrf.disable())
+        http.cors(cors -> configurationSource());
+        http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(
-                                "/**/authenticate",
-                                "/**/entreprise/create",
-                                "/v2/api-docs",
-                                "/swagger-resources",
-                                "/swagger-resources/**",
-                                "/swagger-ui",
-                                "/configuration/security",
-                                "/configuration/ui",
-                                "/**/swagger-ui.html",
-                                "/webjars/**",
-                                "/**/springfox-swagger-ui.html",
-                                "/**/springfox-swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**"
+                                "/**/authenticate", "/**/entreprise/create", "/v2/api-docs",
+                                "/swagger-resources", "/swagger-resources/**", "/swagger-ui",
+                                "/configuration/security", "/configuration/ui", "/**/swagger-ui.html",
+                                "/webjars/**", "/**/springfox-swagger-ui.html", "/**/springfox-swagger-ui/**",
+                                "/v3/api-docs/**", "/swagger-ui/**"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
@@ -92,5 +97,6 @@ public class SecurityConfiguration {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 }
 
