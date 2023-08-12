@@ -4,7 +4,10 @@ spring:
     username: luca
     password: Just$Me12
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+  webmvc:
+    cors:
+      allowed-origins: "*"
+  
   main:
     allow-circular-references: true
 
