@@ -19,6 +19,7 @@ import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 /**
  * @author luca
  */
+@CrossOrigin(origins = "*", originPatterns = "*")
 public interface MvtStkApi {
 
     @PostMapping(value = APP_ROOT + "/mvtstk/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

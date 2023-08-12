@@ -18,6 +18,7 @@ import static com.devtech.gestiondestock.utils.Constants.*;
 /**
  * @author luca
  */
+@CrossOrigin(origins = "*", originPatterns = "*")
 public interface EntrepriseApi {
 
     @PostMapping(value = CREATE_ENTREPRISE_ENDPOINT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,6 +1,7 @@
 package com.devtech.gestiondestock.controller.api;
 
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -11,6 +12,7 @@ import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 /**
  * @author luca
  */
+@CrossOrigin(origins = "*", originPatterns = "*")
 public interface PhotoApi {
     
     @PostMapping(value = APP_ROOT + "/photos/{context}/{id}/{title}", consumes = {

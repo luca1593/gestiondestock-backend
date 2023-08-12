@@ -17,6 +17,7 @@ import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 /**
  * @author luca
  */
+@CrossOrigin(origins = "*", originPatterns = "*")
 public interface FournisseurApi {
 
     @PostMapping(value = APP_ROOT + "/fournisseur/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -18,6 +18,7 @@ import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 /**
  * @author luca
  */
+@CrossOrigin(origins = "*", originPatterns = "*")
 public interface UtilisateurApi {
     @PostMapping(value = APP_ROOT + "/utilisateur/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Enregistrement d'un utilisateur", description = "Cette methode permet d'enregidtre ou de modifier un utilisateur")
