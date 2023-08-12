@@ -22,7 +22,8 @@ import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 
 /**
  * @author luca
- */ //@Api(APP_ROOT + "/commande-client")
+ */
+@CrossOrigin(origins = "*", originPatterns = "*")
 public interface CommandeClientApi {
         @PostMapping(value = APP_ROOT
                 + "/commande-client/create/{dateCommandeClient}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

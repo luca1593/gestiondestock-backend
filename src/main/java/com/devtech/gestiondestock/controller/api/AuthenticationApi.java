@@ -10,11 +10,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import static com.devtech.gestiondestock.utils.Constants.AUTHENTICATION_ENDPOINT;
 
+/**
+ * @author luca
+ */
+@CrossOrigin(origins = "*", originPatterns = "*")
 public interface AuthenticationApi {
     @RequestMapping(AUTHENTICATION_ENDPOINT + "/authenticate")
     @Operation(summary = "Connextion",

@@ -4,13 +4,8 @@ spring:
     username: luca
     password: Just$Me12
     driver-class-name: com.mysql.cj.jdbc.Driver
-  webmvc:
-    cors:
-      allowed-origins: "*"
-  
   main:
     allow-circular-references: true
-
   jpa:
     database: MYSQL
     show-sql: false
@@ -19,8 +14,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-        ejb:
-          interceptor: com.devtech.gestiondestock.interceptor.Interceptor
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -31,11 +24,6 @@ server:
     whitelabel:
       enabled: true
 
-springdoc:
-  api-docs:
-    path: /api-docs
-  swagger-ui:
-    path: /swagger-ui.html
 flickr:
   apiKey: abc11f1e268d908eeee176297269c001
   apiSecret: 50a8ae15b4224302

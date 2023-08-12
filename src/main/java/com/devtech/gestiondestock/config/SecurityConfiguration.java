@@ -38,8 +38,7 @@ public class SecurityConfiguration {
         http.getSharedObject(AuthenticationManagerBuilder.class)
                 .userDetailsService(this.applicationUserDetailsService)
                 .passwordEncoder(passwordEncoder());
-        http.cors(cors -> cors.configurationSource(configurationSource()))
-                .csrf(csrf -> csrf.disable())
+        http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(
                                 "/**/authenticate", "/**/entreprise/create", "/v2/api-docs",

@@ -22,6 +22,7 @@ import static com.devtech.gestiondestock.utils.Constants.*;
 /**
  * @author luca
  */
+@CrossOrigin(origins = "*", originPatterns = "*")
 public interface CommandeFournisseurApi {
     @PostMapping(value = CREATE_COMMANDE_FOURNISSEUR, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Enregistrement d'une commande fournisseur", description = "Cette methode permet d'enregidtre ou de modifier une commande fournisseur")
