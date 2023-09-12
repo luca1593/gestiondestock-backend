@@ -1,5 +1,8 @@
 package com.devtech.gestiondestock.exception;
 
+/**
+ * @author luca
+ */
 public enum ErrorsCode {
     ID_NOT_VALID(0011),
     ARTICLE_NOT_FOUND(1000),
@@ -40,7 +43,8 @@ public enum ErrorsCode {
     BAD_CREDENTIALS(15000),
     //Liste des exeption technique
     UPDATE_PHOTO_EXEPTION(16000),
-    UNKNOWN_CONTEXT(16001);
+    UNKNOWN_CONTEXT(16001),
+    BAD_REQUEST(17001);
 
     private final int code;
 

@@ -4,7 +4,6 @@ import com.devtech.gestiondestock.dto.CommandeFournisseurDto;
 import com.devtech.gestiondestock.dto.FournisseurDto;
 import com.devtech.gestiondestock.dto.LigneCommandeFournisseurDto;
 import com.devtech.gestiondestock.model.EtatCommande;
-import com.devtech.gestiondestock.model.Fournisseur;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -20,6 +19,8 @@ public interface CommandeFournisseurService {
     CommandeFournisseurDto updateArticle(Integer idCommande, Integer idLigneCommande, Integer newIdArticle);
     CommandeFournisseurDto deleteArticle(Integer idCommande, Integer idLigneCommande);
     List<LigneCommandeFournisseurDto> findAllByCommandeFournisseur(Integer idCommande);
+
+    List<LigneCommandeFournisseurDto> findAllByDateInterval(Instant startDate, Instant endDate);
     List<CommandeFournisseurDto> findByDateCommande(Instant dateCommande);
     List<CommandeFournisseurDto> findAll();
     List<CommandeFournisseurDto> findAllByFournisseurDto(FournisseurDto fournisseurDto);

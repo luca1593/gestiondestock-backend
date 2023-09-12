@@ -24,10 +24,10 @@ import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 public interface ArticleApi {
     @PostMapping(value = APP_ROOT + "/articles/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Enregistrement d'un article",
-            description = "Cette methode permet d'enregidtre ou de modifier un article"
+            description = "Cette méthode permet d'enregidtrer ou de modifier un article"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "L'objet article creer ou modifier",
+            @ApiResponse(responseCode = "200", description = "L'objet article créer ou modifier",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ArticleDto.class))
             ),
             @ApiResponse(responseCode = "404", description = "Erreur dans la creation de l'objet article")
@@ -39,7 +39,7 @@ public interface ArticleApi {
             description = "Cette methode permet de rechercher un article par son ID"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "L'objet article a ete trouver dans la BDD",
+            @ApiResponse(responseCode = "200", description = "L'objet article a été trouvé dans la BDD",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ArticleDto.class))
             ),
             @ApiResponse(responseCode = "404", description = "Erreur l'objet article n'a pas ete trouver dans la BDD avec l'ID fournie")
@@ -81,7 +81,7 @@ public interface ArticleApi {
     @DeleteMapping(value = APP_ROOT + "/articles/delete/{idArticle}")
     @Operation(summary = "Supprimer un article", description = "Cette methode permet de supprimer un article par son ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "L'article a ete supprimen dans la BDD")
+            @ApiResponse(responseCode = "200", description = "L'article a été supprimé dans la BDD")
     })
     void delete(@PathVariable("idArticle") Integer id);
 }

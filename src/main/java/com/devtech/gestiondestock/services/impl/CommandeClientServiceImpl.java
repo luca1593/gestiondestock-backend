@@ -266,6 +266,14 @@ public class CommandeClientServiceImpl implements CommandeClientService {
     }
 
     @Override
+    public List<LigneCommandeClientDto> findAllByDateInterval(Instant startDate, Instant endDate) {
+        List<LigneCommandeClientDto> ligneCommandeClientDtoList = new ArrayList<>();
+        List<CommandeClient> commandeClientList = this.commandeClientRepository.getAllBetweenDates(startDate, endDate);
+        commandeClientList.forEach(cmd -> ligneCommandeClientDtoList.addAll(findAllByCommandeClient(cmd.getId())));
+        return ligneCommandeClientDtoList;
+    }
+
+    @Override
     public List<CommandeClientDto> findAll() {
         return this.commandeClientRepository.findAll().stream()
                 .map(CommandeClientDto::fromEntity)

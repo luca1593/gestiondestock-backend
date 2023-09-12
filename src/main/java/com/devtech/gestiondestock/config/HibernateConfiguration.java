@@ -1,12 +1,23 @@
 package com.devtech.gestiondestock.config;
 
-import org.hibernate.Interceptor;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import com.devtech.gestiondestock.interceptor.Interceptor;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer;
 
-public class HibernateConfiguration extends LocalSessionFactoryBean {
+import java.util.Map;
+
+/**
+ * @author luca
+ */
+public class HibernateConfiguration implements HibernatePropertiesCustomizer {
+
+    private final Interceptor interceptor;
+
+    public HibernateConfiguration() {
+        this.interceptor = new Interceptor();
+    }
 
     @Override
-    public void setEntityInterceptor(Interceptor interceptor) {
-        super.setEntityInterceptor((Interceptor) new com.devtech.gestiondestock.interceptor.Interceptor());
+    public void customize(Map<String, Object> hibernateProperties) {
+        hibernateProperties.put("hibernate.session_factory.interceptor", this.interceptor);
     }
 }

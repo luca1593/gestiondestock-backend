@@ -11,8 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import static com.devtech.gestiondestock.utils.Constants.AUTHENTICATION_ENDPOINT;
 
@@ -21,7 +21,7 @@ import static com.devtech.gestiondestock.utils.Constants.AUTHENTICATION_ENDPOINT
  */
 @CrossOrigin(origins = "*", originPatterns = "*")
 public interface AuthenticationApi {
-    @RequestMapping(AUTHENTICATION_ENDPOINT + "/authenticate")
+    @PostMapping(AUTHENTICATION_ENDPOINT + "/authenticate")
     @Operation(summary = "Connextion",
             description = "Cette methode permet de se logger"
     )

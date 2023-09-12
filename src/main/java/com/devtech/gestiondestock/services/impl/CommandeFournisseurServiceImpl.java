@@ -227,6 +227,14 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
     }
 
     @Override
+    public List<LigneCommandeFournisseurDto> findAllByDateInterval(Instant startDate, Instant endDate) {
+        List<LigneCommandeFournisseurDto> ligneCommandeFournisseurDtoList = new ArrayList<>();
+        List<CommandeFournisseur> commandeFournisseurList = this.commandeFournisseurRepository.getAllBetweenDates(startDate, endDate);
+        commandeFournisseurList.forEach(cmd -> ligneCommandeFournisseurDtoList.addAll(findAllByCommandeFournisseur(cmd.getId())));
+        return ligneCommandeFournisseurDtoList;
+    }
+
+    @Override
     public CommandeFournisseurDto findByCodeCommande(String code) {
         if (!StringUtils.hasLength(code)){
             log.error("Commande Fournisseur code is null");
