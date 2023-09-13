@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.devtech</groupId>
-	<artifactId>gestiondestock-dev</artifactId>
+    <artifactId>gestiondestock</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Gestion de stock</name>
 	<description>API Rest de l&apos;application de gestion de stock</description>

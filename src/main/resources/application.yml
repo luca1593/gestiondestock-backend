@@ -23,6 +23,7 @@ server:
   error:
     whitelabel:
       enabled: true
+      
 
 flickr:
   apiKey: abc11f1e268d908eeee176297269c001
