@@ -146,6 +146,14 @@ public class VenteServiceImpl implements VenteService {
                         .map(LigneVenteDto::fromEntity).collect(Collectors.toList()) :  new ArrayList<>();
     }
 
+    @Override
+    public List<LigneVenteDto> findAllByDateInterval(Instant startDate, Instant endDate) {
+        List<LigneVenteDto> ligneVenteDtoList = new ArrayList<>();
+        List<Vente> venteList = this.venteRepository.getAllBetweenDates(startDate, endDate);
+        venteList.forEach(vnt -> ligneVenteDtoList.addAll(findAllLigneVenteByVente(vnt.getId())));
+        return ligneVenteDtoList;
+    }
+
     private void updateMvtStk(LigneVente ligneVente){
             MvtStkDto mvtStkDto = MvtStkDto.builder()
                     .article(ArticleDto.fromEntity(ligneVente.getArticle()))

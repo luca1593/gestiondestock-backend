@@ -21,6 +21,8 @@ public interface CommandeClientService {
     List<LigneCommandeClientDto> findAllByCommandeClient(Integer idCommande);
     CommandeClientDto findByCodeCommande(String code);
     List<CommandeClientDto> findByDateCommande(Instant dateCommande);
+
+    List<LigneCommandeClientDto> findAllByDateInterval(Instant startDate, Instant endDate);
     List<CommandeClientDto> findAll();
     List<CommandeClientDto> findAllByClientDto(ClientDto clientDto);
     void delete(Integer id);

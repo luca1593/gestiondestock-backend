@@ -22,4 +22,6 @@ public interface VenteService {
 
     List<LigneVenteDto> findAllLigneVenteByVente(Integer idVente);
 
+    List<LigneVenteDto> findAllByDateInterval(Instant startDate, Instant endDate);
+
 }

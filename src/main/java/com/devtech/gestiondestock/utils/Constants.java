@@ -1,5 +1,8 @@
 package com.devtech.gestiondestock.utils;
 
+/**
+ * @author luca
+ */
 public interface Constants {
     String APP_ROOT = "v1";
     String CREATE_ENDPOINT = "/create";
