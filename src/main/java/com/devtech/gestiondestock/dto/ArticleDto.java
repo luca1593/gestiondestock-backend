@@ -18,6 +18,7 @@ public class ArticleDto {
     private BigDecimal prixUnitaireht;
     private BigDecimal tauxTva;
     private BigDecimal prixTtc;
+    private BigDecimal prixFrs;
     private BigDecimal stock;
     private String photo;
     private CategoryDto category;
@@ -45,6 +46,7 @@ public class ArticleDto {
                 .prixUnitaireht(article.getPrixUnitaireht())
                 .tauxTva(article.getTauxTva())
                 .prixTtc(article.getPrixTtc())
+                .prixFrs(article.getPrixFrs())
                 .stock(article.getStock())
                 .photo(article.getPhoto())
                 .creationDate(article.getCreationDate())
@@ -65,6 +67,7 @@ public class ArticleDto {
         article.setPrixUnitaireht(articleDto.getPrixUnitaireht());
         article.setTauxTva(articleDto.getTauxTva());
         article.setPrixTtc(articleDto.getPrixTtc());
+        article.setPrixFrs(articleDto.getPrixFrs());
         article.setStock(articleDto.getStock());
         article.setPhoto(articleDto.getPhoto());
         article.setCategory(CategoryDto.toEntity(articleDto.getCategory()));

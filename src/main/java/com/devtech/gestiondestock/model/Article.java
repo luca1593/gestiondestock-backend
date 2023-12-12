@@ -29,6 +29,8 @@ public class Article extends AbstractEntity {
     private BigDecimal tauxTva;
     @Column(name = "prixttc")
     private BigDecimal prixTtc;
+    @Column(name = "prixfrs")
+    private BigDecimal prixFrs;
     @Column(name = "stock")
     private BigDecimal stock;
     @Column(name = "photo")
