@@ -20,6 +20,7 @@ spring:
     dispatch-options-request: true
 
 server:
+  port: 8081
   error:
     whitelabel:
       enabled: true
