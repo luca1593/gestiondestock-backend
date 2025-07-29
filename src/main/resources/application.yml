@@ -1,13 +1,13 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/gestiondestock?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    url: jdbc:postgresql://luca:x3CfPvDqTHnN06uvybumehn7Aepyog0a@dpg-d24k0iv5r7bs73a70u0g-a/gestiondestock_mvfa?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: luca
-    password: Just$Me12
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: x3CfPvDqTHnN06uvybumehn7Aepyog0a
+    driver-class-name: org.postgresql.Driver
   main:
     allow-circular-references: true
   jpa:
-    database: MYSQL
+    database: POSTGRESQL
     show-sql: false
     hibernate:
       ddl-auto: update

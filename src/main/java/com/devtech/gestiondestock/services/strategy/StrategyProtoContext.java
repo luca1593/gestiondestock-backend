@@ -13,6 +13,7 @@ import java.io.InputStream;
 public class StrategyProtoContext {
 
     private final BeanFactory beanFactory;
+    @SuppressWarnings("rawtypes")
     private Strategy strategy;
     @Setter
     private String context;
@@ -28,27 +29,27 @@ public class StrategyProtoContext {
         return this.strategy.savePhoto(id, photo, title);
     }
 
-
-    private void determineContext(String context){
+    private void determineContext(String context) {
         final String beansname = context + "Strategy";
-        switch (context){
-            case "article" :
+        switch (context) {
+            case "article":
                 this.strategy = this.beanFactory.getBean(beansname, SaveArticlePhoto.class);
                 break;
-            case "client" :
+            case "client":
                 this.strategy = this.beanFactory.getBean(beansname, SaveClientPhoto.class);
                 break;
-            case "entreprise" :
+            case "entreprise":
                 this.strategy = this.beanFactory.getBean(beansname, SaveEntreprisePhoto.class);
                 break;
-            case "fournisseur" :
+            case "fournisseur":
                 this.strategy = this.beanFactory.getBean(beansname, SaveFournisseurPhoto.class);
                 break;
-            case "utilisateur" :
+            case "utilisateur":
                 this.strategy = this.beanFactory.getBean(beansname, SaveUtilisateurPhoto.class);
                 break;
-            default: throw new InvalidOpperatioException("Context inconue pour l'enregistrement de la photo",
-                    ErrorsCode.UNKNOWN_CONTEXT);
+            default:
+                throw new InvalidOpperatioException("Context inconue pour l'enregistrement de la photo",
+                        ErrorsCode.UNKNOWN_CONTEXT);
         }
     }
 }

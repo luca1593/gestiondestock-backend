@@ -6,7 +6,6 @@ import lombok.Data;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -18,8 +17,8 @@ public class VenteDto {
     private List<LigneVenteDto> ligneVentes;
     private Integer identreprise;
 
-    public static VenteDto fromEntity(Vente vente){
-        if (vente == null){
+    public static VenteDto fromEntity(Vente vente) {
+        if (vente == null) {
             return null;
         }
         return VenteDto.builder()
@@ -31,9 +30,8 @@ public class VenteDto {
                 .build();
     }
 
-
-    public static Vente toEntity(VenteDto venteDto){
-        if(venteDto == null){
+    public static Vente toEntity(VenteDto venteDto) {
+        if (venteDto == null) {
             return null;
         }
         Vente vente = new Vente();

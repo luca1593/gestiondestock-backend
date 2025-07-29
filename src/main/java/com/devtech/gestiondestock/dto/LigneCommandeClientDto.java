@@ -1,8 +1,6 @@
 package com.devtech.gestiondestock.dto;
 
-import com.devtech.gestiondestock.model.CommandeClient;
 import com.devtech.gestiondestock.model.LigneCommandeClient;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
@@ -18,8 +16,8 @@ public class LigneCommandeClientDto {
     private BigDecimal prixUnitaire;
     private Integer identreprise;
 
-    public static LigneCommandeClientDto fromEntity(LigneCommandeClient ligneCommandeClient){
-        if (ligneCommandeClient == null){
+    public static LigneCommandeClientDto fromEntity(LigneCommandeClient ligneCommandeClient) {
+        if (ligneCommandeClient == null) {
             return null;
         }
         return LigneCommandeClientDto.builder()
@@ -32,15 +30,14 @@ public class LigneCommandeClientDto {
                 .build();
     }
 
-    public static LigneCommandeClient toEntity(LigneCommandeClientDto ligneCommandeClientDto){
-        if (ligneCommandeClientDto == null){
+    public static LigneCommandeClient toEntity(LigneCommandeClientDto ligneCommandeClientDto) {
+        if (ligneCommandeClientDto == null) {
             return null;
         }
         LigneCommandeClient ligneCommandeClient = new LigneCommandeClient();
         ligneCommandeClient.setId(ligneCommandeClientDto.getId());
         ligneCommandeClient.setArticle(ArticleDto.toEntity(
-                ligneCommandeClientDto.getArticle()
-        ));
+                ligneCommandeClientDto.getArticle()));
         ligneCommandeClient.setQuantite(ligneCommandeClientDto.getQuantite());
         ligneCommandeClient.setPrixUnitaire(ligneCommandeClientDto.getPrixUnitaire());
         ligneCommandeClient.setIdentreprise(ligneCommandeClientDto.getIdentreprise());

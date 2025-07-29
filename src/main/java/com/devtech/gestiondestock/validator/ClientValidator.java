@@ -1,17 +1,21 @@
 package com.devtech.gestiondestock.validator;
 
 import com.devtech.gestiondestock.dto.ClientDto;
-import com.devtech.gestiondestock.dto.UtilisateurDto;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClientValidator {
+
+    private ClientValidator() {
+        // Prevent instantiation
+    }
+
     public static List<String> validate(ClientDto clientDto) {
         List<String> errors = new ArrayList<>();
 
-        if (clientDto == null){
+        if (clientDto == null) {
             errors.add("Veuillez renseigner le nom du client");
             errors.add("Veuillez renseigner le prenom du client");
             errors.add("Veuillez renseigner le Mail du client");

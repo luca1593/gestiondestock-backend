@@ -7,7 +7,6 @@ import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.model.Client;
-import com.devtech.gestiondestock.model.CommandeClient;
 import com.devtech.gestiondestock.repository.ClientRepository;
 import com.devtech.gestiondestock.services.ClientService;
 import com.devtech.gestiondestock.services.CommandeClientService;
@@ -30,7 +29,7 @@ public class ClientServiceImpl implements ClientService {
     private final CommandeClientService commandeClientService;
 
     @Autowired
-    public ClientServiceImpl(ClientRepository clientRepository, CommandeClientService commandeClientService){
+    public ClientServiceImpl(ClientRepository clientRepository, CommandeClientService commandeClientService) {
         this.clientRepository = clientRepository;
         this.commandeClientService = commandeClientService;
     }
@@ -38,65 +37,55 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ClientDto save(ClientDto dto) {
         List<String> errors = ClientValidator.validate(dto);
-        if (!errors.isEmpty()){
+        if (!errors.isEmpty()) {
             log.error("Client is invalid {}");
             throw new InvalidEntityException("Le client n'est pas valide", ErrorsCode.CLIENT_NOT_VALID, errors);
         }
         return ClientDto.fromEntity(
-                clientRepository.save(ClientDto.toEntity(dto))
-        );
+                clientRepository.save(ClientDto.toEntity(dto)));
     }
 
     @Override
     public ClientDto findById(Integer id) {
-        if (id == null){
+        if (id == null) {
             log.error("Client ID is not null");
             return null;
         }
         Optional<Client> client = clientRepository.findById(id);
-        return Optional.of(ClientDto.fromEntity(client.get())).orElseThrow(() ->
-                new EntityNotFoundException(
-                        "Aucun client trouver avec l'id = " + id + " dans la BDD",
-                        ErrorsCode.CLIENT_NOT_FOUND
-                )
-        );
+        return Optional.of(ClientDto.fromEntity(client.get())).orElseThrow(() -> new EntityNotFoundException(
+                "Aucun client trouver avec l'id = " + id + " dans la BDD",
+                ErrorsCode.CLIENT_NOT_FOUND));
     }
 
     @Override
     public ClientDto findByNomClient(String nom) {
-        if (!StringUtils.hasLength(nom)){
+        if (!StringUtils.hasLength(nom)) {
             log.error("Client nom is null");
             return null;
         }
         Optional<Client> client = clientRepository.findClientByNom(nom);
-        return Optional.of(ClientDto.fromEntity(client.get())).orElseThrow(() ->
-                new EntityNotFoundException(
-                        "Aucun client trouver avec le nom  = " + nom + " dans la BDD",
-                        ErrorsCode.CLIENT_NOT_FOUND
-                )
-        );
+        return Optional.of(ClientDto.fromEntity(client.get())).orElseThrow(() -> new EntityNotFoundException(
+                "Aucun client trouver avec le nom  = " + nom + " dans la BDD",
+                ErrorsCode.CLIENT_NOT_FOUND));
     }
 
     @Override
     public ClientDto findByEmailClient(String email) {
-        if (!StringUtils.hasLength(email)){
+        if (!StringUtils.hasLength(email)) {
             log.error("Client email is null");
             return null;
         }
         Optional<Client> client = clientRepository.findClientByEmail(email);
-        return Optional.of(ClientDto.fromEntity(client.get())).orElseThrow(() ->
-                new EntityNotFoundException(
-                        "Aucun client trouver avec l'email  = " + email + " dans la BDD",
-                        ErrorsCode.CLIENT_NOT_FOUND
-                )
-        );
+        return Optional.of(ClientDto.fromEntity(client.get())).orElseThrow(() -> new EntityNotFoundException(
+                "Aucun client trouver avec l'email  = " + email + " dans la BDD",
+                ErrorsCode.CLIENT_NOT_FOUND));
     }
 
     @Override
     public List<ClientDto> findAll() {
         return clientRepository.findAll().stream()
                 .map(ClientDto::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -105,14 +94,14 @@ public class ClientServiceImpl implements ClientService {
         clientRepository.deleteById(id);
     }
 
-    private void checkIdClientBeforeDelete(Integer idClient){
+    private void checkIdClientBeforeDelete(Integer idClient) {
         ClientDto dto = findById(idClient);
         List<CommandeClientDto> commandeClients = commandeClientService.findAllByClientDto(dto);
         if (!CollectionUtils.isEmpty(commandeClients)) {
             log.error("Client alredy used");
-            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande client existe deja pour ce client",
-                    ErrorsCode.CLIENT_ALREADY_IN_USE
-            );
+            throw new InvalidOpperatioException(
+                    "Operaton impossible : une ou plusieur commande client existe deja pour ce client",
+                    ErrorsCode.CLIENT_ALREADY_IN_USE);
         }
     }
 }

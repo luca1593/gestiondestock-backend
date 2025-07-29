@@ -41,11 +41,10 @@ public class CommandeClientController implements CommandeClientApi {
 
     @Override
     public ResponseEntity<CommandeClientDto> updateQuantiterCommande(Integer idCommande,
-                                                                     Integer idLigneCommande,
-                                                                     BigDecimal quantite) {
+            Integer idLigneCommande,
+            BigDecimal quantite) {
         return ResponseEntity.ok(
-                this.commandeClientService.updateQuantiterCommande(idCommande, idLigneCommande, quantite)
-        );
+                this.commandeClientService.updateQuantiterCommande(idCommande, idLigneCommande, quantite));
     }
 
     @Override
@@ -55,11 +54,10 @@ public class CommandeClientController implements CommandeClientApi {
 
     @Override
     public ResponseEntity<CommandeClientDto> updateArticle(Integer idCommande,
-                                                           Integer idLigneCommande,
-                                                           Integer newIdArticle) {
+            Integer idLigneCommande,
+            Integer newIdArticle) {
         return ResponseEntity.ok(
-                this.commandeClientService.updateArticle(idCommande, idLigneCommande, newIdArticle)
-        );
+                this.commandeClientService.updateArticle(idCommande, idLigneCommande, newIdArticle));
     }
 
     @Override
@@ -93,10 +91,11 @@ public class CommandeClientController implements CommandeClientApi {
     }
 
     @Override
-    public ResponseEntity<List<CommandeClientDto>> findAllByClient(ClientDto dto){
+    public ResponseEntity<List<CommandeClientDto>> findAllByClient(ClientDto dto) {
         return ResponseEntity.ok(this.commandeClientService.findAllByClientDto(dto));
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public ResponseEntity delete(Integer id) {
         this.commandeClientService.delete(id);

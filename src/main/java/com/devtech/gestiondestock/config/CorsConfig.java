@@ -15,7 +15,8 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsConfig {
-    
+
+    @SuppressWarnings("rawtypes")
     @Bean
     public FilterRegistrationBean corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -38,6 +39,7 @@ public class CorsConfig {
         configuration.setMaxAge(3600L);
         source.registerCorsConfiguration("/**", configuration);
 
+        @SuppressWarnings("unchecked")
         FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
         bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return bean;

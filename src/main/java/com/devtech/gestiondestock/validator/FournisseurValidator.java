@@ -1,6 +1,5 @@
 package com.devtech.gestiondestock.validator;
 
-import com.devtech.gestiondestock.dto.ClientDto;
 import com.devtech.gestiondestock.dto.FournisseurDto;
 import org.springframework.util.StringUtils;
 
@@ -8,10 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FournisseurValidator {
+
+    private FournisseurValidator() {
+        // Prevent instantiation
+    }
+
     public static List<String> validate(FournisseurDto fournisseurDto) {
         List<String> errors = new ArrayList<>();
 
-        if (fournisseurDto == null){
+        if (fournisseurDto == null) {
             errors.add("Veuillez renseigner le nom du fournisseur");
             errors.add("Veuillez renseigner le prenom du fournisseur");
             errors.add("Veuillez renseigner le Mail du fournisseur");

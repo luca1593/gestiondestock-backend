@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -23,8 +22,8 @@ public class FournisseurDto {
     private List<CommandeFournisseurDto> commandeFournisseurs;
     private Integer identreprise;
 
-    public static FournisseurDto fromEntity(Fournisseur fournisseur){
-        if (fournisseur == null){
+    public static FournisseurDto fromEntity(Fournisseur fournisseur) {
+        if (fournisseur == null) {
             return null;
         }
 
@@ -40,8 +39,8 @@ public class FournisseurDto {
                 .build();
     }
 
-    public static Fournisseur toEntity(FournisseurDto fournisseurDto){
-        if (fournisseurDto == null){
+    public static Fournisseur toEntity(FournisseurDto fournisseurDto) {
+        if (fournisseurDto == null) {
             return null;
         }
         Fournisseur fournisseur = new Fournisseur();
@@ -55,6 +54,5 @@ public class FournisseurDto {
         fournisseur.setIdentreprise(fournisseurDto.getIdentreprise());
         return fournisseur;
     }
-
 
 }

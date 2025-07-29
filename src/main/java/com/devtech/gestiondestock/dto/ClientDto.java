@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -22,8 +21,8 @@ public class ClientDto {
     private List<CommandeClientDto> commandeClients;
     private Integer identreprise;
 
-    public static ClientDto fromEntity(Client client){
-        if (client == null){
+    public static ClientDto fromEntity(Client client) {
+        if (client == null) {
             return null;
         }
 
@@ -39,9 +38,9 @@ public class ClientDto {
                 .build();
     }
 
-    public static Client toEntity(ClientDto clientDto){
-        if (clientDto == null){
-            return  null;
+    public static Client toEntity(ClientDto clientDto) {
+        if (clientDto == null) {
+            return null;
         }
         Client client = new Client();
         client.setId(clientDto.getId());

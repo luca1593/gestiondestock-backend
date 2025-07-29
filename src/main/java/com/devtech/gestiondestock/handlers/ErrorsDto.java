@@ -21,6 +21,6 @@ public class ErrorsDto {
 
     private String message;
 
-    private List<String> errors =new ArrayList<>();
+    private List<String> errors = new ArrayList<>();
 
 }
