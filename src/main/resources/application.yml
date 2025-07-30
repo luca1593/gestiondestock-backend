@@ -1,22 +1,22 @@
 spring:
   datasource:
-    url: jdbc:postgresql://luca:x3CfPvDqTHnN06uvybumehn7Aepyog0a@dpg-d24k0iv5r7bs73a70u0g-a.oregon-postgres.render.com/gestiondestock_mvfa?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-    username: luca
-    password: x3CfPvDqTHnN06uvybumehn7Aepyog0a
-    driver-class-name: org.postgresql.Driver
+    url: mysql://localhost:3306/gestiondestock?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: root
+    password: 
+    driver-class-name: org.mysql.Driver
   main:
     allow-circular-references: true
   jpa:
-    database: POSTGRESQL
+    database: MYSQL
     show-sql: false
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MySQ8LDialect
   mvc:
     pathmatch:
-      matching-strategy: ant_path_matcher
+      matching-strategy: ANT_PATH_MATCHER
     dispatch-options-request: true
 
 server:

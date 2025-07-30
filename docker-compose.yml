@@ -1,8 +1,44 @@
+volumes:
+  mysql-data:
+networks:
+  springboot-mysql-network:
+    name: springboot-mysql-network
+    driver: bridge
 services:
-  gestiondestockbackend:
-    image: gestiondestockbackend
+  mysqldb:
+    image: mysql:lts
+    command: --mysql-native-password=ON
+    environment:
+      MYSQL_ROOT_PASSWORD: luca1593
+      MYSQL_DATABASE: gestiondestock
+      MYSQL_USER: luca
+      MYSQL_PASSWORD: x3CfPvDqTHnN06uvybumehn7Aepyog0a
+    ports:
+      - "3325:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - springboot-mysql-network
+  gestiondestock:
+    image: gestiondestock
     build:
       context: .
       dockerfile: ./Dockerfile
+    networks:
+      - springboot-mysql-network
     ports:
-      - 3000:3000
+      - "2000:9000"
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/gestiondestock
+      - SPRING_DATASOURCE_USERNAME=luca
+      - SPRING_DATASOURCE_PASSWORD=x3CfPvDqTHnN06uvybumehn7Aepyog0a
