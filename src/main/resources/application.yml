@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://luca:x3CfPvDqTHnN06uvybumehn7Aepyog0a@dpg-d24k0iv5r7bs73a70u0g-a/gestiondestock_mvfa?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    url: jdbc:postgresql://luca:x3CfPvDqTHnN06uvybumehn7Aepyog0a@dpg-d24k0iv5r7bs73a70u0g-a.oregon-postgres.render.com/gestiondestock_mvfa?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: luca
     password: x3CfPvDqTHnN06uvybumehn7Aepyog0a
     driver-class-name: org.postgresql.Driver
