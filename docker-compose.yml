@@ -37,7 +37,7 @@ services:
       mysqldb:
         condition: service_healthy
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=prod
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/gestiondestock
       - SPRING_DATASOURCE_USERNAME=luca
