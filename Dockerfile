@@ -5,5 +5,4 @@ COPY src ./src
 FROM openjdk:21-jdk-slim-bullseye
 WORKDIR /app
 COPY --from=builder /app/target/*.jar gestiondestock.jar
-RUN mvn clean package -DskipTests
 ENTRYPOINT ["java", "-jar", "gestiondestock.jar"]
