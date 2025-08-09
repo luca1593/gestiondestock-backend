@@ -12,6 +12,7 @@ import com.devtech.gestiondestock.repository.UtilisateurRepository;
 import com.devtech.gestiondestock.services.UtilisateurService;
 import com.devtech.gestiondestock.validator.UtilisateurValidator;
 import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
