@@ -2,6 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/gestiondestock?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: luca
+    password: luca1593
     driver-class-name: org.mysql.Driver
   main:
     allow-circular-references: true
