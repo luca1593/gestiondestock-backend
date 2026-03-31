@@ -55,7 +55,7 @@ public class CommandeFournisseurController implements CommandeFournisseurApi {
 
     @Override
     public CommandeFournisseurDto updateFournisseur(Integer idCommande, Integer idFournisseur) {
-        return this.commandeFournisseurService.updateFournisseur(idFournisseur, idFournisseur);
+        return this.commandeFournisseurService.updateFournisseur(idCommande, idFournisseur);
     }
 
     @Override

@@ -55,7 +55,7 @@ public class ApplicationRequestFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         }
-        MDC.put("idEntreprise : " , idEntreprise);
+        MDC.put("idEntreprise", idEntreprise);
         filterChain.doFilter(request, response);
     }
 }

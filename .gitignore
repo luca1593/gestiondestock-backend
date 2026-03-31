@@ -39,3 +39,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Production ###
+.env
+backups/
+nginx/ssl/
+nginx/logs/
+*.log
+deploy-*.log

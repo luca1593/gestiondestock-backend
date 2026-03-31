@@ -34,10 +34,14 @@ public class FlickrServiceImpl implements FlickrService {
 
   private Flickr flickr;
 
+  @jakarta.annotation.PostConstruct
+  private void init() throws InterruptedException, ExecutionException, IOException, FlickrException {
+    connect();
+  }
+
   @Override
   @SneakyThrows
   public String savePhoto(InputStream photo, String title, Integer id) {
-    connect();
     UploadMetaData uploadMetaData = new UploadMetaData();
     uploadMetaData.setTitle(title + id);
 
@@ -48,7 +52,7 @@ public class FlickrServiceImpl implements FlickrService {
   private void connect() throws InterruptedException, ExecutionException, IOException, FlickrException {
     flickr = new Flickr(apiKey, apiSecret, new REST());
     Auth auth = new Auth();
-    auth.setPermission(Permission.DELETE);
+    auth.setPermission(Permission.WRITE);
     auth.setToken(appKey);
     auth.setTokenSecret(appSecret);
     RequestContext requestContext = RequestContext.getRequestContext();

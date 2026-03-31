@@ -12,7 +12,7 @@ public class EntrepriseValidator {
 
         if (entrepriseDto == null){
             errors.add("Veuillez renseigner le nom de l'entreprise");
-            errors.add("Veuillez renseigner la description de l'entre[rise");
+            errors.add("Veuillez renseigner la description de l'entreprise");
             errors.add("Veuillez renseigner le code fiscal de l'entreprise");
             errors.add("Veuillez renseigner l'adresse de l'entreprise");
             errors.add("Veuillez renseigner le Mail de l'entreprise");

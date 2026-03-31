@@ -42,7 +42,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     public EntrepriseDto save(EntrepriseDto dto) {
         List<String> errors = EntrepriseValidator.validate(dto);
         if (!errors.isEmpty()){
-            log.error("Entreprise is invalid {}");
+            log.error("Entreprise is invalid: {}", dto);
             throw new InvalidEntityException("L'entreprise n'est pas valide", ErrorsCode.ENTREPRISE_NOT_VALID, errors);
         }
         EntrepriseDto savedEntreprise =  EntrepriseDto.fromEntity(
@@ -78,7 +78,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
 
     private String generateRandomPassword(){
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        return bCryptPasswordEncoder.encode("s0n3R@nd0mP@$$w0rd");
+        return bCryptPasswordEncoder.encode(java.util.UUID.randomUUID().toString());
     }
 
     @Override

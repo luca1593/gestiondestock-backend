@@ -100,8 +100,8 @@ public class CategoryServiceImpl implements CategoryService {
         checkId(id);
         List<Article> articles = this.articleRepository.findAllByCategoryId(id);
         if(!CollectionUtils.isEmpty(articles)){
-            log.error("Category alredy used");
-            throw new InvalidOpperatioException("La categorie est deja utilse", 
+            log.error("Category already used");
+            throw new InvalidOpperatioException("La categorie est deja utilisee", 
             ErrorsCode.CATEGORY_ALREADY_IN_USE
             );
         }

@@ -58,13 +58,13 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
     public CommandeFournisseurDto save(CommandeFournisseurDto dto) {
         List<String> errors = CommandeFournisseurValidator.validate(dto);
         if (!errors.isEmpty()){
-            log.error("Commande Fournisseur is not invalid");
+            log.error("Commande Fournisseur is not valid");
             throw new InvalidEntityException("La commande fournisseur n'est pas valid",
                     ErrorsCode.COMMANDE_FOURNISSEUR_NOT_VALID, errors);
         }
         Optional<Fournisseur> fournisseur = this.fournisseurRepository.findById(dto.getFournisseur().getId());
         if (!fournisseur.isPresent()){
-            log.warn("Founisseur with ID {} was not found in the DB", dto.getFournisseur().getId());
+            log.warn("Fournisseur with ID {} was not found in the DB", dto.getFournisseur().getId());
             throw new EntityNotFoundException(
                     "Le Fournisseur avec l'Id = "  + dto.getFournisseur().getId() +
                             " n'existe pas dans la BDD",
@@ -91,7 +91,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
         }
         if (!fournisseurErrors.isEmpty()){
             log.warn("Enregistrement impossible");
-            throw new InvalidEntityException("L'article n'existe pas dans la BDD", ErrorsCode.FOURNISSEUR_NOT_FOUND, fournisseurErrors);
+            throw new InvalidEntityException("L'article n'existe pas dans la BDD", ErrorsCode.ARTICLE_NOT_FOUND, fournisseurErrors);
         }
 
         List<String> ligneCmdErrors = new ArrayList<>();
@@ -102,10 +102,10 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
         }
 
         if (!CollectionUtils.isEmpty(ligneCmdErrors)) {
-            log.error("Commande Client is not invalid", dto);
+            log.error("Commande Fournisseur is not valid: {}", dto);
             throw new InvalidEntityException(
-                "La commande client n'est pas valid",
-                ErrorsCode.COMMANDE_FOURNISSEUR_NON_MODIFIABLE, ligneCmdErrors
+                "La commande fournisseur n'est pas valide",
+                ErrorsCode.COMMANDE_FOURNISSEUR_NOT_VALID, ligneCmdErrors
             );
         }
 
@@ -159,7 +159,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
         checkIdLigneCommande(idLigneCommande);
         if (quantite == null || quantite.compareTo(BigDecimal.ZERO) == 0){
             log.error("Quantite commande is null");
-            throw new InvalidOpperatioException("Impossible de modifier une commande fournisseur avec une quantite null ou ZERRO",
+            throw new InvalidOpperatioException("Impossible de modifier une commande fournisseur avec une quantite null ou ZERO",
                     ErrorsCode.COMMANDE_FOURNISSEUR_NON_MODIFIABLE
             );
         }
@@ -174,7 +174,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
     public CommandeFournisseurDto updateFournisseur(Integer idCommande, Integer idFournisseur) {
         checkIdCommande(idCommande, ErrorsCode.COMMANDE_FOURNISSEUR_NON_MODIFIABLE);
         if (idFournisseur == null){
-            log.error("Client ID is null");
+            log.error("Fournisseur ID is null");
             throw new InvalidOpperatioException("Impossible de modifier une commande fournisseur avec un fournisseur null",
                     ErrorsCode.COMMANDE_FOURNISSEUR_NON_MODIFIABLE
             );
@@ -263,7 +263,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
     public List<CommandeFournisseurDto> findAllByFournisseurDto(FournisseurDto fournisseurDto){
         List<String> errors = FournisseurValidator.validate(fournisseurDto);
         if(!CollectionUtils.isEmpty(errors)){
-            log.error("Fournisseur is not valid", fournisseurDto);
+            log.error("Fournisseur is not valid: {}", fournisseurDto);
             throw new InvalidEntityException(
                 "Le fournisseur n'est pas valide ou n'existe pas pour cette recherche", 
                 ErrorsCode.FOURNISSEUR_NOT_VALID, errors
@@ -315,7 +315,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
         if (!ligneCommandeFournisseur.isPresent()){
             throw new EntityNotFoundException(
                     "Aucune ligne commande fournisseur n'a ete trouver avec l'ID = " + idLigneCommande,
-                    ErrorsCode.LIGNE_COMMANDE_CLIENT_NOT_FOUND
+                    ErrorsCode.LIGNE_COMMANDE_FOURNISSEUR_NOT_FOUND
             );
         }
         return ligneCommandeFournisseur.get();
@@ -336,7 +336,7 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
         }
         List<String> errors = ArticleValidator.validate(ArticleDto.fromEntity(article.get()));
         if (!errors.isEmpty()){
-            log.error("Article is not invalid");
+            log.error("Article is not valid");
             throw new InvalidEntityException("L'article' n'est pas valid",
                     ErrorsCode.ARTICLE_NOT_VALID, errors);
         }

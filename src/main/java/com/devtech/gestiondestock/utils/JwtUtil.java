@@ -14,7 +14,7 @@ import java.util.function.Function;
 
 @Service
 public class JwtUtil {
-    private final String SECRET_KEY = "secret";
+    private final String SECRET_KEY = System.getenv("JWT_SECRET_KEY") != null ? System.getenv("JWT_SECRET_KEY") : "a3f8b2c7d1e9f4a5b6c8d2e7f3a9b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0";
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -46,7 +46,7 @@ public class JwtUtil {
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .claim("identreprise", userDetails.getIdEntreprise().toString())
-                .signWith(SignatureAlgorithm.HS256, this.SECRET_KEY).compact();
+                .signWith(SignatureAlgorithm.HS512, this.SECRET_KEY).compact();
     }
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);

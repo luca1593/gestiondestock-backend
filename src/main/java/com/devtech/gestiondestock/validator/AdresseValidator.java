@@ -20,23 +20,23 @@ public class AdresseValidator {
 
         if (adresseDto == null) {
             errors.add("Veuillez renseigner un addresse valide");
-            errors.add("L'adresse 1 est obligatoir");
-            errors.add("La ville est obligatoir");
-            errors.add("Le codepostale est obligatoir");
-            errors.add("Le pays est obligatoir");
+            errors.add("L'adresse 1 est obligatoire");
+            errors.add("La ville est obligatoire");
+            errors.add("Le code postal est obligatoire");
+            errors.add("Le pays est obligatoire");
             return errors;
         }
         if (!StringUtils.hasLength(adresseDto.getAdresse1())){
-            errors.add("L'adresse 1 est obligatoir");
+            errors.add("L'adresse 1 est obligatoire");
         }
         if (!StringUtils.hasLength(adresseDto.getVille())){
-            errors.add("La ville est obligatoir");
+            errors.add("La ville est obligatoire");
         }
         if (!StringUtils.hasLength(adresseDto.getCodePostal())){
-            errors.add("Le codepostale est obligatoir");
+            errors.add("Le code postal est obligatoire");
         }
         if (!StringUtils.hasLength(adresseDto.getPays())){
-            errors.add("Le pays est obligatoir");
+            errors.add("Le pays est obligatoire");
         }
 
         return errors;

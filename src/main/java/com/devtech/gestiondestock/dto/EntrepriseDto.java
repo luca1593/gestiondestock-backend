@@ -53,8 +53,8 @@ public class EntrepriseDto {
         entreprise.setCodeFiscal(entrepriseDto.getCodeFiscal());
         entreprise.setPhoto(entrepriseDto.getPhoto());
         entreprise.setEmail(entrepriseDto.getEmail());
-        entreprise.setNumTel(entreprise.getNumTel());
-        entreprise.setSiteWeb(entreprise.getSiteWeb());
+        entreprise.setNumTel(entrepriseDto.getNumTel());
+        entreprise.setSiteWeb(entrepriseDto.getSiteWeb());
 
         return entreprise;
 

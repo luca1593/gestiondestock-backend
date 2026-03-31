@@ -43,7 +43,7 @@ public class VenteServiceImpl implements VenteService {
         dto.setDateVente(Instant.now());
         List<String> errors = VenteValidator.validate(dto);
         if (!errors.isEmpty()){
-            log.error("Vente is not valide {}", dto);
+            log.error("Vente is not valid: {}", dto);
             throw new InvalidEntityException("Le vente n'est pas valide", ErrorsCode.VENTE_NOT_VALID, errors);
         }
         List<String> venteErrors = new ArrayList<>();
@@ -61,7 +61,7 @@ public class VenteServiceImpl implements VenteService {
         });
 
         if (!venteErrors.isEmpty()){
-            log.error("Vente not found in DB, {} ", errors);
+            log.error("Vente not found in DB: {}", venteErrors);
             throw new InvalidEntityException(
                     "Un ou plusieur article n'existe pas dans la BDD",
                     ErrorsCode.VENTE_NOT_VALID, venteErrors);
@@ -83,34 +83,30 @@ public class VenteServiceImpl implements VenteService {
     public VenteDto findById(Integer id) {
         if (id == null){
             log.error("Vente ID is null");
-            return null;
+            throw new EntityNotFoundException("L'ID de la vente est null", ErrorsCode.ID_NOT_VALID);
         }
         Optional<Vente> vente = this.venteRepository.findById(id);
-        if (vente.isPresent()){
-            return VenteDto.fromEntity(vente.get());
-        }else {
-            throw new EntityNotFoundException(
-                    "Aucune vente avec l'ID = " + id + " n'a ete trouver dans la base de donnee",
-                    ErrorsCode.VENTE_NOT_FOUND
-            );
-        }
+        return vente.map(VenteDto::fromEntity).orElseThrow(() ->
+                new EntityNotFoundException(
+                        "Aucune vente avec l'ID = " + id + " n'a ete trouve dans la base de donnee",
+                        ErrorsCode.VENTE_NOT_FOUND
+                )
+        );
     }
 
     @Override
     public VenteDto findByCodeVente(String code) {
         if (!StringUtils.hasLength(code)){
-            log.error("Category code is null");
-            return null;
+            log.error("Vente code is null");
+            throw new EntityNotFoundException("Aucune vente avec un code null", ErrorsCode.VENTE_NOT_FOUND);
         }
         Optional<Vente> vente = this.venteRepository.findVenteByCode(code);
-        if (vente.isPresent()){
-            return VenteDto.fromEntity(vente.get());
-        }else {
-            throw new EntityNotFoundException(
-                    "Aucune vente trouver avec le code = " + code + " n'a ete trouver dans la base de donnee",
-                    ErrorsCode.VENTE_NOT_FOUND
-            );
-        }
+        return vente.map(VenteDto::fromEntity).orElseThrow(() ->
+                new EntityNotFoundException(
+                        "Aucune vente avec le code = " + code + " n'a ete trouve dans la base de donnee",
+                        ErrorsCode.VENTE_NOT_FOUND
+                )
+        );
     }
 
     @Override
@@ -168,9 +164,9 @@ public class VenteServiceImpl implements VenteService {
     private void checkIdVenteBeforeDelete(Integer idVente){
         VenteDto dto = findById(idVente);
         if (!CollectionUtils.isEmpty(dto.getLigneVentes())) {
-            log.error("Vente alredy used");
-            throw new InvalidOpperatioException("Operation impossible : une ou plusieur line de vente existe deja pour ce vente",
-                    ErrorsCode.FOURNISSEUR_ALREADY_IN_USE
+            log.error("Vente already used");
+            throw new InvalidOpperatioException("Operation impossible : une ou plusieurs lignes de vente existent deja pour cette vente",
+                    ErrorsCode.VENTE_NOT_VALID
             );
         }
     }

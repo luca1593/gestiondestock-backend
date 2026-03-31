@@ -36,6 +36,6 @@ public class AuthenticationController implements AuthenticationApi {
         );
         final UserDetails userDetails = this.userDetailsService.loadUserByUsername(request.getLogin());
         final String jwt = this.jwtUtil.generateToken((ExtendedUser) userDetails);
-        return ResponseEntity.ok(AuthenticationResponse.builder().accessTokeen(jwt).build());
+        return ResponseEntity.ok(AuthenticationResponse.builder().accessToken(jwt).build());
     }
 }

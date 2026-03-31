@@ -24,7 +24,6 @@ public class StrategyProtoContext {
 
     public Object savePhoto(String context, Integer id, String title, InputStream photo) throws Exception {
         determineContext(context);
-        context += context;
         return this.strategy.savePhoto(id, photo, title);
     }
 

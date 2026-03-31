@@ -44,7 +44,7 @@ public class ArticleServiceImpl implements ArticleService {
         }
         Optional<Category> category = this.categoryRepository.findById(dto.getCategory().getId());
         if (!category.isPresent()){
-            log.warn("Catehory with ID {} was not found in the DB", dto.getCategory().getId());
+            log.warn("Category with ID {} was not found in the DB", dto.getCategory().getId());
             throw new EntityNotFoundException(
                     "La categorie avec l'Id = "
                             + dto.getCategory().getId() +
@@ -62,9 +62,9 @@ public class ArticleServiceImpl implements ArticleService {
     public ArticleDto findById(Integer id) {
         checkIdArticle(id);
         Optional<Article> article = this.articleRepository.findById(id);
-        return Optional.of(ArticleDto.fromEntity(article.get())).orElseThrow(() ->
+        return article.map(ArticleDto::fromEntity).orElseThrow(() ->
                 new EntityNotFoundException(
-                        "Aucun article avec l'ID = " + id + " n'a ete trouver dans la base de donnee",
+                        "Aucun article avec l'ID = " + id + " n'a ete trouve dans la base de donnee",
                         ErrorsCode.ARTICLE_NOT_FOUND
                 )
         );
@@ -74,12 +74,12 @@ public class ArticleServiceImpl implements ArticleService {
     public ArticleDto findByCodeArticle(String code) {
         if (!StringUtils.hasLength(code)){
             log.error("Article code is null");
-            return null;
+            throw new EntityNotFoundException("Aucun article avec un code null", ErrorsCode.ARTICLE_NOT_FOUND);
         }
         Optional<Article> article = this.articleRepository.findArticleByCodeArticle(code);
-        return Optional.of(ArticleDto.fromEntity(article.get())).orElseThrow(() ->
+        return article.map(ArticleDto::fromEntity).orElseThrow(() ->
                 new EntityNotFoundException(
-                        "Aucun article avec le code = " + code + " n'a ete trouver dans la base de donnee",
+                        "Aucun article avec le code = " + code + " n'a ete trouve dans la base de donnee",
                         ErrorsCode.ARTICLE_NOT_FOUND
                 )
         );
@@ -148,22 +148,22 @@ public class ArticleServiceImpl implements ArticleService {
     private void checkArticleBeforDelete(Integer idArticle){
 
         if (!CollectionUtils.isEmpty(findHistoriqueCommandeClient(idArticle))) {
-            log.error("Article alredy used");
-            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande / vente existe deja pour cette article",
+            log.error("Article already used");
+            throw new InvalidOpperatioException("Operation impossible : une ou plusieurs commandes / ventes existent deja pour cet article",
                     ErrorsCode.ARTICLE_ALREADY_IN_USE
             );
         }
 
         if (!CollectionUtils.isEmpty(findHistoriqueCommandeFournisseur(idArticle))) {
-            log.error("Article alredy used");
-            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande / vente existe deja pour cette article",
+            log.error("Article already used");
+            throw new InvalidOpperatioException("Operation impossible : une ou plusieurs commandes / ventes existent deja pour cet article",
                     ErrorsCode.ARTICLE_ALREADY_IN_USE
             );
         }
 
         if (!CollectionUtils.isEmpty(findHistoriqueVente(idArticle))) {
-            log.error("Article alredy used");
-            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande / vente existe deja pour cette article",
+            log.error("Article already used");
+            throw new InvalidOpperatioException("Operation impossible : une ou plusieurs commandes / ventes existent deja pour cet article",
                     ErrorsCode.ARTICLE_ALREADY_IN_USE
             );
         }

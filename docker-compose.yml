@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: gestiondestock-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: gestiondestock
+      MYSQL_USER: luca
+      MYSQL_PASSWORD: luca1593
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - gestiondestock-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: gestiondestock-phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: luca
+      PMA_PASSWORD: luca1593
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+    networks:
+      - gestiondestock-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_DATE: ${BUILD_DATE:-latest}
+        BUILD_VERSION: ${BUILD_VERSION:-latest}
+      no_cache: true
+    container_name: gestiondestock-backend
+    restart: always
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: gestiondestock
+      DB_USERNAME: luca
+      DB_PASSWORD: luca1593
+      JWT_SECRET_KEY: a3f8b2c7d1e9f4a5b6c8d2e7f3a9b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0
+      FLICKR_API_KEY: your_flickr_api_key
+      FLICKR_API_SECRET: your_flickr_api_secret
+      FLICKR_APP_KEY: your_flickr_app_key
+      FLICKR_APP_SECRET: your_flickr_app_secret
+      MAIL_HOST: smtp.gmail.com
+      MAIL_PORT: 587
+      MAIL_USERNAME: gestion-stock@dev-tech.com
+      MAIL_PASSWORD: your_mail_password
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - gestiondestock-network
+
+volumes:
+  mysql_data:
+
+networks:
+  gestiondestock-network:
+    driver: bridge

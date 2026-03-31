@@ -1,6 +1,5 @@
 package com.devtech.gestiondestock.validator;
 
-import com.devtech.gestiondestock.dto.ClientDto;
 import com.devtech.gestiondestock.dto.FournisseurDto;
 import org.springframework.util.StringUtils;
 

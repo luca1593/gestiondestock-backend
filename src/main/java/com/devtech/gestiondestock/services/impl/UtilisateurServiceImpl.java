@@ -38,7 +38,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     public UtilisateurDto save(UtilisateurDto dto) {
         List<String> errors = UtilisateurValidator.validate(dto);
         if (!errors.isEmpty()){
-            log.error("Utilisateur is invalid {}");
+            log.error("Utilisateur is invalid: {}", dto);
             throw new InvalidEntityException("L'utilisateur n'est pas valide", ErrorsCode.UTILISATEUR_NOT_VALID, errors);
         }
         return UtilisateurDto.fromEntity(
@@ -137,7 +137,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     private static void validate(ChangerMotDePasseUtilisateurDto dto) {
         if (dto == null){
             log.warn("Impossible de changer le mot de passe avec un objet null");
-            throw new InvalidOpperatioException("Aucune information n'a ete fourni pour le changgemet de mot de passe",
+            throw new InvalidOpperatioException("Aucune information n'a ete fourni pour le changement de mot de passe",
                     ErrorsCode.UTILISATEUR_CHANGE_PASSWORD_NOT_VALID);
         }
         if (dto.getId() == null){
@@ -151,8 +151,8 @@ public class UtilisateurServiceImpl implements UtilisateurService {
                     ErrorsCode.UTILISATEUR_CHANGE_PASSWORD_NOT_VALID);
         }
         if (!dto.getMotDePasse().equals(dto.getConfirmMotDePasse())){
-            log.warn("Impossible de changer le mot de passe avec deux mots de passw different");
-            throw new InvalidOpperatioException("Mot de passe utilisateur non coforme :: impossible de modifier le mot de passe",
+            log.warn("Impossible de changer le mot de passe avec deux mots de passe different");
+            throw new InvalidOpperatioException("Mot de passe utilisateur non conforme :: impossible de modifier le mot de passe",
                     ErrorsCode.UTILISATEUR_CHANGE_PASSWORD_NOT_VALID);
         }
     }

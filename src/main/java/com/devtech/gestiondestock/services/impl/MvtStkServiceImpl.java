@@ -38,7 +38,7 @@ public class MvtStkServiceImpl implements MvtStkService {
     public MvtStkDto save(MvtStkDto dto) {
         List<String> errors = MvtStkValidator.validate(dto);
         if (!errors.isEmpty()){
-            log.error("Mouvement is not invalid {}");
+            log.error("Mouvement is not valid: {}", dto);
             throw new InvalidEntityException("Le mouvement n'est pas valide", ErrorsCode.MOUVEMENT_STOCK_NOT_VALID, errors);
         }
         return MvtStkDto.fromEntity(
@@ -64,7 +64,7 @@ public class MvtStkServiceImpl implements MvtStkService {
     @Override
     public List<MvtStkDto> findMvtStkByDateMvt(Instant dateMvt) {
         if (dateMvt == null) {
-            log.error("Mouvement Date is not null");
+            log.error("Mouvement Date is null");
             return null;
         }
         return this.mvtStkRepository.findMvtStkByDateMvt(dateMvt) != null ?
@@ -77,7 +77,7 @@ public class MvtStkServiceImpl implements MvtStkService {
     @Override
     public List<MvtStkDto> findMvtStkByType(String typeMvt) {
         if (!StringUtils.hasLength(typeMvt)) {
-            log.error("Mouvement Type is not null");
+            log.error("Mouvement Type is null");
             return null;
         }
         return this.mvtStkRepository.findMvtStkByTypeMvt(typeMvt) != null ?
@@ -162,7 +162,7 @@ public class MvtStkServiceImpl implements MvtStkService {
     private MvtStkDto getMvtStkDto(MvtStkDto dto, double quantite, TypeMvt typeMvt, ErrorsCode errorsCode) {
         List<String> errors = MvtStkValidator.validate(dto);
         if (!errors.isEmpty()){
-            log.error("Article is not valide {}", dto);
+            log.error("Mouvement de stock is not valid: {}", dto);
             throw new InvalidEntityException("Le mouvement de stock n'est pas valide",
                     errorsCode, errors);
         }

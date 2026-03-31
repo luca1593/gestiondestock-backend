@@ -59,10 +59,10 @@ public class CommandeClientServiceImpl implements CommandeClientService {
     public CommandeClientDto save(CommandeClientDto dto) {
         List<String> errors = CommandeClientValidator.validate(dto);
         if(!CollectionUtils.isEmpty(errors)){
-            log.error("Commande Client is not valid", dto);
+            log.error("Commande Client is not valid: {}", dto);
             throw new InvalidEntityException(
-                "La commande client n'est pas valide", 
-                ErrorsCode.COMMANDE_CLIENT_NON_MODIFIABLE, errors
+                "La commande client n'est pas valide",
+                ErrorsCode.COMMANDE_CLIENT_NOT_VALID, errors
             );
         }
 
@@ -75,7 +75,7 @@ public class CommandeClientServiceImpl implements CommandeClientService {
         log.warn("Client with ID {} was not found in the DB", dto.getClient().getId());
         throw new EntityNotFoundException(
                 "Le client avec l'Id = "
-                        + dto.getClient().getCommandeClients() +
+                        + dto.getClient().getId() +
                         " n'existe pas dans la BDD",
                 ErrorsCode.CLIENT_NOT_FOUND);
     }
@@ -112,10 +112,10 @@ public class CommandeClientServiceImpl implements CommandeClientService {
     }
 
     if (!CollectionUtils.isEmpty(ligneCmdErrors)) {
-        log.error("Commande Client is not valid", dto);
+        log.error("Commande Client is not valid: {}", dto);
         throw new InvalidEntityException(
             "La commande client n'est pas valide",
-            ErrorsCode.COMMANDE_CLIENT_NON_MODIFIABLE, ligneCmdErrors
+            ErrorsCode.COMMANDE_CLIENT_NOT_VALID, ligneCmdErrors
         );
     }
 
@@ -160,7 +160,7 @@ public class CommandeClientServiceImpl implements CommandeClientService {
 
         if (quantite == null || quantite.compareTo(BigDecimal.ZERO) == 0){
             log.error("Quantite commande is null");
-            throw new InvalidOpperatioException("Impossible de modifier une commande client avec une quantite null ou ZERRO",
+            throw new InvalidOpperatioException("Impossible de modifier une commande client avec une quantite null ou ZERO",
                     ErrorsCode.COMMANDE_CLIENT_NON_MODIFIABLE
             );
         }
@@ -276,7 +276,7 @@ public class CommandeClientServiceImpl implements CommandeClientService {
     public List<CommandeClientDto> findAllByClientDto(ClientDto clientDto){
         List<String> errors = ClientValidator.validate(clientDto);
         if(!CollectionUtils.isEmpty(errors)){
-            log.error("Client is not valid", clientDto);
+            log.error("Client is not valid: {}", clientDto);
             throw new InvalidEntityException(
                 "Le client n'est pas valide ou n'existe pas pour cette recherche", 
                 ErrorsCode.CLIENT_NOT_FOUND, errors
@@ -335,7 +335,7 @@ public class CommandeClientServiceImpl implements CommandeClientService {
         }
         List<String> errors = ArticleValidator.validate(ArticleDto.fromEntity(article.get()));
         if (!errors.isEmpty()) {
-            log.error("Article is not invalid");
+            log.error("Article is not valid");
             throw new InvalidEntityException("L'article' n'est pas valid",
                     ErrorsCode.ARTICLE_NOT_VALID, errors);
         }

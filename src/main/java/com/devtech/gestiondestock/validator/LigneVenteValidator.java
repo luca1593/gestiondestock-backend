@@ -1,6 +1,5 @@
 package com.devtech.gestiondestock.validator;
 
-import com.devtech.gestiondestock.dto.LigneCommandeClientDto;
 import com.devtech.gestiondestock.dto.LigneVenteDto;
 
 import java.util.ArrayList;

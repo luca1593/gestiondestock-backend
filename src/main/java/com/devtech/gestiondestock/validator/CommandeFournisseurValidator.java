@@ -27,7 +27,7 @@ public class CommandeFournisseurValidator {
         if (commandeFournisseurDto.getDateCommande() == null) {
             errors.add("Veuillez renseigner la date de la commande");
         }
-        if (!StringUtils.hasLength(commandeFournisseurDto.getEtatcommande().toString())) {
+        if (commandeFournisseurDto.getEtatcommande() == null || !StringUtils.hasLength(commandeFournisseurDto.getEtatcommande().toString())) {
             errors.add("Veuillez renseigner l'etat de la commande");
         }
         if (commandeFournisseurDto.getFournisseur() == null || commandeFournisseurDto.getFournisseur().getId() == null){

@@ -26,9 +26,9 @@ public class Interceptor implements StatementInspector {
                     && StringUtils.hasLength(idEntreprise)) {
 
                 if (sql.contains("where")) {
-                    sql = sql + " and " + entityName + ".identreprise = " + idEntreprise;
+                    sql = sql + " and " + entityName + ".identreprise = " + Integer.parseInt(idEntreprise);
                 } else {
-                    sql = sql + " where " + entityName + ".identreprise = " + idEntreprise;
+                    sql = sql + " where " + entityName + ".identreprise = " + Integer.parseInt(idEntreprise);
                 }
             }
         }

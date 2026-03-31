@@ -1,7 +1,6 @@
 package com.devtech.gestiondestock.validator;
 
 import com.devtech.gestiondestock.dto.ClientDto;
-import com.devtech.gestiondestock.dto.UtilisateurDto;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;

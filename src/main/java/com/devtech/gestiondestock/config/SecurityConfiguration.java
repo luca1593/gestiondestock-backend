@@ -72,12 +72,12 @@ public class SecurityConfiguration {
         configuration.setAllowCredentials(true);
         List<String> allowedMethods = new java.util.ArrayList<>();
         allowedMethods.add(CorsConfiguration.ALL);
-        configuration.addAllowedOriginPattern(CorsConfiguration.ALL);
         configuration.setAllowedMethods(allowedMethods);
         configuration.setAllowedHeaders(allowedMethods);
-        configuration.addAllowedOrigin("http://localhost:4200");
-        configuration.addAllowedOrigin("http://localhost:4200/**");
-        configuration.addAllowedOrigin("http://www.gestion-stock.mg");
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:4200",
+                "http://www.gestion-stock.mg"
+        ));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

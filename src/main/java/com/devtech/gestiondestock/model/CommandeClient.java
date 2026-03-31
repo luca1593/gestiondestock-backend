@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "commmandClient")
+@Table(name = "commandeClient")
 public class CommandeClient extends AbstractEntity{
     @Column(name = "code")
     private String code;
@@ -30,6 +30,6 @@ public class CommandeClient extends AbstractEntity{
     Client client;
     @OneToMany(mappedBy = "commandeClient")
     private List<LigneCommandeClient> ligneCommandeClients;
-    @Column(name = "identrepeiae")
+    @Column(name = "identreprise")
     private Integer identreprise;
 }

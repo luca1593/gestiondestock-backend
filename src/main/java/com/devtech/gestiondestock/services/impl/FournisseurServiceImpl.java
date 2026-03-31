@@ -38,8 +38,8 @@ public class FournisseurServiceImpl implements FournisseurService {
     public FournisseurDto save(FournisseurDto dto) {
         List<String> errors = FournisseurValidator.validate(dto);
         if (!errors.isEmpty()){
-            log.error("Fournisseur is invalid {}");
-            throw new InvalidEntityException("L'entreprise n'est pas valide", ErrorsCode.FOURNISSEUR_NOT_VALID, errors);
+            log.error("Fournisseur is invalid: {}", dto);
+            throw new InvalidEntityException("Le fournisseur n'est pas valide", ErrorsCode.FOURNISSEUR_NOT_VALID, errors);
         }
         return FournisseurDto.fromEntity(
                 fournisseurRepository.save(FournisseurDto.toEntity(dto))
@@ -50,12 +50,12 @@ public class FournisseurServiceImpl implements FournisseurService {
     public FournisseurDto findById(Integer id) {
         if (id == null){
             log.error("Fournisseur ID is null");
-            return null;
+            throw new EntityNotFoundException("L'ID du fournisseur est null", ErrorsCode.ID_NOT_VALID);
         }
         Optional<Fournisseur> fournisseur = fournisseurRepository.findById(id);
-        return Optional.of(FournisseurDto.fromEntity(fournisseur.get())).orElseThrow(() ->
+        return fournisseur.map(FournisseurDto::fromEntity).orElseThrow(() ->
                 new EntityNotFoundException(
-                        "Aucun Fournisseur trouver avec l'id = " + id + " dans la BDD",
+                        "Aucun fournisseur trouve avec l'id = " + id + " dans la BDD",
                         ErrorsCode.FOURNISSEUR_NOT_FOUND
                 )
         );
@@ -65,12 +65,12 @@ public class FournisseurServiceImpl implements FournisseurService {
     public FournisseurDto findByNomFournisseur(String nom) {
         if (!StringUtils.hasLength(nom)){
             log.error("Fournisseur nom is null");
-            return null;
+            throw new EntityNotFoundException("Aucun fournisseur trouve avec un nom null", ErrorsCode.FOURNISSEUR_NOT_FOUND);
         }
         Optional<Fournisseur> fournisseur = fournisseurRepository.findFournisseurByNom(nom);
-        return Optional.of(FournisseurDto.fromEntity(fournisseur.get())).orElseThrow(() ->
+        return fournisseur.map(FournisseurDto::fromEntity).orElseThrow(() ->
                 new EntityNotFoundException(
-                        "Aucun Fournisseur trouver avec le nom  = " + nom + " dans la BDD",
+                        "Aucun fournisseur trouve avec le nom = " + nom + " dans la BDD",
                         ErrorsCode.FOURNISSEUR_NOT_FOUND
                 )
         );
@@ -80,13 +80,13 @@ public class FournisseurServiceImpl implements FournisseurService {
     public FournisseurDto findByEmailFournisseur(String email) {
         if (!StringUtils.hasLength(email)){
             log.error("Fournisseur email is null");
-            return null;
+            throw new EntityNotFoundException("Aucun fournisseur trouve avec un email null", ErrorsCode.FOURNISSEUR_NOT_FOUND);
         }
         Optional<Fournisseur> fournisseur = fournisseurRepository.findFournisseurByEmail(email);
-        return Optional.of(FournisseurDto.fromEntity(fournisseur.get())).orElseThrow(() ->
+        return fournisseur.map(FournisseurDto::fromEntity).orElseThrow(() ->
                 new EntityNotFoundException(
-                        "Aucun fournisseur trouver avec l'email  = " + email + " dans la BDD",
-                        ErrorsCode.ENTREPRISE_NOT_FOUND
+                        "Aucun fournisseur trouve avec l'email = " + email + " dans la BDD",
+                        ErrorsCode.FOURNISSEUR_NOT_FOUND
                 )
         );
     }
@@ -108,8 +108,8 @@ public class FournisseurServiceImpl implements FournisseurService {
         FournisseurDto dto = findById(idFournisseur);
         List<CommandeFournisseurDto> commandeFournisseurDtos = cmdFournisseur.findAllByFournisseurDto(dto);
         if (!CollectionUtils.isEmpty(commandeFournisseurDtos)) {
-            log.error("Fournisseur alredy used");
-            throw new InvalidOpperatioException("Operaton impossible : une ou plusieur commande fournisseur existe deja pour ce fournisseur",
+            log.error("Fournisseur already used");
+            throw new InvalidOpperatioException("Operation impossible : une ou plusieurs commandes fournisseur existent deja pour ce fournisseur",
                     ErrorsCode.FOURNISSEUR_ALREADY_IN_USE
             );
         }

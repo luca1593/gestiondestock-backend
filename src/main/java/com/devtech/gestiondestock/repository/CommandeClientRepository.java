@@ -12,4 +12,10 @@ public interface CommandeClientRepository extends JpaRepository<CommandeClient, 
     Optional<CommandeClient> findCommandeClientByCode(String code);
     List<CommandeClient> findAllByDateCommande(Instant dateCommade);
     List<CommandeClient> findAllByClient(Client client);
+
+    List<CommandeClient> findByEtatcommande(com.devtech.gestiondestock.model.EtatCommande etat);
+
+    List<CommandeClient> findByCodeContainingIgnoreCase(String code);
+
+    List<CommandeClient> findByDateCommandeBetween(Instant debut, Instant fin);
 }

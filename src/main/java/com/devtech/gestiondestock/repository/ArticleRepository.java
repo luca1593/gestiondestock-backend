@@ -13,4 +13,10 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
     Optional<Article> findArticleByCodeArticle(String code);
 
     List<Article> findAllByCategoryId(Integer idCategory);
+
+    List<Article> findByDesignationContainingIgnoreCase(String designation);
+
+    List<Article> findByCodeArticleContainingIgnoreCase(String code);
+
+    List<Article> findByDesignationContainingIgnoreCaseOrCodeArticleContainingIgnoreCase(String designation, String code);
 }
