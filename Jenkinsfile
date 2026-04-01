@@ -90,12 +90,8 @@ pipeline {
                 echo "Deploying with docker compose..."
                 sh '''
                     docker compose down || true
-                    docker compose up -d mysql
-                    echo "Waiting for MySQL to start (60 seconds)..."
-                    sleep 60
-                    echo "MySQL should be ready, starting backend..."
-                    docker compose up -d backend
-                    echo "Backend container started, waiting for application..."
+                    docker compose up -d
+                    echo "All containers started, waiting for application..."
                 '''
             }
             post {
