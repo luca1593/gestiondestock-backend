@@ -66,7 +66,7 @@ services:
       MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
       MAIL_PORT: ${MAIL_PORT:-587}
       MAIL_USERNAME: ${MAIL_USERNAME:-mpiasaorange@gmail.com}
-      MAIL_PASSWORD: ${MAIL_PASSWORD:-Just\$Me12}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-JustMe12}
       SWAGGER_ENABLED: ${SWAGGER_ENABLED:-true}
       SHOW_HEALTH_DETAILS: ${SHOW_HEALTH_DETAILS:-true}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:4200,http://localhost:8085}
