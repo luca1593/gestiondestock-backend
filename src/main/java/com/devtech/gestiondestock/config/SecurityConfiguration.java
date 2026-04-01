@@ -2,6 +2,7 @@ package com.devtech.gestiondestock.config;
 
 import com.devtech.gestiondestock.services.auth.ApplicationUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,11 +19,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author luca
- */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -33,6 +32,9 @@ public class SecurityConfiguration {
     @Autowired
     private ApplicationRequestFilter applicationRequestFilter;
 
+    @Value("${cors.allowed-origins:http://localhost:4200,http://localhost:8085,http://gestion-stock.mg}")
+    private List<String> allowedOrigins;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.getSharedObject(AuthenticationManagerBuilder.class)
@@ -42,11 +44,12 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(
-                                "/**/authenticate", "/**/entreprise/create", "/v2/api-docs",
-                                "/swagger-resources", "/swagger-resources/**", "/swagger-ui",
-                                "/configuration/security", "/configuration/ui", "/**/swagger-ui.html",
-                                "/webjars/**", "/**/springfox-swagger-ui.html", "/**/springfox-swagger-ui/**",
-                                "/v3/api-docs/**", "/swagger-ui/**"
+                                "/**/authenticate", "/**/entreprise/create",
+                                "/v2/api-docs", "/v3/api-docs/**",
+                                "/swagger-resources/**", "/swagger-ui/**", "/swagger-ui.html",
+                                "/webjars/**",
+                                "/actuator/**", "/health/**",
+                                "/error"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
@@ -70,14 +73,11 @@ public class SecurityConfiguration {
     public CorsConfigurationSource configurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        List<String> allowedMethods = new java.util.ArrayList<>();
-        allowedMethods.add(CorsConfiguration.ALL);
-        configuration.setAllowedMethods(allowedMethods);
-        configuration.setAllowedHeaders(allowedMethods);
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:4200",
-                "http://www.gestion-stock.mg"
-        ));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+        configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

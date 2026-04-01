@@ -89,10 +89,11 @@ pipeline {
             steps {
                 echo "Deploying with docker compose..."
                 sh '''
+                    cp .env.example .env 2>/dev/null || true
                     docker compose down || true
                     docker compose up -d mysql
                     echo "Waiting for MySQL to be ready..."
-                    sleep 15
+                    sleep 30
                     docker compose up -d --build backend
                 '''
             }
