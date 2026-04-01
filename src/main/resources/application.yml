@@ -54,7 +54,7 @@ management:
         include: health,info,metrics
   endpoint:
     health:
-      show-details: ${SHOW_HEALTH_DETAILS:true}
+      show-details: ${SHOW_HEALTH_DETAILS:when_authorized}
       probes:
         enabled: true
 
