@@ -8,21 +8,6 @@ pipeline {
         BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d_%H%M%S', returnStdout: true).trim()
         DOCKER_REGISTRY = ''
         COMPOSE_PROJECT_NAME = 'gestiondestock'
-        
-        // Credentials from Jenkins (configure in Jenkins credentials)
-        DB_HOST = 'mysql'
-        DB_PORT = '3307'
-        DB_NAME = 'gestiondestock'
-        DB_USERNAME = credentials('DB_USERNAME')
-        DB_PASSWORD = credentials('DB_PASSWORD')
-        JWT_SECRET_KEY = credentials('JWT_SECRET_KEY')
-        FLICKR_API_KEY = credentials('FLICKR_API_KEY')
-        FLICKR_API_SECRET = credentials('FLICKR_API_SECRET')
-        FLICKR_APP_KEY = credentials('FLICKR_APP_KEY')
-        FLICKR_APP_SECRET = credentials('FLICKR_APP_SECRET')
-        MAIL_USERNAME = credentials('MAIL_USERNAME')
-        MAIL_PASSWORD = credentials('MAIL_PASSWORD')
-        MYSQL_ROOT_PASSWORD = credentials('MYSQL_ROOT_PASSWORD')
     }
 
     stages {
@@ -137,9 +122,9 @@ pipeline {
                 sh '''
                     echo "Waiting for backend to start..."
                     for i in {1..60}; do
-                        if curl -sf http://localhost:8085/actuator/health > /dev/null 2>&1; then
+                        if wget -qO- http://localhost:8085/actuator/health > /dev/null 2>&1; then
                             echo "Application is healthy!"
-                            curl -s http://localhost:8085/actuator/health
+                            wget -qO- http://localhost:8085/actuator/health
                             exit 0
                         fi
                         CONTAINER_STATUS=$(docker compose ps backend 2>/dev/null | tail -1 | awk '{print $4}' || echo "unknown")
