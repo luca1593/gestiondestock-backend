@@ -71,6 +71,9 @@ flickr:
   appKey: ${FLICKR_APP_KEY:demo}
   appSecret: ${FLICKR_APP_SECRET:demo}
 
+jwt:
+  secret: ${JWT_SECRET_KEY:a3f8b2c7d1e9f4a5b6c8d2e7f3a9b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0}
+
 logging:
   level:
     root: INFO

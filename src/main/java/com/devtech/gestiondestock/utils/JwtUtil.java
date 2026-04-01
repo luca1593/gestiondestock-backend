@@ -4,6 +4,7 @@ import com.devtech.gestiondestock.model.auth.ExtendedUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +18,12 @@ import java.util.function.Function;
 @Service
 public class JwtUtil {
     private static final long EXPIRATION_TIME = 1000 * 60 * 30;
-    private final SecretKey SECRET_KEY;
 
-    public JwtUtil() {
-        String secret = System.getenv("JWT_SECRET_KEY");
-        if (secret == null || secret.isEmpty()) {
-            throw new IllegalStateException("JWT_SECRET_KEY environment variable must be set");
-        }
-        this.SECRET_KEY = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    @Value("${jwt.secret:a3f8b2c7d1e9f4a5b6c8d2e7f3a9b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0}")
+    private String secretString;
+
+    private SecretKey getSecretKey() {
+        return Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
     }
 
     public String extractUsername(String token) {
@@ -47,7 +46,7 @@ public class JwtUtil {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .verifyWith(SECRET_KEY)
+                .verifyWith(getSecretKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -69,7 +68,7 @@ public class JwtUtil {
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .claim("identreprise", userDetails.getIdEntreprise().toString())
-                .signWith(SECRET_KEY)
+                .signWith(getSecretKey())
                 .compact();
     }
 
