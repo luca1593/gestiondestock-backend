@@ -4,6 +4,8 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
+  main:
+    allow-circular-references: true
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -12,3 +14,53 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
+  mail:
+    host: localhost
+    port: 25
+    username: test@test.com
+    password: testpass
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8085
+  error:
+    whitelabel:
+      enabled: false
+
+cors:
+  allowed-origins: http://localhost:4200
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
+flickr:
+  apiKey: testkey
+  apiSecret: testsecret
+  appKey: testappkey
+  appSecret: testappsecret
+
+jwt:
+  secret: testSecretKeyForUnitTestsOnlyDoNotUseInProductionEnvironment1234567890
+
+logging:
+  level:
+    root: INFO
+    com.devtech.gestiondestock: INFO
