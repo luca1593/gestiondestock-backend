@@ -91,6 +91,8 @@ services:
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       SPRING_PROFILES_ACTIVE: prod
+      SWAGGER_ENABLED: false
+      SHOW_HEALTH_DETAILS: false
     expose:
       - "8085"
     depends_on:

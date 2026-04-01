@@ -1,0 +1,13 @@
+spring:
+  webmvc:
+    cors:
+      allowed-origins: "http://www.gestion-stock.mg"
+
+management:
+  endpoint:
+    health:
+      show-details: false
+
+springdoc:
+  swagger-ui:
+    enabled: false

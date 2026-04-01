@@ -6,10 +6,10 @@ services:
     container_name: gestiondestock-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: gestiondestock
-      MYSQL_USER: luca
-      MYSQL_PASSWORD: luca1593
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - "3307:3307"
     volumes:
@@ -29,8 +29,8 @@ services:
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3307
-      PMA_USER: luca
-      PMA_PASSWORD: luca1593
+      PMA_USER: ${DB_USERNAME}
+      PMA_PASSWORD: ${DB_PASSWORD}
     ports:
       - "8081:82"
     depends_on:
@@ -49,20 +49,23 @@ services:
     container_name: gestiondestock-backend
     restart: always
     environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-default}
       DB_HOST: mysql
       DB_PORT: 3307
       DB_NAME: gestiondestock
-      DB_USERNAME: luca
-      DB_PASSWORD: luca1593
-      JWT_SECRET_KEY: a3f8b2c7d1e9f4a5b6c8d2e7f3a9b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0
-      FLICKR_API_KEY: your_flickr_api_key
-      FLICKR_API_SECRET: your_flickr_api_secret
-      FLICKR_APP_KEY: your_flickr_app_key
-      FLICKR_APP_SECRET: your_flickr_app_secret
-      MAIL_HOST: smtp.gmail.com
-      MAIL_PORT: 587
-      MAIL_USERNAME: gestion-stock@dev-tech.com
-      MAIL_PASSWORD: your_mail_password
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      FLICKR_API_KEY: ${FLICKR_API_KEY}
+      FLICKR_API_SECRET: ${FLICKR_API_SECRET}
+      FLICKR_APP_KEY: ${FLICKR_APP_KEY}
+      FLICKR_APP_SECRET: ${FLICKR_APP_SECRET}
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-true}
+      SHOW_HEALTH_DETAILS: ${SHOW_HEALTH_DETAILS:-false}
     ports:
       - "8085:8080"
     depends_on:
