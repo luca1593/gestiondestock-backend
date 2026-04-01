@@ -39,7 +39,7 @@ pipeline {
             post {
                 success {
                     echo "Build successful"
-                    archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
+                    archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
                 }
                 failure {
                     echo "Build failed!"
@@ -114,7 +114,7 @@ pipeline {
                 sh '''
                     MAX_RETRIES=30
                     RETRY_COUNT=0
-                    until curl -f http://localhost:8085/swagger-ui.html || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
+                    until curl -f http://localhost:8085/actuator/health || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
                         echo "Waiting for application to start... ($((RETRY_COUNT+1))/$MAX_RETRIES)"
                         sleep 5
                         RETRY_COUNT=$((RETRY_COUNT+1))

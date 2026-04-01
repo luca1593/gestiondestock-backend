@@ -23,7 +23,7 @@ WORKDIR /app
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-COPY --from=build /app/target/gestiondestock.war app.war
+COPY --from=build /app/target/gestiondestock.jar app.jar
 
 RUN chown -R appuser:appgroup /app
 
@@ -35,4 +35,4 @@ ENV DB_HOST=mysql
 ENV DB_PORT=3307
 ENV DB_NAME=gestiondestock
 
-ENTRYPOINT ["java", "-jar", "app.war"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
