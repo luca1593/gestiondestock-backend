@@ -91,13 +91,13 @@ pipeline {
                 sh '''
                     docker compose down || true
                     docker compose up -d mysql
-                    echo "Waiting for MySQL to be ready..."
-                    for i in {1..30}; do
-                        if docker compose exec -T mysql mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD} --silent 2>/dev/null; then
+                    echo "Waiting for MySQL to be ready (up to 120 seconds)..."
+                    for i in {1..60}; do
+                        if docker compose exec -T mysql mysqladmin ping -h localhost -uroot -p${MYSQL_ROOT_PASSWORD:-rootpassword} --silent 2>/dev/null; then
                             echo "MySQL is ready!"
                             break
                         fi
-                        echo "Waiting for MySQL... ($i/30)"
+                        echo "Waiting for MySQL... ($i/60)"
                         sleep 2
                     done
                     docker compose up -d backend
@@ -111,6 +111,7 @@ pipeline {
                 failure {
                     echo "Deployment failed!"
                     sh 'docker compose logs backend || true'
+                    sh 'docker compose logs mysql || true'
                     error "Deploy stage failed"
                 }
             }
