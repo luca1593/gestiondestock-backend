@@ -87,13 +87,13 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo "Deploying with docker-compose..."
+                echo "Deploying with docker compose..."
                 sh '''
-                    docker-compose down || true
-                    docker-compose up -d mysql
+                    docker compose down || true
+                    docker compose up -d mysql
                     echo "Waiting for MySQL to be ready..."
                     sleep 15
-                    docker-compose up -d --build backend
+                    docker compose up -d --build backend
                 '''
             }
             post {
@@ -102,7 +102,7 @@ pipeline {
                 }
                 failure {
                     echo "Deployment failed!"
-                    sh 'docker-compose logs backend'
+                    sh 'docker compose logs backend'
                     error "Deploy stage failed"
                 }
             }
@@ -121,7 +121,7 @@ pipeline {
                     done
                     if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
                         echo "Application failed to start within timeout"
-                        docker-compose logs backend
+                        docker compose logs backend
                         exit 1
                     fi
                     echo "Application is running!"
