@@ -91,15 +91,9 @@ pipeline {
                 sh '''
                     docker compose down || true
                     docker compose up -d mysql
-                    echo "Waiting for MySQL to be ready (up to 120 seconds)..."
-                    for i in {1..60}; do
-                        if docker compose exec -T mysql mysqladmin ping -h localhost -uroot -p${MYSQL_ROOT_PASSWORD:-rootpassword} --silent 2>/dev/null; then
-                            echo "MySQL is ready!"
-                            break
-                        fi
-                        echo "Waiting for MySQL... ($i/60)"
-                        sleep 2
-                    done
+                    echo "Waiting for MySQL to start (60 seconds)..."
+                    sleep 60
+                    echo "MySQL should be ready, starting backend..."
                     docker compose up -d backend
                     echo "Backend container started, waiting for application..."
                 '''
