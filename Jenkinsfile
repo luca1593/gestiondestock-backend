@@ -89,8 +89,8 @@ pipeline {
             steps {
                 echo "Deploying with docker compose..."
                 sh '''
-                    docker compose down || true
-                    docker compose up -d
+                    docker compose -f down || true
+                    docker compose -f up -d
                     echo "All containers started, waiting for application..."
                 '''
             }
