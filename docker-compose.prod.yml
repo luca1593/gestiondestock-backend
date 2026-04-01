@@ -92,7 +92,7 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       SPRING_PROFILES_ACTIVE: prod
     expose:
-      - "8080"
+      - "8085"
     depends_on:
       mysql:
         condition: service_healthy
@@ -108,7 +108,7 @@ services:
           cpus: '1.0'
           memory: 1G
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8085/actuator/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5

@@ -29,7 +29,7 @@ RUN chown -R appuser:appgroup /app
 
 USER appuser
 
-EXPOSE 8080
+EXPOSE 8085
 
 ENV DB_USERNAME=luca
 ENV DB_PASSWORD=luca1593

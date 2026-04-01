@@ -64,7 +64,7 @@ services:
       MAIL_USERNAME: gestion-stock@dev-tech.com
       MAIL_PASSWORD: your_mail_password
     ports:
-      - "8080:8080"
+      - "8085:8080"
     depends_on:
       mysql:
         condition: service_healthy
