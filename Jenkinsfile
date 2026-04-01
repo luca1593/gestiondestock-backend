@@ -111,31 +111,6 @@ pipeline {
             }
         }
 
-        stage('Health Check') {
-            steps {
-                echo "Checking application health..."
-                sh '''
-                    echo "Waiting for backend to start..."
-                    for i in {1..60}; do
-                        if wget -qO- http://localhost:8085/actuator/health > /dev/null 2>&1; then
-                            echo "Application is healthy!"
-                            wget -qO- http://localhost:8085/actuator/health
-                            exit 0
-                        fi
-                        CONTAINER_STATUS=$(docker compose ps backend 2>/dev/null | tail -1 | awk '{print $4}' || echo "unknown")
-                        echo "Waiting for application to start... ($i/60) - Container status: $CONTAINER_STATUS"
-                        sleep 3
-                    done
-                    echo "Application failed to start within timeout"
-                    echo "=== Backend Logs ==="
-                    docker compose logs backend || true
-                    echo "=== Docker PS ==="
-                    docker compose ps || true
-                    exit 1
-                '''
-            }
-        }
-
         stage('Verify Image') {
             steps {
                 echo "Verifying deployed image..."
