@@ -8,6 +8,21 @@ pipeline {
         BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d_%H%M%S', returnStdout: true).trim()
         DOCKER_REGISTRY = ''
         COMPOSE_PROJECT_NAME = 'gestiondestock'
+        
+        // Credentials from Jenkins (configure in Jenkins credentials)
+        DB_HOST = 'mysql'
+        DB_PORT = '3307'
+        DB_NAME = 'gestiondestock'
+        DB_USERNAME = credentials('DB_USERNAME')
+        DB_PASSWORD = credentials('DB_PASSWORD')
+        JWT_SECRET_KEY = credentials('JWT_SECRET_KEY')
+        FLICKR_API_KEY = credentials('FLICKR_API_KEY')
+        FLICKR_API_SECRET = credentials('FLICKR_API_SECRET')
+        FLICKR_APP_KEY = credentials('FLICKR_APP_KEY')
+        FLICKR_APP_SECRET = credentials('FLICKR_APP_SECRET')
+        MAIL_USERNAME = credentials('MAIL_USERNAME')
+        MAIL_PASSWORD = credentials('MAIL_PASSWORD')
+        MYSQL_ROOT_PASSWORD = credentials('MYSQL_ROOT_PASSWORD')
     }
 
     stages {
@@ -89,12 +104,19 @@ pipeline {
             steps {
                 echo "Deploying with docker compose..."
                 sh '''
-                    cp .env.example .env 2>/dev/null || true
                     docker compose down || true
                     docker compose up -d mysql
                     echo "Waiting for MySQL to be ready..."
-                    sleep 30
-                    docker compose up -d --build backend
+                    for i in {1..30}; do
+                        if docker compose exec -T mysql mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD} --silent 2>/dev/null; then
+                            echo "MySQL is ready!"
+                            break
+                        fi
+                        echo "Waiting for MySQL... ($i/30)"
+                        sleep 2
+                    done
+                    docker compose up -d backend
+                    echo "Backend container started, waiting for application..."
                 '''
             }
             post {
@@ -103,7 +125,7 @@ pipeline {
                 }
                 failure {
                     echo "Deployment failed!"
-                    sh 'docker compose logs backend'
+                    sh 'docker compose logs backend || true'
                     error "Deploy stage failed"
                 }
             }
@@ -113,19 +135,23 @@ pipeline {
             steps {
                 echo "Checking application health..."
                 sh '''
-                    MAX_RETRIES=30
-                    RETRY_COUNT=0
-                    until curl -f http://localhost:8085/actuator/health || [ $RETRY_COUNT -eq $MAX_RETRIES ]; do
-                        echo "Waiting for application to start... ($((RETRY_COUNT+1))/$MAX_RETRIES)"
-                        sleep 5
-                        RETRY_COUNT=$((RETRY_COUNT+1))
+                    echo "Waiting for backend to start..."
+                    for i in {1..60}; do
+                        if curl -sf http://localhost:8085/actuator/health > /dev/null 2>&1; then
+                            echo "Application is healthy!"
+                            curl -s http://localhost:8085/actuator/health
+                            exit 0
+                        fi
+                        CONTAINER_STATUS=$(docker compose ps backend 2>/dev/null | tail -1 | awk '{print $4}' || echo "unknown")
+                        echo "Waiting for application to start... ($i/60) - Container status: $CONTAINER_STATUS"
+                        sleep 3
                     done
-                    if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
-                        echo "Application failed to start within timeout"
-                        docker compose logs backend
-                        exit 1
-                    fi
-                    echo "Application is running!"
+                    echo "Application failed to start within timeout"
+                    echo "=== Backend Logs ==="
+                    docker compose logs backend || true
+                    echo "=== Docker PS ==="
+                    docker compose ps || true
+                    exit 1
                 '''
             }
         }
@@ -138,6 +164,8 @@ pipeline {
                     docker inspect --format='{{.Config.Image}}' gestiondestock-backend || true
                     echo "Available images:"
                     docker images ${IMAGE_NAME}
+                    echo "Container status:"
+                    docker compose ps
                 """
             }
         }
