@@ -14,12 +14,6 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - gestiondestock-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
-      interval: 15s
-      timeout: 10s
-      retries: 20
-      start_period: 60s
 
   phpmyadmin:
     image: phpmyadmin:latest
@@ -72,16 +66,9 @@ services:
     ports:
       - "8085:8085"
     depends_on:
-      mysql:
-        condition: service_healthy
+      - mysql
     networks:
       - gestiondestock-network
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8085/actuator/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 90s
 
 volumes:
   mysql_data:
