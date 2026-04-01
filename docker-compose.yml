@@ -32,7 +32,7 @@ services:
       PMA_USER: luca
       PMA_PASSWORD: luca1593
     ports:
-      - "8081:80"
+      - "8081:82"
     depends_on:
       - mysql
     networks:
