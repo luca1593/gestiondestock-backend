@@ -34,7 +34,7 @@ services:
       PMA_USER: ${DB_USERNAME:-luca}
       PMA_PASSWORD: ${DB_PASSWORD:-luca1593}
     ports:
-      - "8084:80"
+      - "8087:80"
     depends_on:
       - mysql
     networks:
