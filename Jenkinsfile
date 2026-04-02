@@ -125,9 +125,5 @@ EOF
             docker compose logs mysql || true
             '''
         }
-
-        always {
-            cleanWs()
-        }
     }
 }
