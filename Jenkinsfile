@@ -4,13 +4,12 @@ pipeline {
     environment {
         APP_NAME = 'gestiondestock-backend'
         IMAGE_NAME = 'gestiondestock-backend'
-        IMAGE_TAG = "${env.BUILD_NUMBER ?: 'latest'}"
-        BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d_%H%M%S', returnStdout: true).trim()
-        DOCKER_REGISTRY = ''
+        IMAGE_TAG = "${BUILD_NUMBER}"
         COMPOSE_PROJECT_NAME = 'gestiondestock'
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -18,19 +17,37 @@ pipeline {
             }
         }
 
-        stage('Clean Old Images') {
+        stage('Verify Docker') {
             steps {
-                echo "Cleaning old Docker images to free space..."
+                echo "Checking Docker installation..."
                 sh '''
-                    docker image prune -f
-                    docker images "${IMAGE_NAME}" --format "{{.ID}}" | tail -n +6 | xargs -r docker rmi -f 2>/dev/null || true
+                    docker --version
+                    docker compose version
                 '''
             }
         }
 
-        stage('Build') {
+        stage('Clean Old Containers') {
             steps {
-                echo "Building the application..."
+                echo "Stopping old containers..."
+                sh '''
+                    docker compose down || true
+                '''
+            }
+        }
+
+        stage('Clean Old Images') {
+            steps {
+                echo "Cleaning old Docker images..."
+                sh '''
+                    docker image prune -f
+                '''
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                echo "Building Spring Boot application..."
                 sh '''
                     chmod +x mvnw
                     ./mvnw clean package -DskipTests
@@ -38,100 +55,75 @@ pipeline {
             }
             post {
                 success {
-                    echo "Build successful"
                     archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
-                }
-                failure {
-                    echo "Build failed!"
-                    error "Build stage failed"
                 }
             }
         }
 
-        stage('Test') {
+        stage('Run Tests') {
             steps {
                 echo "Running tests..."
                 sh './mvnw test'
             }
             post {
                 always {
-                    junit '**/target/surefire-reports/TEST-*.xml'
+                    junit '**/target/surefire-reports/*.xml'
                 }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo "Building Docker image with latest changes..."
+                echo "Building Docker image..."
                 sh """
                     docker build \
-                        --no-cache \
-                        --build-arg BUILD_DATE=${BUILD_TIMESTAMP} \
-                        --build-arg BUILD_VERSION=${IMAGE_TAG} \
-                        -t ${IMAGE_NAME}:${IMAGE_TAG} \
-                        -t ${IMAGE_NAME}:latest \
-                        .
+                    --no-cache \
+                    -t ${IMAGE_NAME}:${IMAGE_TAG} \
+                    -t ${IMAGE_NAME}:latest \
+                    .
                 """
-            }
-            post {
-                success {
-                    echo "Docker image built successfully: ${IMAGE_NAME}:${IMAGE_TAG}"
-                    sh "docker images ${IMAGE_NAME}"
-                }
-                failure {
-                    echo "Docker image build failed!"
-                    error "Docker build stage failed"
-                }
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Application') {
             steps {
-                echo "Deploying with docker compose..."
+                echo "Starting containers with docker compose..."
+
                 sh '''
-                    docker compose down || true
-                    docker compose up -d
-                    echo "All containers started, waiting for application..."
+                    docker compose up -d --build
                 '''
             }
-            post {
-                success {
-                    echo "Application deployed successfully"
-                }
-                failure {
-                    echo "Deployment failed!"
-                    sh 'docker compose logs backend || true'
-                    sh 'docker compose logs mysql || true'
-                    error "Deploy stage failed"
-                }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                echo "Checking running containers..."
+
+                sh '''
+                    docker compose ps
+                    docker logs gestiondestock-backend --tail 50 || true
+                '''
             }
         }
 
-        stage('Verify Image') {
-            steps {
-                echo "Verifying deployed image..."
-                sh """
-                    echo "Running container image:"
-                    docker inspect --format='{{.Config.Image}}' gestiondestock-backend || true
-                    echo "Available images:"
-                    docker images ${IMAGE_NAME}
-                    echo "Container status:"
-                    docker compose ps
-                """
-            }
-        }
     }
 
     post {
-        always {
-            echo "Cleaning up workspace..."
-            cleanWs()
-        }
+
         success {
-            echo "Pipeline completed successfully!"
+            echo "Pipeline completed successfully"
         }
+
         failure {
-            echo "Pipeline failed!"
+            echo "Pipeline failed - showing logs"
+            sh '''
+                docker compose logs backend || true
+                docker compose logs mysql || true
+            '''
+        }
+
+        always {
+            cleanWs()
         }
     }
 }
