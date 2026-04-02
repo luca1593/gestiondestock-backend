@@ -5,7 +5,6 @@ pipeline {
         APP_NAME = 'gestiondestock-backend'
         IMAGE_NAME = 'gestiondestock-backend'
         IMAGE_TAG = "${BUILD_NUMBER}"
-        COMPOSE_PROJECT_NAME = 'gestiondestock'
     }
 
     stages {
@@ -13,112 +12,117 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                echo "Source code checked out successfully"
+                echo "Source code downloaded"
             }
         }
 
         stage('Verify Docker') {
             steps {
-                echo "Checking Docker installation..."
                 sh '''
-                    docker --version
-                    docker compose version
+                docker --version
+                docker compose version
                 '''
             }
         }
 
-        stage('Clean Old Containers') {
+        stage('Create ENV File') {
             steps {
-                echo "Stopping old containers..."
+                echo "Creating .env file"
+
                 sh '''
-                    docker compose down || true
+cat <<EOF > .env
+SPRING_PROFILES_ACTIVE=prod
+
+MYSQL_ROOT_PASSWORD=rootpassword
+DB_NAME=gestiondestock
+DB_USERNAME=luca
+DB_PASSWORD=luca1593
+
+JWT_SECRET_KEY=+ORJQdAuRJgWSiRMu+3Sq401f0pUMajBZwVRYwno5fiiTp4vxJ42Aiou2tUQipxLknqtEVFStKVB/m9TjJxdPg==
+
+FLICKR_API_KEY=abc11f1e268d908eeee176297269c001
+FLICKR_API_SECRET=50a8ae15b4224302
+FLICKR_APP_KEY=72157720855398857-f67e55f056acdd0d
+FLICKR_APP_SECRET=2ba345379070ffc8
+
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=mpiasaorange@gmail.com
+MAIL_PASSWORD=JustMe12
+
+SWAGGER_ENABLED=false
+SHOW_HEALTH_DETAILS=false
+
+BUILD_DATE=latest
+BUILD_VERSION=latest
+
+WATCHTOWER_NOTIFICATION_URL=
+EOF
                 '''
             }
         }
 
-        stage('Clean Old Images') {
+        stage('Stop Old Containers') {
             steps {
-                echo "Cleaning old Docker images..."
                 sh '''
-                    docker image prune -f
+                docker compose down || true
                 '''
             }
         }
 
-        stage('Build Application') {
+        stage('Build Spring Boot') {
             steps {
-                echo "Building Spring Boot application..."
                 sh '''
-                    chmod +x mvnw
-                    ./mvnw clean package -DskipTests
+                chmod +x mvnw
+                ./mvnw clean package -DskipTests
                 '''
-            }
-            post {
-                success {
-                    archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
-                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                echo "Running tests..."
                 sh './mvnw test'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo "Building Docker image..."
-                sh """
-                    docker build \
-                    --no-cache \
-                    -t ${IMAGE_NAME}:${IMAGE_TAG} \
-                    -t ${IMAGE_NAME}:latest \
-                    .
-                """
+                sh '''
+                docker build --no-cache -t gestiondestock-backend:latest .
+                '''
             }
         }
 
         stage('Deploy Application') {
             steps {
-                echo "Starting containers with docker compose..."
-
                 sh '''
-                    docker compose up -d --build
+                docker compose up -d --build
                 '''
             }
         }
 
         stage('Verify Deployment') {
             steps {
-                echo "Checking running containers..."
-
                 sh '''
-                    docker compose ps
-                    docker logs gestiondestock-backend --tail 50 || true
+                docker compose ps
+                docker logs gestiondestock-backend --tail 50 || true
                 '''
             }
         }
-
     }
 
     post {
 
         success {
-            echo "Pipeline completed successfully"
+            echo "Application deployed successfully"
         }
 
         failure {
-            echo "Pipeline failed - showing logs"
+            echo "Deployment failed"
+
             sh '''
-                docker compose logs backend || true
-                docker compose logs mysql || true
+            docker compose logs backend || true
+            docker compose logs mysql || true
             '''
         }
 
