@@ -62,10 +62,25 @@ EOF
             }
         }
 
+        stage('Setup SSL Certificates') {
+            steps {
+                sh '''
+                mkdir -p nginx/ssl
+                if [ ! -f nginx/ssl/fullchain.pem ] || [ ! -f nginx/ssl/privkey.pem ]; then
+                    echo "Generating self-signed SSL certificates..."
+                    chmod +x nginx/ssl/generate-ssl.sh
+                    ./nginx/ssl/generate-ssl.sh localhost
+                else
+                    echo "SSL certificates already exist"
+                fi
+                '''
+            }
+        }
+
         stage('Stop Old Containers') {
             steps {
                 sh '''
-                docker compose down || true
+                docker compose -f docker-compose.prod.yml down || true
                 '''
             }
         }
@@ -96,7 +111,8 @@ EOF
         stage('Deploy Application') {
             steps {
                 sh '''
-                docker compose up -d --build
+                docker compose -f docker-compose.prod.yml down || true
+                docker compose -f docker-compose.prod.yml up -d --build
                 '''
             }
         }
@@ -104,8 +120,20 @@ EOF
         stage('Verify Deployment') {
             steps {
                 sh '''
-                docker compose ps
-                docker logs gestiondestock-backend --tail 50 || true
+                docker compose -f docker-compose.prod.yml ps
+                docker logs gestiondestock-backend --tail 100 || true
+                sleep 30
+                echo "Checking application health..."
+                for i in 1 2 3 4 5; do
+                    if curl -k -s https://localhost/actuator/health | grep -q "UP"; then
+                        echo "Application is healthy and accessible"
+                        exit 0
+                    fi
+                    echo "Waiting for application... attempt $i/5"
+                    sleep 10
+                done
+                echo "Application health check failed"
+                exit 1
                 '''
             }
         }
@@ -121,8 +149,9 @@ EOF
             echo "Deployment failed"
 
             sh '''
-            docker compose logs backend || true
-            docker compose logs mysql || true
+            docker compose -f docker-compose.prod.yml logs backend || true
+            docker compose -f docker-compose.prod.yml logs mysql || true
+            docker compose -f docker-compose.prod.yml logs nginx || true
             '''
         }
     }
