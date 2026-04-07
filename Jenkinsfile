@@ -62,21 +62,6 @@ EOF
             }
         }
 
-        stage('Setup SSL Certificates') {
-            steps {
-                sh '''
-                mkdir -p nginx/ssl
-                if [ ! -f nginx/ssl/fullchain.pem ] || [ ! -f nginx/ssl/privkey.pem ]; then
-                    echo "Generating self-signed SSL certificates..."
-                    chmod +x nginx/ssl/generate-ssl.sh
-                    ./nginx/ssl/generate-ssl.sh localhost
-                else
-                    echo "SSL certificates already exist"
-                fi
-                '''
-            }
-        }
-
         stage('Stop Old Containers') {
             steps {
                 sh '''
@@ -125,7 +110,7 @@ EOF
                 sleep 30
                 echo "Checking application health..."
                 for i in 1 2 3 4 5; do
-                    if curl -k -s https://localhost/actuator/health | grep -q "UP"; then
+                    if curl -s http://localhost/actuator/health | grep -q "UP"; then
                         echo "Application is healthy and accessible"
                         exit 0
                     fi
