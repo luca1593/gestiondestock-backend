@@ -9,10 +9,16 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
   endpoint:
     health:
-      show-details: false
+      show-details: ${SHOW_HEALTH_DETAILS:ALWAYS}
+      probes:
+        enabled: true
 
 springdoc:
   swagger-ui:
-    enabled: false
+    enabled: true
