@@ -1,3 +1,11 @@
+volumes:
+  mysql_data:
+    name: db_gstk
+
+networks:
+  app-network:  # Réseau unique pour tous les services
+    driver: bridge
+
 services:
   mysql:
     image: mysql:lts
@@ -13,7 +21,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - backend-network # Réseau unique
+      - app-network # Réseau unique
     deploy:
       resources:
         limits:
@@ -103,7 +111,7 @@ services:
       mysql:
         condition: service_healthy
     networks:
-      - backend-network # Réseau unique
+      - app-network # Réseau unique
     deploy:
       resources:
         limits:
@@ -137,7 +145,7 @@ services:
     depends_on:
       - backend
     networks:
-      - backend-network # Réseau unique
+      - app-network # Réseau unique
     deploy:
       resources:
         limits:
@@ -167,11 +175,3 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
-
-volumes:
-  mysql_data:
-    name: db_gstk
-
-networks:
-  app-network:  # Réseau unique pour tous les services
-    driver: bridge
