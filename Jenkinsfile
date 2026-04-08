@@ -5,6 +5,8 @@ pipeline {
         APP_NAME = 'gestiondestock-backend'
         IMAGE_NAME = 'gestiondestock-backend'
         IMAGE_TAG = "${BUILD_NUMBER}"
+        // Variables pour Docker BuildKit et DNS
+        DOCKER_BUILDKIT = '0'  // Désactiver BuildKit pour éviter les problèmes DNS
     }
 
     stages {
@@ -65,7 +67,7 @@ EOF
         stage('Stop Old Containers') {
             steps {
                 sh '''
-                docker compose -f docker-compose.prod.yml down || true
+                docker compose -f docker-compose.prod.yml down  --remove-orphans || true
                 '''
             }
         }
@@ -83,12 +85,18 @@ EOF
             steps {
                 sh './mvnw test'
             }
+            post {
+               always {
+                   junit '**/target/surefire-reports/*.xml'  // Publier les résultats des tests
+               }
+            }
         }
 
         stage('Build Docker Image') {
             steps {
                 sh '''
-                docker build --no-cache -t gestiondestock-backend:latest .
+                docker build --no-cache --network=host -t ${IMAGE_NAME}:latest .
+                docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${IMAGE_TAG}
                 '''
             }
         }
@@ -96,30 +104,36 @@ EOF
         stage('Deploy Application') {
             steps {
                 sh '''
-                docker compose -f docker-compose.prod.yml down || true
-                docker compose -f docker-compose.prod.yml up -d --build
+                docker compose -f docker-compose.prod.yml down --remove-orphans || true
+                docker compose -f docker-compose.prod.yml up -d --build --force-recreate
                 '''
             }
         }
 
         stage('Verify Deployment') {
             steps {
-                sh '''
-                docker compose -f docker-compose.prod.yml ps
-                docker logs gestiondestock-backend --tail 100 || true
-                sleep 30
-                echo "Checking application health..."
-                for i in 1 2 3 4 5; do
-                    if curl -s http://localhost/actuator/health | grep -q "UP"; then
-                        echo "Application is healthy and accessible"
-                        exit 0
-                    fi
-                    echo "Waiting for application... attempt $i/5"
-                    sleep 10
-                done
-                echo "Application health check failed"
-                exit 1
-                '''
+                script {
+                    sh '''
+                    echo "Checking container status..."
+                    docker compose -f docker-compose.prod.yml ps
+                    echo "Getting backend logs..."
+                     docker compose -f docker-compose.prod.yml logs backend --tail 50 || true
+                     echo "Waiting for application to start..."
+                     sleep 30
+                     echo "Checking application health..."
+                     for i in 1 2 3 4 5 6 7 8 9 10; do
+                        if curl -s -f http://localhost:8080/actuator/health; then
+                            cho "✅ Application is healthy and accessible"
+                            exit 0
+                        fi
+                        echo "⏳ Waiting for application... attempt $i/10"
+                        sleep 10
+                     done
+                     echo "❌ Application health check failed after 100 seconds"
+                     docker compose -f docker-compose.prod.yml logs backend --tail 200
+                     exit 1
+                     '''
+                }
             }
         }
     }
@@ -128,16 +142,39 @@ EOF
 
         success {
             echo "Application deployed successfully"
+            sh '''
+            echo "Deployment Summary:"
+            echo "- Image: ${IMAGE_NAME}:${IMAGE_TAG}"
+            echo "- Containers running:"
+            docker compose -f docker-compose.prod.yml ps
+            '''
         }
 
         failure {
-            echo "Deployment failed"
+            echo "❌ Deployment failed - collecting diagnostics..."
 
             sh '''
-            docker compose -f docker-compose.prod.yml logs backend || true
-            docker compose -f docker-compose.prod.yml logs mysql || true
-            docker compose -f docker-compose.prod.yml logs nginx || true
+            echo "=== Docker Compose Logs ==="
+            docker compose -f docker-compose.prod.yml logs backend --tail 200 || true
+            docker compose -f docker-compose.prod.yml logs mysql --tail 100 || true
+            docker compose -f docker-compose.prod.yml logs nginx --tail 100 || true
+            echo "=== Container Status ==="
+            docker compose -f docker-compose.prod.yml ps || true
+            echo "=== Docker Images ==="
+            docker images | grep ${IMAGE_NAME} || true
+            echo "=== Network Check ==="
+            docker network ls || true
             '''
         }
+
+         always {
+            script {
+                // Nettoyage des anciennes images (optionnel)
+                sh '''
+                # Garder seulement les 2 dernières images
+                docker images ${IMAGE_NAME} --format "table {{.Tag}}" | tail -n +2 | head -n -2 | xargs -r docker rmi || true
+                '''
+            }
+         }
     }
 }

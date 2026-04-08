@@ -1,5 +1,12 @@
 FROM eclipse-temurin:17-jdk-alpine AS build
 
+# Configuration DNS Alpine
+RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf && \
+    echo "nameserver 1.1.1.1" >> /etc/resolv.conf && \
+    apk update --no-cache && \
+    apk add --no-cache wget ca-certificates curl && \
+    update-ca-certificates
+
 ARG BUILD_DATE
 ARG BUILD_VERSION
 
@@ -14,8 +21,6 @@ RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
 FROM eclipse-temurin:17-jre-alpine
-
-RUN apk add --no-cache wget
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}"
 LABEL org.opencontainers.image.version="${BUILD_VERSION}"
