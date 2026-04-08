@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: mysql:8.0
+    image: mysql:lts
     container_name: gestiondestock-mysql
     restart: always
     environment:
@@ -19,7 +19,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2.0'
+          cpus: '1.0'
           memory: 2G
         reservations:
           cpus: '1.0'

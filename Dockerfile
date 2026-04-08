@@ -15,7 +15,7 @@ RUN ./mvnw clean package -DskipTests
 
 FROM eclipse-temurin:17-jre-alpine
 
-RUN apk add --no-cache wget
+RUN apk add --no-cache curl
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}"
 LABEL org.opencontainers.image.version="${BUILD_VERSION}"
