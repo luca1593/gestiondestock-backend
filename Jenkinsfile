@@ -117,22 +117,24 @@ EOF
                     echo "Checking container status..."
                     docker compose -f docker-compose.prod.yml ps
                     echo "Getting backend logs..."
-                     docker compose -f docker-compose.prod.yml logs backend --tail 50 || true
-                     echo "Waiting for application to start..."
-                     sleep 30
-                     echo "Checking application health..."
-                     for i in 1 2 3 4 5 6 7 8 9 10; do
+                    echo "Checking backend logs for database connection..."
+                    docker compose -f docker-compose.prod.yml logs backend --tail 50 | grep -i "database\|mysql\|connection" || true
+                    docker compose -f docker-compose.prod.yml logs backend --tail 50 || true
+                    echo "Waiting for application to start..."
+                    sleep 45
+                    echo "Checking application health..."
+                    for i in 1 2 3 4 5 6 7 8 9 10; do
                         if curl -s -f http://localhost:8085/actuator/health; then
                             cho "✅ Application is healthy and accessible"
                             exit 0
                         fi
                         echo "⏳ Waiting for application... attempt $i/10"
                         sleep 10
-                     done
-                     echo "❌ Application health check failed after 100 seconds"
-                     docker compose -f docker-compose.prod.yml logs backend --tail 200
-                     exit 1
-                     '''
+                    done
+                    echo "❌ Application health check failed after 100 seconds"
+                    docker compose -f docker-compose.prod.yml logs backend --tail 200
+                    exit 1
+                    '''
                 }
             }
         }

@@ -41,7 +41,7 @@ services:
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: gestiondestock-phpmyadmin
-    restart: always
+    restart: unless-stopped
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3307
@@ -75,7 +75,7 @@ services:
         BUILD_DATE: ${BUILD_DATE:-latest}
         BUILD_VERSION: ${BUILD_VERSION:-latest}
     container_name: gestiondestock-backend
-    restart: always
+    restart: unless-stopped
     environment:
       DB_HOST: mysql
       DB_PORT: 3307
@@ -95,7 +95,7 @@ services:
       SWAGGER_ENABLED: false
       SHOW_HEALTH_DETAILS: false
     expose:
-      - "8085"
+      - "8085:8080"
     depends_on:
       mysql:
         condition: service_healthy
@@ -127,7 +127,7 @@ services:
     container_name: gestiondestock-nginx
     restart: always
     ports:
-      - "80:80"
+      - "93:93"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/logs:/var/log/nginx
