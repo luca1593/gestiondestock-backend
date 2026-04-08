@@ -69,12 +69,11 @@ pipeline {
             steps {
                 sh '''
                 echo "=== Sauvegarde de la base de données ==="
-                TIMESTAMP=$(date +%Y%m%d_%H%M%S)
                 # Créer le dossier de backup
                 mkdir -p ./backup
                 # Exporter la base
-                docker exec gestiondestock-mysql mysqldump -u luca -pluca1593 gestiondestock > ./backup/backup_${TIMESTAMP}.sql
-                echo "✅ Backup créé : backup_${TIMESTAMP}.sql"
+                docker exec gestiondestock-mysql mysqldump -u luca -pluca1593 gestiondestock > ./backup/backup_${IMAGE_TAG}.sql
+                echo "✅ Backup créé : backup_${IMAGE_TAG}.sql"
                 # Garder seulement les 5 derniers backups
                 ls -t ./backup/backup_*.sql | tail -n +6 | xargs -r rm
                 docker compose -f docker-compose.prod.yml down  --remove-orphans || true
@@ -138,9 +137,9 @@ pipeline {
                             echo "✅ Application is responding (HTTP $HTTP_CODE)"
                             echo "=== Restauration de la base de données ==="
                             # Vérifier si un backup existe
-                            if [ -f ./backup/backup_*.sql ]; then
-                                docker exec -i gestiondestock-mysql mysql -u luca -pluca1593 gestiondestock < ./backup/backup_*.sql
-                                echo "✅ Base restaurée depuis backup_*.sql"
+                            if [ -f ./backup/backup_${IMAGE_TAG}.sql ]; then
+                                docker exec -i gestiondestock-mysql mysql -u luca -pluca1593 gestiondestock < ./backup/backup_${IMAGE_TAG}.sql
+                                echo "✅ Base restaurée depuis backup_${IMAGE_TAG}.sql"
                             else
                                 echo "⚠️  Aucun backup trouvé"
                             fi
