@@ -68,6 +68,15 @@ pipeline {
         stage('Stop Old Containers') {
             steps {
                 sh '''
+                echo "=== Sauvegarde de la base de données ==="
+                TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+                # Créer le dossier de backup
+                mkdir -p ./backup
+                # Exporter la base
+                docker exec gestiondestock-mysql mysqldump -u luca -pluca1593 gestiondestock > ./backup/backup_${TIMESTAMP}.sql
+                echo "✅ Backup créé : backup_${TIMESTAMP}.sql"
+                # Garder seulement les 5 derniers backups
+                ls -t ./backup/backup_*.sql | tail -n +6 | xargs -r rm
                 docker compose -f docker-compose.prod.yml down  --remove-orphans || true
                 '''
             }
@@ -127,6 +136,14 @@ pipeline {
                         HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8085/actuator/health || echo "000")
                         if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "503" ]; then
                             echo "✅ Application is responding (HTTP $HTTP_CODE)"
+                            echo "=== Restauration de la base de données ==="
+                            # Vérifier si un backup existe
+                            if [ -f ./backup/backup_*.sql ]; then
+                                docker exec -i gestiondestock-mysql mysql -u luca -pluca1593 gestiondestock < ./backup/backup_*.sql
+                                echo "✅ Base restaurée depuis backup_*.sql"
+                            else
+                                echo "⚠️  Aucun backup trouvé"
+                            fi
                             exit 0
                         fi
                         echo "⏳ Waiting for application... attempt $i/10"
