@@ -9,7 +9,7 @@ services:
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "127.0.0.1:3307:3307"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql/conf.d:/etc/mysql/conf.d:ro
@@ -90,10 +90,14 @@ services:
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: true
+      SERVER_PORT: 8080
       SWAGGER_ENABLED: false
       SHOW_HEALTH_DETAILS: false
-    expose:
-      - "8085"
+    ports:
+      - "8085:8080"
     depends_on:
       mysql:
         condition: service_healthy

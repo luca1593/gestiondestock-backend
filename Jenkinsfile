@@ -32,34 +32,38 @@ pipeline {
                 echo "Creating .env file"
 
                 sh '''
-cat <<EOF > .env
-SPRING_PROFILES_ACTIVE=prod
+                cat <<EOF > .env
+                SPRING_PROFILES_ACTIVE=prod
 
-MYSQL_ROOT_PASSWORD=rootpassword
-DB_NAME=gestiondestock
-DB_USERNAME=luca
-DB_PASSWORD=luca1593
+                MYSQL_ROOT_PASSWORD=rootpassword
+                DB_NAME=gestiondestock
+                DB_USERNAME=luca
+                DB_PASSWORD=luca1593
+                SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+                SPRING_JPA_HIBERNATE_DDL_AUTO: update
+                SPRING_JPA_SHOW_SQL: true
+                SERVER_PORT: 8080
 
-JWT_SECRET_KEY=+ORJQdAuRJgWSiRMu+3Sq401f0pUMajBZwVRYwno5fiiTp4vxJ42Aiou2tUQipxLknqtEVFStKVB/m9TjJxdPg==
+                JWT_SECRET_KEY=+ORJQdAuRJgWSiRMu+3Sq401f0pUMajBZwVRYwno5fiiTp4vxJ42Aiou2tUQipxLknqtEVFStKVB/m9TjJxdPg==
 
-FLICKR_API_KEY=abc11f1e268d908eeee176297269c001
-FLICKR_API_SECRET=50a8ae15b4224302
-FLICKR_APP_KEY=72157720855398857-f67e55f056acdd0d
-FLICKR_APP_SECRET=2ba345379070ffc8
+                FLICKR_API_KEY=abc11f1e268d908eeee176297269c001
+                FLICKR_API_SECRET=50a8ae15b4224302
+                FLICKR_APP_KEY=72157720855398857-f67e55f056acdd0d
+                FLICKR_APP_SECRET=2ba345379070ffc8
 
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=mpiasaorange@gmail.com
-MAIL_PASSWORD=JustMe12
+                MAIL_HOST=smtp.gmail.com
+                MAIL_PORT=587
+                MAIL_USERNAME=mpiasaorange@gmail.com
+                MAIL_PASSWORD=JustMe12
 
-SWAGGER_ENABLED=false
-SHOW_HEALTH_DETAILS=false
+                SWAGGER_ENABLED=false
+                SHOW_HEALTH_DETAILS=false
 
-BUILD_DATE=latest
-BUILD_VERSION=latest
+                BUILD_DATE=latest
+                BUILD_VERSION=latest
 
-WATCHTOWER_NOTIFICATION_URL=
-EOF
+                WATCHTOWER_NOTIFICATION_URL=
+                EOF
                 '''
             }
         }
