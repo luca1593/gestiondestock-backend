@@ -92,19 +92,15 @@ services:
       
       # Configuration JWT
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-a3f8b2c7d1e9f4a5b6c8d2e7f3a9b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0}
-      
-      # Configuration Mail
-      - MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
-      - MAIL_PORT=${MAIL_PORT:-587}
-      - MAIL_USERNAME=${MAIL_USERNAME:-mpiasaorange@gmail.com}
-      - MAIL_PASSWORD=${MAIL_PASSWORD:-JustMe12}
 
       # Flickr (OBLIGATOIRES)
       - FLICKR_API_KEY=${FLICKR_API_KEY:-abc11f1e268d908eeee176297269c001}
       - FLICKR_API_SECRET=${FLICKR_API_SECRET:-50a8ae15b4224302}
       - FLICKR_APP_KEY=${FLICKR_APP_KEY:-72157720855398857-f67e55f056acdd0d}
       - FLICKR_APP_SECRET=${FLICKR_APP_SECRET:-2ba345379070ffc8}
-      
+      -
+      - MANAGEMENT_HEALTH_MAIL_ENABLED=false
+
       # Autres configurations
       - SWAGGER_ENABLED=${SWAGGER_ENABLED:-true}
       - SHOW_HEALTH_DETAILS=NEVER

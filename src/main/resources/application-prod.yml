@@ -28,6 +28,9 @@ management:
       show-details: NEVER
       probes:
         enabled: true
+  health:
+    mail:
+      enabled: false
 
 springdoc:
   swagger-ui:
