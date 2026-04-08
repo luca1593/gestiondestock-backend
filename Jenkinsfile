@@ -56,8 +56,8 @@ pipeline {
                 MAIL_USERNAME=mpiasaorange@gmail.com
                 MAIL_PASSWORD=JustMe12
 
-                SWAGGER_ENABLED=false
-                SHOW_HEALTH_DETAILS=false
+                SWAGGER_ENABLED=true
+                SHOW_HEALTH_DETAILS=NEVER
 
                 BUILD_DATE=latest
                 BUILD_VERSION=latest
