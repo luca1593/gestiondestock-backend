@@ -123,7 +123,7 @@ EOF
                     echo "Checking application health..."
                     for i in 1 2 3 4 5 6 7 8 9 10; do
                         if curl -s -f http://localhost:8085/actuator/health; then
-                            cho "✅ Application is healthy and accessible"
+                            echo "✅ Application is healthy and accessible"
                             exit 0
                         fi
                         echo "⏳ Waiting for application... attempt $i/10"
