@@ -15,6 +15,8 @@ RUN ./mvnw clean package -DskipTests
 
 FROM eclipse-temurin:17-jre-alpine
 
+RUN apk add --no-cache wget
+
 LABEL org.opencontainers.image.created="${BUILD_DATE}"
 LABEL org.opencontainers.image.version="${BUILD_VERSION}"
 LABEL org.opencontainers.image.source="https://github.com/luca/gestiondestock-backend"
