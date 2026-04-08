@@ -107,7 +107,7 @@ services:
       
       # Autres configurations
       - SWAGGER_ENABLED=${SWAGGER_ENABLED:-true}
-      - SHOW_HEALTH_DETAILS=${SHOW_HEALTH_DETAILS:-true}
+      - SHOW_HEALTH_DETAILS=${SHOW_HEALTH_DETAILS:-NEVER}
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:4200,http://localhost:8085}
       - SERVER_PORT=8080
       - SERVER_ADDRESS=0.0.0.0
