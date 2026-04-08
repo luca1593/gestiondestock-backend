@@ -98,7 +98,11 @@ services:
       - FLICKR_API_SECRET=${FLICKR_API_SECRET:-50a8ae15b4224302}
       - FLICKR_APP_KEY=${FLICKR_APP_KEY:-72157720855398857-f67e55f056acdd0d}
       - FLICKR_APP_SECRET=${FLICKR_APP_SECRET:-2ba345379070ffc8}
-      -
+
+      - MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
+      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_USERNAME=${MAIL_USERNAME:-mpiasaorange@gmail.com}
+      - MAIL_PASSWORD=${MAIL_PASSWORD:-JustMe12}
       - MANAGEMENT_HEALTH_MAIL_ENABLED=false
 
       # Autres configurations
