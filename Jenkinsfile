@@ -52,6 +52,8 @@ pipeline {
                 FLICKR_APP_SECRET=2ba345379070ffc8
 
                 SWAGGER_ENABLED=true
+                SPRINGDOC_SWAGGER_UI_ENABLED=true
+                SPRINGDOC_API_DOCS_ENABLED=true
                 SHOW_HEALTH_DETAILS=NEVER
 
                 BUILD_DATE=latest

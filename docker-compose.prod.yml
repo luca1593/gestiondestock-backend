@@ -106,7 +106,9 @@ services:
       - MANAGEMENT_HEALTH_MAIL_ENABLED=false
 
       # Autres configurations
-      - SWAGGER_ENABLED=${SWAGGER_ENABLED:-true}
+      - SWAGGER_ENABLED=true
+      - SPRINGDOC_SWAGGER_UI_ENABLED=true
+      - SPRINGDOC_API_DOCS_ENABLED=true
       - SHOW_HEALTH_DETAILS=NEVER
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:4200,http://localhost:8085}
       - SERVER_PORT=8080
