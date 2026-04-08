@@ -117,8 +117,6 @@ EOF
                     echo "Checking container status..."
                     docker compose -f docker-compose.prod.yml ps
                     echo "Getting backend logs..."
-                    echo "Checking backend logs for database connection..."
-                    docker compose -f docker-compose.prod.yml logs backend --tail 50 | grep -i "database\|mysql\|connection" || true
                     docker compose -f docker-compose.prod.yml logs backend --tail 50 || true
                     echo "Waiting for application to start..."
                     sleep 45
