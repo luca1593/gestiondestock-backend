@@ -68,15 +68,33 @@ pipeline {
         stage('Stop Old Containers') {
             steps {
                 sh '''
-                echo "=== Sauvegarde de la base de données ==="
-                # Créer le dossier de backup
-                mkdir -p ./backup
-                # Exporter la base
-                docker exec gestiondestock-mysql mysqldump -u luca -pluca1593 gestiondestock > ./backup/backup_${IMAGE_TAG}.sql
-                echo "✅ Backup créé : backup_${IMAGE_TAG}.sql"
-                # Garder seulement les 5 derniers backups
-                ls -t ./backup/backup_*.sql | tail -n +6 | xargs -r rm
-                docker compose -f docker-compose.prod.yml down  --remove-orphans || true
+                echo "=== Vérification des containers existants ==="
+                
+                # Vérifier si des containers existent déjà
+                RUNNING_CONTAINERS=$(docker ps -a --format "{{.Names}}" | grep -E "^gestiondestock-" || true)
+                
+                if [ -z "$RUNNING_CONTAINERS" ]; then
+                    echo "⚠️  Aucun container existant trouvé, passage directly au déploiement"
+                else
+                    echo "✅ Containers existants détectés:"
+                    echo "$RUNNING_CONTAINERS"
+                    
+                    echo "=== Sauvegarde de la base de données ==="
+                    # Créer le dossier de backup
+                    mkdir -p ./backup
+                    
+                    # Vérifier si MySQL est actif avant backup
+                    if docker ps --format "{{.Names}}" | grep -q "^gestiondestock-mysql$"; then
+                        docker exec gestiondestock-mysql mysqldump -u luca -pluca1593 gestiondestock > ./backup/backup_${IMAGE_TAG}.sql
+                        echo "✅ Backup créé : backup_${IMAGE_TAG}.sql"
+                        ls -t ./backup/backup_*.sql | tail -n +6 | xargs -r rm
+                    else
+                        echo "⚠️  Container MySQL non actif, sauvegarde ignorée"
+                    fi
+                fi
+                
+                echo "=== Arrêt des conteneurs ==="
+                docker compose -f docker-compose.prod.yml down --remove-orphans || true
                 '''
             }
         }
