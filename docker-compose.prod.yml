@@ -5,11 +5,20 @@ volumes:
 networks:
   app-network:  # Réseau unique pour tous les services
     driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-gestion
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
 
 services:
   mysql:
     image: mysql:lts
     container_name: gestiondestock-mysql
+    # ... autres configurations
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-luca1593}
@@ -45,6 +54,10 @@ services:
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: gestiondestock-phpmyadmin
+    # ... autres configurations
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     restart: unless-stopped
     environment:
       PMA_HOST: mysql
@@ -78,6 +91,10 @@ services:
         BUILD_DATE: ${BUILD_DATE:-latest}
         BUILD_VERSION: ${BUILD_VERSION:-latest}
     container_name: gestiondestock-backend
+    # ... autres configurations
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     restart: unless-stopped
     environment:
       # Configuration Spring Boot pour MySQL
