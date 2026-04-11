@@ -122,18 +122,17 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-                # Créer un fichier resolv.conf personnalisé
-                cat > /tmp/resolv.conf <<EOF
-                nameserver 8.8.8.8
-                nameserver 1.1.1.1
-                nameserver 8.8.4.4
-                EOF
-                # Build avec le fichier resolv.conf
-                docker build --network=host \
-                             --dns 8.8.8.8 \
-                             --dns 1.1.1.1 \
-                             -t ${IMAGE_NAME}:latest .
+                echo "=== Build de l'image Docker ==="
+                # Vérifier que le JAR existe
+                if [ ! -f target/*.jar ]; then
+                    echo "❌ JAR non trouvé!"
+                    exit 1
+                fi
+
+                # Build avec le Dockerfile simplifié
+                docker build --no-cache -t ${IMAGE_NAME}:latest .
                 docker tag ${IMAGE_NAME}:latest ${IMAGE_NAME}:${IMAGE_TAG}
+                echo "✅ Image Docker créée avec succès"
                 '''
             }
         }
