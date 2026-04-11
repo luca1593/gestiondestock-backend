@@ -72,10 +72,10 @@ pipeline {
                 # Créer le dossier de backup
                 mkdir -p ./backup
                 # Exporter la base
-                #docker exec gestiondestock-mysql mysqldump -u luca -pluca1593 gestiondestock > ./backup/backup_${IMAGE_TAG}.sql
-                #echo "✅ Backup créé : backup_${IMAGE_TAG}.sql"
+                docker exec gestiondestock-mysql mysqldump -u luca -pluca1593 gestiondestock > ./backup/backup_${IMAGE_TAG}.sql
+                echo "✅ Backup créé : backup_${IMAGE_TAG}.sql"
                 # Garder seulement les 5 derniers backups
-                #ls -t ./backup/backup_*.sql | tail -n +6 | xargs -r rm
+                ls -t ./backup/backup_*.sql | tail -n +6 | xargs -r rm
                 docker compose -f docker-compose.prod.yml down  --remove-orphans || true
                 '''
             }
