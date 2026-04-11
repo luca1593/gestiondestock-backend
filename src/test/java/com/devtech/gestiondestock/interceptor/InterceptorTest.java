@@ -24,7 +24,7 @@ class InterceptorTest {
         
         String result = interceptor.inspect(sql);
         
-        assertTrue(result.contains("AND article0_.identreprise = 1"));
+        assertTrue(result.contains("AND (article0_.identreprise = 1 OR article0_.identreprise IS NULL)"));
     }
 
     @Test
@@ -34,7 +34,7 @@ class InterceptorTest {
         
         String result = interceptor.inspect(sql);
         
-        assertTrue(result.contains("WHERE article0_.identreprise = 2"));
+        assertTrue(result.contains("WHERE (article0_.identreprise = 2 OR article0_.identreprise IS NULL)"));
     }
 
     @Test
@@ -44,7 +44,7 @@ class InterceptorTest {
         
         String result = interceptor.inspect(sql);
         
-        assertTrue(result.contains("WHERE a.identreprise = 3"));
+        assertTrue(result.contains("WHERE (a.identreprise = 3 OR a.identreprise IS NULL)"));
     }
 
     @Test
@@ -133,7 +133,7 @@ class InterceptorTest {
         
         String result = interceptor.inspect(sql);
         
-        assertTrue(result.contains("WHERE a.identreprise = 1"));
+        assertTrue(result.contains("WHERE (a.identreprise = 1 OR a.identreprise IS NULL)"));
     }
 
     @Test
@@ -143,7 +143,7 @@ class InterceptorTest {
         
         String result = interceptor.inspect(sql);
         
-        assertTrue(result.contains("WHERE a.identreprise = 2"));
+        assertTrue(result.contains("WHERE (a.identreprise = 2 OR a.identreprise IS NULL)"));
     }
 
     @Test
@@ -171,7 +171,7 @@ class InterceptorTest {
         
         String result = interceptor.inspect(sql);
         
-        assertTrue(result.contains("WHERE c.identreprise = 1"));
+        assertTrue(result.contains("WHERE (c.identreprise = 1 OR c.identreprise IS NULL)"));
     }
 
     @Test
@@ -181,7 +181,7 @@ class InterceptorTest {
         
         String result = interceptor.inspect(sql);
         
-        assertTrue(result.contains("WHERE f.identreprise = 3"));
+        assertTrue(result.contains("WHERE (f.identreprise = 3 OR f.identreprise IS NULL)"));
     }
 
     @Test
@@ -191,6 +191,6 @@ class InterceptorTest {
         
         String result = interceptor.inspect(sql);
         
-        assertTrue(result.contains("WHERE cf.identreprise = 1"));
+        assertTrue(result.contains("WHERE (cf.identreprise = 1 OR cf.identreprise IS NULL)"));
     }
 }

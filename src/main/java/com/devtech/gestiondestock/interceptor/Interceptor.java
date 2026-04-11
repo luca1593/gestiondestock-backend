@@ -86,7 +86,7 @@ public class Interceptor implements StatementInspector {
         }
 
         String aliasOrTable = tableInfo.alias != null ? tableInfo.alias : tableInfo.tableName;
-        String filterCondition = aliasOrTable + ".identreprise = " + idEntrepriseValue;
+        String filterCondition = "(" + aliasOrTable + ".identreprise = " + idEntrepriseValue + " OR " + aliasOrTable + ".identreprise IS NULL)";
         
         if (WHERE_PATTERN.matcher(sql).find()) {
             return sql + " AND " + filterCondition;
