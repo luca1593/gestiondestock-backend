@@ -1,6 +1,8 @@
 package com.devtech.gestiondestock.interceptor;
 
 import org.hibernate.resource.jdbc.spi.StatementInspector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -16,6 +18,8 @@ import java.util.regex.Pattern;
  */
 @Component
 public class Interceptor implements StatementInspector {
+
+    private static final Logger log = LoggerFactory.getLogger(Interceptor.class);
 
     private static final Set<String> EXCLUDED_TABLES = new HashSet<>();
     
@@ -63,6 +67,8 @@ public class Interceptor implements StatementInspector {
         if (!StringUtils.hasLength(idEntreprise)) {
             return sql;
         }
+        
+        log.debug("INTERCEPTOR: idEntreprise={} | SQL: {}", idEntreprise, sql);
 
         int idEntrepriseValue;
         try {
@@ -88,15 +94,19 @@ public class Interceptor implements StatementInspector {
         String aliasOrTable = tableInfo.alias != null ? tableInfo.alias : tableInfo.tableName;
         String filterCondition = "(" + aliasOrTable + ".identreprise = " + idEntrepriseValue + " OR " + aliasOrTable + ".identreprise IS NULL)";
         
+        String result;
         if (WHERE_PATTERN.matcher(sql).find()) {
-            return sql + " AND " + filterCondition;
+            result = sql + " AND " + filterCondition;
         } else {
             int fromIndex = findMainFromIndex(sql);
             if (fromIndex > 0) {
-                return sql.substring(0, fromIndex) + " WHERE " + filterCondition + " " + sql.substring(fromIndex);
+                result = sql.substring(0, fromIndex) + " WHERE " + filterCondition + " " + sql.substring(fromIndex);
+            } else {
+                result = sql + " WHERE " + filterCondition;
             }
-            return sql + " WHERE " + filterCondition;
         }
+        log.debug("INTERCEPTOR MODIFIED: {}", result);
+        return result;
     }
 
     private static class TableInfo {
