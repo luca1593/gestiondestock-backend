@@ -37,9 +37,13 @@ public class RequestLoggingFilter implements Filter {
         try {
             MDC.put("requestId", requestId);
             
-            log.info("==> REQUEST [{}] {} {} | IP: {} | Entreprise: {}",
-                    requestId, method, uri, remoteAddr, 
-                    idEntreprise != null ? idEntreprise : "N/A");
+            String userEmail = MDC.get("userEmail");
+            
+            log.info("==> REQUEST [{}] {} {} | User: {} | Entreprise: {} | IP: {}",
+                    requestId, method, uri, 
+                    userEmail != null ? userEmail : "Anonymous",
+                    idEntreprise != null ? idEntreprise : "N/A",
+                    remoteAddr);
             
             if (queryString != null) {
                 log.debug("    Query params: {}", queryString);

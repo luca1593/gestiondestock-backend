@@ -56,6 +56,9 @@ public class ApplicationRequestFilter extends OncePerRequestFilter {
             }
         }
         MDC.put("idEntreprise", idEntreprise);
+        if (userEmail != null) {
+            MDC.put("userEmail", userEmail);
+        }
         filterChain.doFilter(request, response);
     }
 }
