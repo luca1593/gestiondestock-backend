@@ -1,6 +1,8 @@
 volumes:
   mysql_data:
     name: db_gstk
+  app_logs:
+    name: app_gstk_logs
 
 networks:
   app-network:  # Réseau unique pour tous les services
@@ -130,8 +132,11 @@ services:
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:4200,http://localhost:8085}
       - SERVER_PORT=8080
       - SERVER_ADDRESS=0.0.0.0
+      - LOG_PATH=/app/logs
     ports:
       - "8085:8080"
+    volumes:
+      - app_logs:/app/logs
     depends_on:
       mysql:
         condition: service_healthy
