@@ -67,17 +67,62 @@ pipeline {
 
         stage('Stop Old Containers') {
             steps {
-                sh '''
-                echo "=== Sauvegarde de la base de données ==="
-                # Créer le dossier de backup
-                mkdir -p ./backup
-                # Exporter la base
-                docker exec gestiondestock-mysql mysqldump -u luca -pluca1593 gestiondestock > ./backup/backup_${IMAGE_TAG}.sql
-                echo "✅ Backup créé : backup_${IMAGE_TAG}.sql"
-                # Garder seulement les 5 derniers backups
-                ls -t ./backup/backup_*.sql | tail -n +6 | xargs -r rm
-                docker compose -f docker-compose.prod.yml down  --remove-orphans || true
-                '''
+                script {
+                    sh '''
+                    echo "=== Vérification des prérequis ==="
+
+                    # Vérifier que docker-compose.prod.yml existe
+                    if [ ! -f "docker-compose.prod.yml" ]; then
+                        echo "❌ Fichier docker-compose.prod.yml non trouvé!"
+                        exit 1
+                    fi
+
+                    # Vérifier que MySQL est en cours d'exécution avant de faire le backup
+                    if docker ps --format '{{.Names}}' | grep -q "^gestiondestock-mysql$"; then
+                        echo "✅ Container MySQL trouvé, préparation du backup..."
+
+                        # Créer le dossier de backup s'il n'existe pas
+                        mkdir -p ./backup
+                        echo "📁 Dossier de backup créé: ./backup"
+
+                        # Vérifier que la base de données est accessible
+                        if docker exec gestiondestock-mysql mysqladmin ping -h localhost -u luca -pluca1593 2>/dev/null; then
+                            echo "✅ MySQL est accessible, sauvegarde en cours..."
+
+                            # Exporter la base
+                            docker exec gestiondestock-mysql mysqldump -u luca -pluca1593 gestiondestock > ./backup/backup_${IMAGE_TAG}.sql
+
+                            # Vérifier que le backup a été créé
+                            if [ -f "./backup/backup_${IMAGE_TAG}.sql" ] && [ -s "./backup/backup_${IMAGE_TAG}.sql" ]; then
+                                echo "✅ Backup créé avec succès : backup_${IMAGE_TAG}.sql"
+                                # Afficher la taille du backup
+                                ls -lh ./backup/backup_${IMAGE_TAG}.sql
+                            else
+                                echo "⚠️  Le backup est vide ou n'a pas été créé"
+                            fi
+
+                            # Garder seulement les 5 derniers backups
+                            echo "🧹 Nettoyage des anciens backups..."
+                            ls -t ./backup/backup_*.sql 2>/dev/null | tail -n +6 | xargs -r rm
+                            echo "✅ Nettoyage terminé"
+                        else
+                            echo "⚠️  MySQL n'est pas accessible, backup ignoré"
+                        fi
+                    else
+                        echo "⚠️  Container MySQL non trouvé, sauvegarde ignorée"
+                    fi
+
+                    echo "=== Arrêt des conteneurs ==="
+                    # Vérifier si des conteneurs sont en cours d'exécution
+                    if docker compose -f docker-compose.prod.yml ps -q 2>/dev/null | grep -q .; then
+                        echo "⏹️  Arrêt des conteneurs existants..."
+                        docker compose -f docker-compose.prod.yml down --remove-orphans
+                        echo "✅ Conteneurs arrêtés"
+                    else
+                        echo "ℹ️  Aucun conteneur en cours d'exécution"
+                    fi
+                    '''
+                }
             }
         }
 
