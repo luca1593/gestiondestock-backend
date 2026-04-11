@@ -35,6 +35,11 @@
         <appender-ref ref="CONSOLE"/>
     </logger>
     
+    <logger name="com.devtech.gestiondestock.config.RequestLoggingFilter" level="INFO" additivity="false">
+        <appender-ref ref="APP_FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    
     <logger name="com.devtech.gestiondestock" level="INFO" additivity="false">
         <appender-ref ref="APP_FILE"/>
         <appender-ref ref="CONSOLE"/>
