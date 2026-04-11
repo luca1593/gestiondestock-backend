@@ -15,8 +15,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-        ejb:
-          interceptor: com.devtech.gestiondestock.interceptor.Interceptor
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
