@@ -68,13 +68,13 @@ class InterceptorTest {
     }
 
     @Test
-    void testSelectUtilisateurWithFilter() {
+    void testSelectOnExcludedTableUtilisateur() {
         MDC.put("idEntreprise", "1");
         String sql = "select u.id, u.email from utilisateur u";
         
         String result = interceptor.inspect(sql);
         
-        assertTrue(result.contains("WHERE u.identreprise = 1"));
+        assertEquals(sql, result);
     }
 
     @Test
