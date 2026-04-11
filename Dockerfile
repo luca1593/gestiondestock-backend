@@ -8,9 +8,6 @@ COPY pom.xml .
 COPY mvnw .
 COPY .mvn .mvn
 
-# Télécharger les dépendances
-RUN mvn dependency:go-offline
-
 # Copier le code source
 COPY src src
 
