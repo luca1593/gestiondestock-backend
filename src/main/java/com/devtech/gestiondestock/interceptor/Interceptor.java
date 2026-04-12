@@ -104,10 +104,10 @@ public class Interceptor implements StatementInspector {
         if (hasWhere) {
             result = sql + " AND " + filterCondition;
         } else {
-            int fromIndex = findMainFromIndex(sql);
-            log.debug("fromIndex={} for SQL: {}", fromIndex, sql);
-            if (fromIndex > 0) {
-                result = sql.substring(0, fromIndex) + " WHERE " + filterCondition + " " + sql.substring(fromIndex);
+            int insertPos = findEndOfFromClause(sql);
+            log.debug("insertPos={} for SQL: {}", insertPos, sql);
+            if (insertPos > 0) {
+                result = sql.substring(0, insertPos) + " WHERE " + filterCondition + " " + sql.substring(insertPos);
             } else {
                 result = sql + " WHERE " + filterCondition;
             }
@@ -230,5 +230,16 @@ public class Interceptor implements StatementInspector {
         }
         
         return -1;
+    }
+    
+    private int findEndOfFromClause(String sql) {
+        Pattern pattern = Pattern.compile("(?i)\\bfrom\\s+[a-zA-Z_][a-zA-Z0-9_]*(?:\\s+(?:as\\s+)?[a-zA-Z_][a-zA-Z0-9_]*)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(sql);
+        
+        if (matcher.find()) {
+            return matcher.end();
+        }
+        
+        return sql.toLowerCase().indexOf(" from ");
     }
 }
