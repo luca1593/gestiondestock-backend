@@ -28,6 +28,8 @@ public class Interceptor implements StatementInspector {
         EXCLUDED_TABLES.add("entreprises");
         EXCLUDED_TABLES.add("roles");
         EXCLUDED_TABLES.add("role");
+        EXCLUDED_TABLES.add("utilisateur");
+        EXCLUDED_TABLES.add("utilisateurs");
     }
 
     private static final Pattern FROM_PATTERN = Pattern.compile(
