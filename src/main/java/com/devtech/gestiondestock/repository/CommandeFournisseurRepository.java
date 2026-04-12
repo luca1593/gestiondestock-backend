@@ -13,4 +13,6 @@ public interface CommandeFournisseurRepository extends JpaRepository<CommandeFou
     Optional<CommandeFournisseur> findCommandeFournisseurByCode(String code);
     List<CommandeFournisseur> findCommandeFournisseurByDateCommande(Instant dateCommade);
     List<CommandeFournisseur> findAllByFournisseur(Fournisseur fournisseur);
+
+    List<CommandeFournisseur> findAllByIdentreprise(Integer identreprise);
 }

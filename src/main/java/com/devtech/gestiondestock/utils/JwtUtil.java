@@ -17,7 +17,7 @@ import java.util.function.Function;
 
 @Service
 public class JwtUtil {
-    private static final long EXPIRATION_TIME = 1000 * 60 * 30;
+    private static final long EXPIRATION_TIME = 1000L * 60 * 60 * 4;
 
     @Value("${jwt.secret:a3f8b2c7d1e9f4a5b6c8d2e7f3a9b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0}")
     private String secretString;
