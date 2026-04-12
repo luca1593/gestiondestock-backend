@@ -88,13 +88,6 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<ArticleDto> findAll() {
-        String idEntrepriseStr = MDC.get("idEntreprise");
-        if (idEntrepriseStr != null && !idEntrepriseStr.isEmpty()) {
-            Integer idEntreprise = Integer.parseInt(idEntrepriseStr);
-            return this.articleRepository.findAllByEntreprise(idEntreprise).stream()
-                    .map(ArticleDto::fromEntity)
-                    .collect(Collectors.toList());
-        }
         return this.articleRepository.findAll().stream()
                 .map(ArticleDto::fromEntity)
                 .collect(Collectors.toList());
