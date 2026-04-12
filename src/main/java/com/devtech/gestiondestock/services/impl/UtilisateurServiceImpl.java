@@ -97,7 +97,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         String idEntrepriseStr = MDC.get("idEntreprise");
         if (idEntrepriseStr != null && !idEntrepriseStr.isEmpty()) {
             Integer idEntreprise = Integer.parseInt(idEntrepriseStr);
-            return utilisateurRepository.findAllByIdentreprise(idEntreprise).stream()
+            return utilisateurRepository.findAllByEntreprise(idEntreprise).stream()
                     .map(UtilisateurDto::fromEntity)
                     .collect(Collectors.toList());
         }

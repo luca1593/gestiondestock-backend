@@ -91,7 +91,7 @@ public class ArticleServiceImpl implements ArticleService {
         String idEntrepriseStr = MDC.get("idEntreprise");
         if (idEntrepriseStr != null && !idEntrepriseStr.isEmpty()) {
             Integer idEntreprise = Integer.parseInt(idEntrepriseStr);
-            return this.articleRepository.findAllByIdentreprise(idEntreprise).stream()
+            return this.articleRepository.findAllByEntreprise(idEntreprise).stream()
                     .map(ArticleDto::fromEntity)
                     .collect(Collectors.toList());
         }

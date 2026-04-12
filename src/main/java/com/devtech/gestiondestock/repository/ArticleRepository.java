@@ -24,4 +24,6 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 
     @Query("SELECT a FROM Article a WHERE a.entreprise.id = :identreprise OR a.entreprise IS NULL")
     List<Article> findAllByIdentreprise(@Param("identreprise") Integer identreprise);
+
+    List<Article> findAllByEntreprise(Integer idEntreprise);
 }
