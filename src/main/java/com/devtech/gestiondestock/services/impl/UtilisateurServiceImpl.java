@@ -12,6 +12,7 @@ import com.devtech.gestiondestock.repository.UtilisateurRepository;
 import com.devtech.gestiondestock.services.UtilisateurService;
 import com.devtech.gestiondestock.validator.UtilisateurValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -93,6 +94,13 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     @Override
     public List<UtilisateurDto> findAll() {
+        String idEntrepriseStr = MDC.get("idEntreprise");
+        if (idEntrepriseStr != null && !idEntrepriseStr.isEmpty()) {
+            Integer idEntreprise = Integer.parseInt(idEntrepriseStr);
+            return utilisateurRepository.findAllByIdentreprise(idEntreprise).stream()
+                    .map(UtilisateurDto::fromEntity)
+                    .collect(Collectors.toList());
+        }
         return utilisateurRepository.findAll().stream()
                 .map(UtilisateurDto::fromEntity)
                 .collect(Collectors.toList());

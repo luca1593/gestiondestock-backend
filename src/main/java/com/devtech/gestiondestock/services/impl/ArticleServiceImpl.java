@@ -12,6 +12,7 @@ import com.devtech.gestiondestock.services.ArticleService;
 import com.devtech.gestiondestock.validator.ArticleValidator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -87,6 +88,13 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<ArticleDto> findAll() {
+        String idEntrepriseStr = MDC.get("idEntreprise");
+        if (idEntrepriseStr != null && !idEntrepriseStr.isEmpty()) {
+            Integer idEntreprise = Integer.parseInt(idEntrepriseStr);
+            return this.articleRepository.findAllByIdentreprise(idEntreprise).stream()
+                    .map(ArticleDto::fromEntity)
+                    .collect(Collectors.toList());
+        }
         return this.articleRepository.findAll().stream()
                 .map(ArticleDto::fromEntity)
                 .collect(Collectors.toList());
