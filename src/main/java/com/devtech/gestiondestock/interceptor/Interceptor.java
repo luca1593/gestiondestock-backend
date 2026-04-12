@@ -65,6 +65,7 @@ public class Interceptor implements StatementInspector {
 
         String idEntreprise = MDC.get("idEntreprise");
         if (!StringUtils.hasLength(idEntreprise)) {
+            log.error("INTERCEPTOR: idEntreprise NOT SET IN MDC - SQL returned WITHOUT filter! SQL: {}", sql);
             return sql;
         }
         
@@ -73,7 +74,9 @@ public class Interceptor implements StatementInspector {
         int idEntrepriseValue;
         try {
             idEntrepriseValue = Integer.parseInt(idEntreprise);
+            log.debug("Parsed idEntreprise: {}", idEntrepriseValue);
         } catch (NumberFormatException e) {
+            log.error("INTERCEPTOR: Failed to parse idEntreprise '{}' - SQL returned WITHOUT filter! SQL: {}", idEntreprise, sql);
             return sql;
         }
 
@@ -95,10 +98,14 @@ public class Interceptor implements StatementInspector {
         String filterCondition = "(" + aliasOrTable + ".identreprise = " + idEntrepriseValue + " OR " + aliasOrTable + ".identreprise IS NULL)";
         
         String result;
-        if (WHERE_PATTERN.matcher(sql).find()) {
+        boolean hasWhere = WHERE_PATTERN.matcher(sql).find();
+        log.debug("HAS WHERE: {}, fromIndex calculation...", hasWhere);
+        
+        if (hasWhere) {
             result = sql + " AND " + filterCondition;
         } else {
             int fromIndex = findMainFromIndex(sql);
+            log.debug("fromIndex={} for SQL: {}", fromIndex, sql);
             if (fromIndex > 0) {
                 result = sql.substring(0, fromIndex) + " WHERE " + filterCondition + " " + sql.substring(fromIndex);
             } else {
@@ -131,9 +138,11 @@ public class Interceptor implements StatementInspector {
         if (matcher.find()) {
             String tableName = matcher.group(1);
             String alias = matcher.group(2);
+            log.debug("EXTRACTED TABLE: {} alias: {} from SQL: {}", tableName, alias, sql);
             return new TableInfo(tableName, alias);
         }
         
+        log.error("INTERCEPTOR: Could not extract table info from SQL: {}", sql);
         return new TableInfo(null, null);
     }
 
@@ -208,12 +217,14 @@ public class Interceptor implements StatementInspector {
         Pattern pattern = Pattern.compile("(?i)\\bfrom\\b", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(sql);
         
-        int subqueryCount = 0;
         while (matcher.find()) {
             int pos = matcher.start();
+            if (pos <= 6) {
+                return pos;
+            }
             String before = sql.substring(Math.max(0, pos - 7), pos).toLowerCase();
             
-            if (!before.contains("select") || subqueryCount == 0) {
+            if (!before.contains("select")) {
                 return pos;
             }
         }

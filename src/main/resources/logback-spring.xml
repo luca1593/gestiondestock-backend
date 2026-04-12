@@ -33,6 +33,7 @@
     <logger name="com.devtech.gestiondestock.interceptor" level="DEBUG" additivity="false">
         <appender-ref ref="INTERCEPTOR_FILE"/>
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="APP_FILE"/>
     </logger>
     
     <logger name="com.devtech.gestiondestock.config.RequestLoggingFilter" level="INFO" additivity="false">
