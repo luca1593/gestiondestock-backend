@@ -21,4 +21,7 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
     List<Article> findByCodeArticleContainingIgnoreCase(String code);
 
     List<Article> findByDesignationContainingIgnoreCaseOrCodeArticleContainingIgnoreCase(String designation, String code);
+
+    @Query("SELECT a FROM Article a WHERE a.entreprise.id = :idEntreprise")
+    List<Article> findAllByIdentreprise(@Param("idEntreprise") Integer idEntreprise);
 }

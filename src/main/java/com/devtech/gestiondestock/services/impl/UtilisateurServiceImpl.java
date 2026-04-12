@@ -94,13 +94,6 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     @Override
     public List<UtilisateurDto> findAll() {
-        String idEntrepriseStr = MDC.get("idEntreprise");
-        if (idEntrepriseStr != null && !idEntrepriseStr.isEmpty()) {
-            Integer idEntreprise = Integer.parseInt(idEntrepriseStr);
-            return utilisateurRepository.findAllByEntreprise(idEntreprise).stream()
-                    .map(UtilisateurDto::fromEntity)
-                    .collect(Collectors.toList());
-        }
         return utilisateurRepository.findAll().stream()
                 .map(UtilisateurDto::fromEntity)
                 .collect(Collectors.toList());

@@ -11,6 +11,4 @@ import java.util.Optional;
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Integer> {
     Optional<Utilisateur> findUtilisateurByNom(String nom);
     Optional<Utilisateur> findUtilisateurByEmail(String email);
-    @Query("SELECT u FROM Utilisateur u WHERE u.entreprise.id = :idEntreprise OR u.entreprise IS NULL")
-    List<Utilisateur> findAllByEntreprise(@Param("idEntreprise") Integer idEntreprise);
 }

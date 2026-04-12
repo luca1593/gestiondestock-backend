@@ -23,7 +23,7 @@ public class Utilisateur extends AbstractEntity{
     private String nom;
     @Column(name = "prenom")
     private String prenom;
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
     @Column(name = "dateDeNaissance")
     private Instant dateDeNaissance;
