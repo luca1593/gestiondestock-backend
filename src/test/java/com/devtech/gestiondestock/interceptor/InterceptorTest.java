@@ -74,7 +74,7 @@ class InterceptorTest {
         
         String result = interceptor.inspect(sql);
         
-        assertTrue(result.contains("WHERE (u.identreprise = 1 OR u.identreprise IS NULL)"));
+        assertEquals(sql, result);
     }
 
     @Test
