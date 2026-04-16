@@ -1,3 +1,5 @@
+version: '3.8'
+
 volumes:
   mysql_data:
     name: db_gstk
@@ -12,12 +14,18 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/16
+  front-network: # Réseau pour tous les services front
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-gestion
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
 
 services:
   mysql:
     image: mysql:lts
     container_name: gestiondestock-mysql
-    # ... autres configurations
     dns:
       - 8.8.8.8
       - 1.1.1.1
@@ -28,11 +36,11 @@ services:
       MYSQL_USER: ${DB_USERNAME:-luca}
       MYSQL_PASSWORD: ${DB_PASSWORD:-luca1593}
     ports:
-      - "3307:3306"  # Port hôte:3307, conteneur:3306
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - app-network # Réseau unique
+      - app-network
     deploy:
       resources:
         limits:
@@ -56,14 +64,13 @@ services:
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: gestiondestock-phpmyadmin
-    # ... autres configurations
     dns:
       - 8.8.8.8
       - 1.1.1.1
     restart: unless-stopped
     environment:
       PMA_HOST: mysql
-      PMA_PORT: 3306  # Port interne du conteneur MySQL
+      PMA_PORT: 3306
       PMA_USER: ${DB_USERNAME:-luca}
       PMA_PASSWORD: ${DB_PASSWORD:-luca1593}
       UPLOAD_LIMIT: 50M
@@ -93,7 +100,6 @@ services:
         BUILD_DATE: ${BUILD_DATE:-latest}
         BUILD_VERSION: ${BUILD_VERSION:-latest}
     container_name: gestiondestock-backend
-    # ... autres configurations
     dns:
       - 8.8.8.8
       - 1.1.1.1
@@ -108,16 +114,17 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_SHOW_SQL=true
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
-      
+
       # Configuration JWT
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-a3f8b2c7d1e9f4a5b6c8d2e7f3a9b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0}
 
-      # Flickr (OBLIGATOIRES)
+      # Flickr
       - FLICKR_API_KEY=${FLICKR_API_KEY:-abc11f1e268d908eeee176297269c001}
       - FLICKR_API_SECRET=${FLICKR_API_SECRET:-50a8ae15b4224302}
       - FLICKR_APP_KEY=${FLICKR_APP_KEY:-72157720855398857-f67e55f056acdd0d}
       - FLICKR_APP_SECRET=${FLICKR_APP_SECRET:-2ba345379070ffc8}
 
+      # Mail
       - MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
       - MAIL_PORT=${MAIL_PORT:-587}
       - MAIL_USERNAME=${MAIL_USERNAME:-mpiasaorange@gmail.com}
@@ -129,7 +136,7 @@ services:
       - SPRINGDOC_SWAGGER_UI_ENABLED=true
       - SPRINGDOC_API_DOCS_ENABLED=true
       - SHOW_HEALTH_DETAILS=NEVER
-      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:4200,http://localhost:8085}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:4200,http://localhost:8085,http://localhost:8086,http://12.24.5.100:8086}
       - SERVER_PORT=8080
       - SERVER_ADDRESS=0.0.0.0
       - LOG_PATH=/app/logs
@@ -141,7 +148,8 @@ services:
       mysql:
         condition: service_healthy
     networks:
-      - app-network # Réseau unique
+      - app-network
+      - front-network
     deploy:
       resources:
         limits:
@@ -151,7 +159,7 @@ services:
           cpus: '1.0'
           memory: 1G
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]  # Port 8080 interne
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -175,7 +183,7 @@ services:
     depends_on:
       - backend
     networks:
-      - app-network # Réseau unique
+      - front-network
     deploy:
       resources:
         limits:
@@ -205,3 +213,53 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
+
+  # NOUVEAU SERVICE: Frontend Angular
+  frontend-setup:
+    image: alpine/git:latest
+    container_name: frontend-setup-temp
+    volumes:
+      - ./frontend:/frontend
+    command: >
+      sh -c "rm -rf /frontend/* && 
+             git clone https://github.com/luca1593/gestion-de-stock.git /frontend || 
+             git clone https://${GITHUB_TOKEN}@github.com/luca1593/gestion-de-stock.git /frontend"
+    networks:
+      - front-network
+
+  frontend:
+    build:
+      context: ./frontend  # Chemin vers votre projet Angular
+      dockerfile: Dockerfile
+      args:
+        - API_URL=http://backend:8080/v1
+    container_name: gestiondestock-frontend
+    restart: unless-stopped
+    environment:
+      - API_URL=http://backend:8080/v1
+      - NODE_ENV=production
+    ports:
+      - "8086:82"  # Frontend accessible sur le port 8086
+    depends_on:
+      - backend
+    networks:
+      - front-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:82"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

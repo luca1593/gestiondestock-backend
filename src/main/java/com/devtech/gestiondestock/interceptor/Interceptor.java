@@ -43,7 +43,7 @@ public class Interceptor implements StatementInspector {
     );
 
     private static final Pattern IDENTREPRISE_PATTERN = Pattern.compile(
-        "(?i)\\.identreprise\\s*=\\s*\\d+",
+        "(?i)\\.identreprise\\s*=\\s*(\\?|\\d+)",
         Pattern.CASE_INSENSITIVE
     );
 
