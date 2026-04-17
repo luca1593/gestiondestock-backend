@@ -14,13 +14,6 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/16
-  front-network: # Réseau pour tous les services front
-    driver: bridge
-    driver_opts:
-      com.docker.network.bridge.name: br-gestion
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
 
 services:
   mysql:
@@ -149,7 +142,7 @@ services:
         condition: service_healthy
     networks:
       - app-network
-      - front-network
+      - api-front-network
     deploy:
       resources:
         limits:
@@ -170,31 +163,6 @@ services:
         max-size: "50m"
         max-file: "10"
 
-  nginx:
-    image: nginx:alpine
-    container_name: gestiondestock-nginx
-    restart: always
-    ports:
-      - "93:93"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./nginx/logs:/var/log/nginx
-      - ./nginx/html:/usr/share/nginx/html:ro
-    depends_on:
-      - backend
-    networks:
-      - front-network
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 128M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
-        max-file: "5"
-
   watchtower:
     image: containrrr/watchtower:latest
     container_name: gestiondestock-watchtower
@@ -213,53 +181,3 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
-
-  # NOUVEAU SERVICE: Frontend Angular
-  frontend-setup:
-    image: alpine/git:latest
-    container_name: frontend-setup-temp
-    volumes:
-      - ./frontend:/frontend
-    command: >
-      sh -c "rm -rf /frontend/* && 
-             git clone https://github.com/luca1593/gestion-de-stock.git /frontend || 
-             git clone https://${GITHUB_TOKEN}@github.com/luca1593/gestion-de-stock.git /frontend"
-    networks:
-      - front-network
-
-  frontend:
-    build:
-      context: ./frontend  # Chemin vers votre projet Angular
-      dockerfile: Dockerfile
-      args:
-        - API_URL=http://backend:8080/v1
-    container_name: gestiondestock-frontend
-    restart: unless-stopped
-    environment:
-      - API_URL=http://backend:8080/v1
-      - NODE_ENV=production
-    ports:
-      - "8086:82"  # Frontend accessible sur le port 8086
-    depends_on:
-      - backend
-    networks:
-      - front-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:82"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
