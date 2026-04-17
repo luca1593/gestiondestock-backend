@@ -14,6 +14,8 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/16
+  api-front-network:
+    external: true
 
 services:
   mysql:
