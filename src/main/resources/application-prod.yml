@@ -2,6 +2,13 @@ spring:
   webmvc:
     cors:
       allowed-origins: "http://www.gestion-stock.mg"
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+    date-format: dd/MM/yyyy HH:mm:ss
+    time-zone: UTC
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT:3307}/${DB_NAME:gestiondestock}?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: ${DB_USERNAME}
