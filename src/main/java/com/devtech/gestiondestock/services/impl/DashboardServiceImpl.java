@@ -109,7 +109,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         Map<String, List<Vente>> groupedByDate = ventes.stream()
                 .collect(Collectors.groupingBy(v -> {
-                    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
                             .withZone(ZoneId.systemDefault());
                     return fmt.format(v.getDateVente());
                 }));
@@ -146,7 +146,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         Map<String, List<Vente>> groupedByMonth = ventes.stream()
                 .collect(Collectors.groupingBy(v -> {
-                    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM")
+                    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
                             .withZone(ZoneId.systemDefault());
                     return fmt.format(v.getDateVente());
                 }));

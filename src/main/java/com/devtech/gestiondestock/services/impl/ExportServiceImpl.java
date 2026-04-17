@@ -178,7 +178,7 @@ public class ExportServiceImpl implements ExportService {
             }
 
             int rowNum = 1;
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.systemDefault());
             for (Vente vente : ventes) {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(vente.getId());
@@ -214,7 +214,7 @@ public class ExportServiceImpl implements ExportService {
             }
 
             int rowNum = 1;
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.systemDefault());
             for (CommandeClient cc : commandes) {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(cc.getId());
