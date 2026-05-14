@@ -59,6 +59,19 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 
+		<!-- Micrometer Prometheus registry for /actuator/prometheus -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+
+		<!-- Spring Boot Admin Client -->
+		<dependency>
+			<groupId>de.codecentric</groupId>
+			<artifactId>spring-boot-admin-starter-client</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+
         <!-- https://mvnrepository.com/artifact/com.github.fabienbarbero/flickr-api -->
 		<dependency>
 			<groupId>com.flickr4java</groupId>

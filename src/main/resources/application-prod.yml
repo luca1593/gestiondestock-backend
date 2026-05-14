@@ -10,9 +10,9 @@ spring:
     date-format: dd/MM/yyyy HH:mm:ss
     time-zone: UTC
   datasource:
-    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3307}/${DB_NAME:gestiondestock}?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://${DB_HOST:12.24.5.100}:${DB_PORT:3306}/${DB_NAME:gestiondestock}?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: ${DB_USERNAME:luca}
+    password: ${DB_PASSWORD:luca1593}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database: MYSQL
@@ -27,7 +27,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus,loggers,env,beans
   endpoint:
     health:
       show-details: NEVER
@@ -36,6 +36,15 @@ management:
   health:
     mail:
       enabled: false
+  metrics:
+    tags:
+      env: prod
+
+spring.boot.admin:
+  client:
+    url: ${SPRING_BOOT_ADMIN_URL:http://localhost:8084}
+    instance:
+      name: gestiondestock-prod
 
 springdoc:
   api-docs:

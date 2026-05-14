@@ -54,8 +54,8 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
       SERVER_PORT: 8085
-      DB_HOST: mysql
-      DB_PORT: 3306
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-3306}
       DB_NAME: ${DB_NAME:-gestiondestock}
       DB_USERNAME: ${DB_USERNAME:-luca}
       DB_PASSWORD: ${DB_PASSWORD:-luca1593}
@@ -67,11 +67,9 @@ services:
       SWAGGER_ENABLED: ${SWAGGER_ENABLED:-true}
       SHOW_HEALTH_DETAILS: ${SHOW_HEALTH_DETAILS:-true}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:4200,http://localhost:8085}
+      SPRING_BOOT_ADMIN_URL: ${SPRING_BOOT_ADMIN_URL:-http://spring-boot-admin:8084}
     ports:
       - "8085:8085"
-    depends_on:
-      mysql:
-        condition: service_healthy
     networks:
       - gestiondestock-network
     healthcheck:
@@ -81,8 +79,58 @@ services:
       retries: 5
       start_period: 90s
 
+  spring-boot-admin:
+    image: codecentric/spring-boot-admin:3.1.0
+    container_name: spring-boot-admin
+    restart: always
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_BOOT_ADMIN_AUTH_USERNAME: admin
+      SPRING_BOOT_ADMIN_AUTH_PASSWORD: admin123
+      SPRING_SECURITY_USER_NAME: admin
+      SPRING_SECURITY_USER_PASSWORD: admin123
+    networks:
+      - gestiondestock-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - gestiondestock-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_INSTALL_PLUGINS: ""
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - gestiondestock-network
+    depends_on:
+      - prometheus
+
 volumes:
   mysql_data:
+  prometheus_data:
+  grafana_data:
 
 networks:
   gestiondestock-network:
