@@ -18,10 +18,15 @@ spring:
     database: MYSQL
     show-sql: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MariaDBDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
 
 management:
   endpoints:
@@ -55,7 +60,7 @@ springdoc:
     path: /swagger-ui.html
     url: /v3/api-docs
 server:
-  port: 8080
+  port: ${SERVER_PORT:8085}
 
 logging:
   level:

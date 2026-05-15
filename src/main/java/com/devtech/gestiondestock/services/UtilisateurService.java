@@ -10,6 +10,7 @@ public interface UtilisateurService {
     UtilisateurDto findById(Integer id);
     UtilisateurDto findByNomUtilisateur(String nom);
     UtilisateurDto findByEmailUtilisateur(String email);
+    UtilisateurDto findByEmailForAuthentication(String email);
     List<UtilisateurDto> findAll();
     UtilisateurDto changerMotDePasse(ChangerMotDePasseUtilisateurDto dto);
     void delete(Integer id);

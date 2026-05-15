@@ -32,35 +32,40 @@ public class ApplicationRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
-        String userEmail = null;
-        String jwt = null;
-        String idEntreprise = null;
+        try {
+            final String authHeader = request.getHeader("Authorization");
+            String userEmail = null;
+            String jwt = null;
+            String idEntreprise = null;
 
-        if (authHeader !=null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7);
-            userEmail = this.jwtUtil.extractUsername(jwt);
-            idEntreprise = this.jwtUtil.extractIdEntreprise(jwt);
-        }
-
-        if (idEntreprise != null) {
-            MDC.put("idEntreprise", idEntreprise);
-        }
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            if (this.jwtUtil.validateToken(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
-                );
-                usernamePasswordAuthenticationToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            if (authHeader !=null && authHeader.startsWith("Bearer ")) {
+                jwt = authHeader.substring(7);
+                userEmail = this.jwtUtil.extractUsername(jwt);
+                idEntreprise = this.jwtUtil.extractIdEntreprise(jwt);
             }
+
+            if (idEntreprise != null) {
+                MDC.put("idEntreprise", idEntreprise);
+            }
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                if (this.jwtUtil.validateToken(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
+                    usernamePasswordAuthenticationToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                }
+            }
+            if (userEmail != null) {
+                MDC.put("userEmail", userEmail);
+            }
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove("idEntreprise");
+            MDC.remove("userEmail");
         }
-        if (userEmail != null) {
-            MDC.put("userEmail", userEmail);
-        }
-        filterChain.doFilter(request, response);
     }
 }
