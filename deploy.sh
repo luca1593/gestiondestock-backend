@@ -82,8 +82,8 @@ deploy() {
     sleep 15
     
     docker-compose -f "$COMPOSE_FILE" up -d backend
-    log "Waiting for backend..."
-    sleep 30
+    log "Waiting for backend (app takes ~136s)..."
+    sleep 90
     
     docker-compose -f "$COMPOSE_FILE" up -d nginx
     
