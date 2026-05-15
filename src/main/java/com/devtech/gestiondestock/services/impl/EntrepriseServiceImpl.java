@@ -77,8 +77,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
     }
 
     private String generateRandomPassword(){
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        return bCryptPasswordEncoder.encode(java.util.UUID.randomUUID().toString());
+        return java.util.UUID.randomUUID().toString();
     }
 
     @Override

@@ -49,13 +49,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto findById(Integer id) {
         checkId(id);
-        Optional<Category> category = this.categoryRepository.findById(id);
-        return Optional.of(CategoryDto.fromEntity(category.get())).orElseThrow(() ->
-                new EntityNotFoundException(
-                        "Aucun categorie avec l'ID = " + id + " n'a ete trouver dans la base de donnee",
-                        ErrorsCode.CATEGORY_NOT_FOUND
-                )
-        );
+        return this.categoryRepository.findById(id)
+                .map(CategoryDto::fromEntity)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Aucun categorie avec l'ID = " + id + " n'a ete trouver dans la base de donnee",
+                                ErrorsCode.CATEGORY_NOT_FOUND
+                        )
+                );
     }
 
     @Override
