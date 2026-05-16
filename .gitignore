@@ -49,3 +49,6 @@ nginx/logs/
 *.log
 deploy-*.log
 logs/
+AGENTS.md
+HISTORIQUE_DEBUG.md
+Todo.md
