@@ -27,7 +27,7 @@ public class SaveUtilisateurPhoto implements Strategy<UtilisateurDto> {
 
     @Override
     public UtilisateurDto savePhoto(Integer id, InputStream photo, String titre) throws Exception {
-        UtilisateurDto utilisateur = this.utilisateurService.findById(id);
+        UtilisateurDto utilisateur = this.utilisateurService.findByIdWithPassword(id);
         String urlPhoto = this.cloudinaryService.savePhoto(photo, titre, id);
         if (!StringUtils.hasLength(urlPhoto)) {
             throw new InvalidOpperatioException("Impossible de mettre a jour la photo de l'utilisateur",

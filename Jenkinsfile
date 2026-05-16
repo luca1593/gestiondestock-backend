@@ -171,10 +171,10 @@ pipeline {
                     docker compose -f docker-compose.prod.yml ps
                     echo "Getting backend logs..."
                     docker compose -f docker-compose.prod.yml logs backend --tail 50 || true
-                    echo "Waiting for application to start..."
-                    sleep 45
+                    echo "Waiting for application to start (app takes ~200s)..."
+                    sleep 120
                     echo "Checking application health..."
-                    for i in 1 2 3 4 5 6 7 8 9 10; do
+                    for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
                         # Vérifier si l'application répond (même si mail health check échoue)
                         HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8085/actuator/health || echo "000")
                         if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "503" ]; then
@@ -189,10 +189,10 @@ pipeline {
                             fi
                             exit 0
                         fi
-                        echo "⏳ Waiting for application... attempt $i/10"
-                        sleep 30
+                        echo "⏳ Waiting for application... attempt $i/15"
+                        sleep 20
                     done
-                    echo "❌ Application health check failed after 100 seconds"
+                    echo "❌ Application health check failed after 420 seconds"
                     docker compose -f docker-compose.prod.yml logs backend --tail 200
                     exit 1
                     '''
