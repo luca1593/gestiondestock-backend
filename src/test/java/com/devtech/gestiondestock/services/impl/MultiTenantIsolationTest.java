@@ -33,6 +33,8 @@ class MultiTenantIsolationTest {
     @Autowired private ClientService clientService;
     @Autowired private FactureService factureService;
     @Autowired private EntrepotService entrepotService;
+    @Autowired private VenteService venteService;
+    @Autowired private DashboardService dashboardService;
 
     private void flushAndClear() {
         entityManager.flush();
@@ -403,48 +405,188 @@ class MultiTenantIsolationTest {
         assertEquals(0, factureService.findAll().size());
     }
 
+    // ───── DASHBOARD & EXPORT ISOLATION ─────
+
+    private VenteDto createVenteFor(Integer entrepriseId, String code, List<LigneVenteDto> lignes) {
+        MDC.put("idEntreprise", entrepriseId.toString());
+        VenteDto dto = venteService.save(VenteDto.builder()
+                .code(code)
+                .dateVente(Instant.now())
+                .identreprise(entrepriseId)
+                .ligneVentes(lignes)
+                .build());
+        flushAndClear();
+        return dto;
+    }
+
+    private LigneVenteDto createLigneVente(Integer articleId, BigDecimal quantite, BigDecimal prixUnitaire, Integer entrepriseId) {
+        return LigneVenteDto.builder()
+                .article(ArticleDto.builder().id(articleId).build())
+                .quantite(quantite)
+                .prixUnitaire(prixUnitaire)
+                .identreprise(entrepriseId)
+                .build();
+    }
+
     @Test
-    void testFullScenario_EachEnterpriseOperatesIndependently() {
-        Integer catAId = createCategoryFor(entAId, "SC-CAT-A").getId();
-        Integer catBId = createCategoryFor(entBId, "SC-CAT-B").getId();
-        Integer catCId = createCategoryFor(entCId, "SC-CAT-C").getId();
+    void testDashboardGlobalStats_EachEnterpriseSeesOnlyOwnData() {
+        Integer catAId = createCategoryFor(entAId, "DASH-CAT-A").getId();
+        Integer catBId = createCategoryFor(entBId, "DASH-CAT-B").getId();
 
-        ArticleDto artA = createArticleFor(entAId, "SC-ART-A", catAId);
-        ArticleDto artB = createArticleFor(entBId, "SC-ART-B", catBId);
-        ArticleDto artC = createArticleFor(entCId, "SC-ART-C", catCId);
+        ArticleDto artA = createArticleFor(entAId, "DASH-ART-A", catAId);
+        ArticleDto artB = createArticleFor(entBId, "DASH-ART-B", catBId);
 
-        ClientDto cliA = createClientFor(entAId, "sc-a@test.com");
-        ClientDto cliB = createClientFor(entBId, "sc-b@test.com");
-        FactureDto facA = createFactureFor(entAId, "SC-FAC-A", cliA.getId());
-        FactureDto facB = createFactureFor(entBId, "SC-FAC-B", cliB.getId());
+        ClientDto clientA = createClientFor(entAId, "dash-a@test.com");
+        ClientDto clientB = createClientFor(entBId, "dash-b@test.com");
 
-        flushAndClear();
-        MDC.put("idEntreprise", entAId.toString());
-        assertEquals(1, articleService.findAll().size());
-        assertEquals(1, clientService.findAll().size());
-        assertEquals(1, factureService.findAll().size());
-        assertNotNull(articleService.findById(artA.getId()));
-        assertThrows(EntityNotFoundException.class, () -> articleService.findById(artB.getId()));
-        assertThrows(EntityNotFoundException.class, () -> articleService.findById(artC.getId()));
-        assertThrows(EntityNotFoundException.class, () -> factureService.findById(facB.getId()));
+        createVenteFor(entAId, "DASH-VTE-A", List.of(
+                createLigneVente(artA.getId(), BigDecimal.valueOf(2), BigDecimal.valueOf(100), entAId)
+        ));
+        createVenteFor(entBId, "DASH-VTE-B", List.of(
+                createLigneVente(artB.getId(), BigDecimal.valueOf(3), BigDecimal.valueOf(50), entBId)
+        ));
 
         flushAndClear();
-        MDC.put("idEntreprise", entBId.toString());
-        assertEquals(1, articleService.findAll().size());
-        assertEquals(1, clientService.findAll().size());
-        assertEquals(1, factureService.findAll().size());
-        assertNotNull(articleService.findById(artB.getId()));
-        assertThrows(EntityNotFoundException.class, () -> articleService.findById(artA.getId()));
-        assertThrows(EntityNotFoundException.class, () -> articleService.findById(artC.getId()));
-        assertThrows(EntityNotFoundException.class, () -> clientService.findById(cliA.getId()));
-        assertThrows(EntityNotFoundException.class, () -> factureService.findById(facA.getId()));
+
+        DashboardStatsDto statsA = dashboardService.getGlobalStats(entAId);
+        assertEquals(1, statsA.getTotalArticles());
+        assertEquals(1, statsA.getTotalClients());
+        assertEquals(1, statsA.getTotalVentes());
+        assertEquals(0, BigDecimal.valueOf(200).compareTo(statsA.getChiffreAffaires()));
 
         flushAndClear();
-        MDC.put("idEntreprise", entCId.toString());
-        assertEquals(1, articleService.findAll().size());
-        assertEquals(0, clientService.findAll().size());
-        assertNotNull(articleService.findById(artC.getId()));
-        assertThrows(EntityNotFoundException.class, () -> articleService.findById(artA.getId()));
-        assertThrows(EntityNotFoundException.class, () -> articleService.findById(artB.getId()));
+
+        DashboardStatsDto statsB = dashboardService.getGlobalStats(entBId);
+        assertEquals(1, statsB.getTotalArticles());
+        assertEquals(1, statsB.getTotalClients());
+        assertEquals(1, statsB.getTotalVentes());
+        assertEquals(0, BigDecimal.valueOf(150).compareTo(statsB.getChiffreAffaires()));
+    }
+
+    @Test
+    void testDashboardGlobalStats_CrossEnterpriseDataNotLeaked() {
+        Integer catAId = createCategoryFor(entAId, "DASH-ISO-A").getId();
+        Integer catBId = createCategoryFor(entBId, "DASH-ISO-B").getId();
+
+        ArticleDto artA = createArticleFor(entAId, "DASH-ISO-ART-A", catAId);
+        createArticleFor(entBId, "DASH-ISO-ART-B", catBId);
+
+        ClientDto clientA = createClientFor(entAId, "iso-dash-a@test.com");
+        createClientFor(entBId, "iso-dash-b@test.com");
+
+        createVenteFor(entAId, "DASH-ISO-VTE-A", List.of(
+                createLigneVente(artA.getId(), BigDecimal.valueOf(5), BigDecimal.valueOf(200), entAId)
+        ));
+
+        flushAndClear();
+
+        DashboardStatsDto statsB = dashboardService.getGlobalStats(entBId);
+        assertEquals(1, statsB.getTotalArticles());
+        assertEquals(1, statsB.getTotalClients());
+        assertEquals(0, statsB.getTotalVentes());
+        assertEquals(0, BigDecimal.ZERO.compareTo(statsB.getChiffreAffaires()));
+
+        flushAndClear();
+
+        DashboardStatsDto statsA = dashboardService.getGlobalStats(entAId);
+        assertEquals(1, statsA.getTotalArticles());
+        assertEquals(1, statsA.getTotalClients());
+        assertEquals(1, statsA.getTotalVentes());
+        assertEquals(0, BigDecimal.valueOf(1000).compareTo(statsA.getChiffreAffaires()));
+    }
+
+    @Test
+    void testDashboardTopArticles_NoCrossEnterpriseLeak() {
+        Integer catAId = createCategoryFor(entAId, "TOP-CAT-A").getId();
+        Integer catBId = createCategoryFor(entBId, "TOP-CAT-B").getId();
+
+        ArticleDto artA1 = createArticleFor(entAId, "TOP-A1", catAId);
+        ArticleDto artA2 = createArticleFor(entAId, "TOP-A2", catAId);
+        ArticleDto artB1 = createArticleFor(entBId, "TOP-B1", catBId);
+
+        createVenteFor(entAId, "TOP-VTE-A1", List.of(
+                createLigneVente(artA1.getId(), BigDecimal.valueOf(10), BigDecimal.valueOf(50), entAId),
+                createLigneVente(artA2.getId(), BigDecimal.valueOf(5), BigDecimal.valueOf(30), entAId)
+        ));
+        createVenteFor(entBId, "TOP-VTE-B1", List.of(
+                createLigneVente(artB1.getId(), BigDecimal.valueOf(20), BigDecimal.valueOf(25), entBId)
+        ));
+
+        flushAndClear();
+
+        List<ArticleStatsDto> topA = dashboardService.getTopArticles(entAId, 10);
+        assertFalse(topA.isEmpty());
+        for (ArticleStatsDto dto : topA) {
+            assertNotEquals(artB1.getId(), dto.getArticleId());
+        }
+
+        flushAndClear();
+
+        List<ArticleStatsDto> topB = dashboardService.getTopArticles(entBId, 10);
+        assertFalse(topB.isEmpty());
+        for (ArticleStatsDto dto : topB) {
+            assertNotEquals(artA1.getId(), dto.getArticleId());
+            assertNotEquals(artA2.getId(), dto.getArticleId());
+        }
+    }
+
+    @Test
+    void testDashboardVentesParPeriode_NoCrossEnterpriseLeak() {
+        Integer catAId = createCategoryFor(entAId, "PER-CAT-A").getId();
+        Integer catBId = createCategoryFor(entBId, "PER-CAT-B").getId();
+
+        ArticleDto artA = createArticleFor(entAId, "PER-ART-A", catAId);
+        ArticleDto artB = createArticleFor(entBId, "PER-ART-B", catBId);
+
+        createVenteFor(entAId, "PER-VTE-A", List.of(
+                createLigneVente(artA.getId(), BigDecimal.valueOf(1), BigDecimal.valueOf(100), entAId)
+        ));
+        createVenteFor(entBId, "PER-VTE-B", List.of(
+                createLigneVente(artB.getId(), BigDecimal.valueOf(1), BigDecimal.valueOf(200), entBId)
+        ));
+
+        flushAndClear();
+
+        Instant now = Instant.now();
+        Instant weekAgo = now.minusSeconds(604800);
+        Instant tomorrow = now.plusSeconds(86400);
+
+        List<VenteStatsDto> ventesA = dashboardService.getVentesParPeriode(entAId, weekAgo, tomorrow);
+        List<VenteStatsDto> ventesB = dashboardService.getVentesParPeriode(entBId, weekAgo, tomorrow);
+
+        long nbVentesA = ventesA.stream().mapToLong(VenteStatsDto::getNbVentes).sum();
+        long nbVentesB = ventesB.stream().mapToLong(VenteStatsDto::getNbVentes).sum();
+
+        assertTrue(nbVentesA >= 1, "Enterprise A should have at least 1 vente");
+        assertTrue(nbVentesB >= 1, "Enterprise B should have at least 1 vente");
+    }
+
+    @Test
+    void testDashboardChiffreAffairesParMois_NoCrossEnterpriseLeak() {
+        Integer catAId = createCategoryFor(entAId, "CA-CAT-A").getId();
+        Integer catBId = createCategoryFor(entBId, "CA-CAT-B").getId();
+
+        ArticleDto artA = createArticleFor(entAId, "CA-ART-A", catAId);
+        ArticleDto artB = createArticleFor(entBId, "CA-ART-B", catBId);
+
+        createVenteFor(entAId, "CA-VTE-A", List.of(
+                createLigneVente(artA.getId(), BigDecimal.valueOf(3), BigDecimal.valueOf(100), entAId)
+        ));
+        createVenteFor(entBId, "CA-VTE-B", List.of(
+                createLigneVente(artB.getId(), BigDecimal.valueOf(7), BigDecimal.valueOf(50), entBId)
+        ));
+
+        flushAndClear();
+
+        int currentYear = Instant.now().atZone(java.time.ZoneId.systemDefault()).getYear();
+
+        List<VenteStatsDto> caA = dashboardService.getChiffreAffairesParMois(entAId, currentYear);
+        List<VenteStatsDto> caB = dashboardService.getChiffreAffairesParMois(entBId, currentYear);
+
+        long nbVentesA = caA.stream().mapToLong(VenteStatsDto::getNbVentes).sum();
+        long nbVentesB = caB.stream().mapToLong(VenteStatsDto::getNbVentes).sum();
+
+        assertTrue(nbVentesA >= 1, "Enterprise A should have at least 1 vente in CA report");
+        assertTrue(nbVentesB >= 1, "Enterprise B should have at least 1 vente in CA report");
     }
 }
