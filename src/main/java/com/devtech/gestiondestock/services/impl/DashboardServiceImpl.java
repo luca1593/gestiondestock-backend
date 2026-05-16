@@ -78,7 +78,7 @@ public class DashboardServiceImpl implements DashboardService {
     public List<ArticleStatsDto> getTopArticles(Integer identreprise, int limit) {
         List<Article> articles = articleRepository.findAllByIdentreprise(identreprise);
         List<LigneVente> lignesVente = ligneVenteRepository.findAllByIdentreprise(identreprise);
-        List<LigneCommandeClient> lignesCC = ligneCommandeClientRepository.findAll();
+        List<LigneCommandeClient> lignesCC = ligneCommandeClientRepository.findAllByIdentreprise(identreprise);
 
         return articles.stream()
                 .map(article -> {
