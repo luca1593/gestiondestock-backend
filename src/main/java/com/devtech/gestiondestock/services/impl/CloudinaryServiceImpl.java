@@ -41,9 +41,8 @@ public class CloudinaryServiceImpl implements CloudinaryService {
     try {
       String publicId = title + "_" + id;
       byte[] bytes = photo.readAllBytes();
-      Map<?, ?> uploadResult = cloudinary.uploader().upload(bytes, ObjectUtils.asMap(
-          "public_id", publicId,
-          "upload_preset", "gestiondestock"
+      Map<?, ?> uploadResult = cloudinary.uploader().unsignedUpload(bytes, "gestiondestock", ObjectUtils.asMap(
+          "public_id", publicId
       ));
       String url = (String) uploadResult.get("secure_url");
       log.info("Photo uploaded to Cloudinary: {}", url);
