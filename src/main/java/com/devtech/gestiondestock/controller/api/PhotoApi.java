@@ -13,7 +13,7 @@ import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
  */
 public interface PhotoApi {
     
-    @PostMapping(value = APP_ROOT + "/photos/{context}/{id}/{title}", consumes = {
+    @PostMapping(value = {"/photos/{context}/{id}/{title}", APP_ROOT + "/photos/{context}/{id}/{title}"}, consumes = {
             MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     Object savePhoto(
         @PathVariable("context") String context,
