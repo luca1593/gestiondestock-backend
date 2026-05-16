@@ -66,7 +66,7 @@ public interface FournisseurApi {
     )})
     List<FournisseurDto> findAll();
 
-    @DeleteMapping(value = APP_ROOT + "/fournisseur/detele/{idFournisseur}")
+    @DeleteMapping(value = APP_ROOT + "/fournisseur/delete/{idFournisseur}")
     @Operation(summary = "Supprimer un fournisseur", description = "Cette methode permet de supprimer un fournisseur par son ID")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Le fournisseur a ete supprimer dans la BDD")})
     void delete(@PathVariable("idFournisseur") Integer id);

@@ -18,4 +18,6 @@ public interface EntrepriseService {
 
     void delete(Integer id);
 
+    EntrepriseDto updatePhoto(Integer id, String photoUrl);
+
 }

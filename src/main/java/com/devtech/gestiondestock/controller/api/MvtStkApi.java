@@ -87,7 +87,7 @@ public interface MvtStkApi {
     @PostMapping(value = APP_ROOT + "/mvtstk/correction-neg", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     MvtStkDto correctionMvtStkNeg(@RequestBody MvtStkDto dto);
 
-    @DeleteMapping(value = APP_ROOT + "/mvtstk/detele/{typeMvt}")
+    @DeleteMapping(value = APP_ROOT + "/mvtstk/delete/{typeMvt}")
     @Operation(summary = "Supprimer une commande client", description = "Cette methode permet de supprimer un mouvement de stock par son ID")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Le mouvement de stock a ete supprimen dans la BDD")})
     void delete(@PathVariable("typeMvt") Integer id);

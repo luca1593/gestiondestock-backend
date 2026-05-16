@@ -42,9 +42,13 @@ build/
 
 ### Production ###
 .env
+.env.example
 backups/
 nginx/ssl/
 nginx/logs/
 *.log
 deploy-*.log
 logs/
+AGENTS.md
+HISTORIQUE_DEBUG.md
+Todo.md

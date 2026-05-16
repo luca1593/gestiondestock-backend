@@ -143,4 +143,15 @@ public class EntrepriseServiceImpl implements EntrepriseService {
         }
         this.entrepriseRepository.deleteById(id);
     }
+
+    @Override
+    public EntrepriseDto updatePhoto(Integer id, String photoUrl) {
+        Optional<Entreprise> optionalEntreprise = this.entrepriseRepository.findById(id);
+        if (optionalEntreprise.isEmpty()) {
+            throw new EntityNotFoundException("Aucune entreprise avec l'ID = " + id, ErrorsCode.ENTREPRISE_NOT_FOUND);
+        }
+        Entreprise entreprise = optionalEntreprise.get();
+        entreprise.setPhoto(photoUrl);
+        return EntrepriseDto.fromEntity(this.entrepriseRepository.save(entreprise));
+    }
 }

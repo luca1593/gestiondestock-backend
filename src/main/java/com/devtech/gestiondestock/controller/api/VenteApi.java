@@ -67,7 +67,7 @@ public interface VenteApi {
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(schema = @Schema(implementation = VenteDto.class))))})
     List<VenteDto> findAll();
 
-    @DeleteMapping(value = APP_ROOT + "/vente/detele/{idVente}")
+    @DeleteMapping(value = APP_ROOT + "/vente/delete/{idVente}")
     @Operation(summary = "Supprimer une vente", description = "Cette methode permet de supprimer un article par son ID")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "La vente a ete supprimen dans la BDD")})
     void delete(@PathVariable("idVente") Integer id);
