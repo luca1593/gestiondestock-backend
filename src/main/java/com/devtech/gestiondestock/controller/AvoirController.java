@@ -5,6 +5,7 @@ import com.devtech.gestiondestock.services.AvoirService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,14 @@ public class AvoirController {
 
     private final AvoirService avoirService;
 
+    private Integer getCurrentEntrepriseId() {
+        String idEntreprise = MDC.get("idEntreprise");
+        if (idEntreprise == null) {
+            throw new IllegalStateException("idEntreprise not set in MDC - user not authenticated");
+        }
+        return Integer.parseInt(idEntreprise);
+    }
+
     @PostMapping("/save")
     @Operation(summary = "Creer/modifier un avoir")
     public ResponseEntity<AvoirDto> save(@RequestBody AvoirDto dto) {
@@ -36,41 +45,36 @@ public class AvoirController {
     @GetMapping("/client/{clientId}")
     @Operation(summary = "Avoirs d'un client")
     public ResponseEntity<List<AvoirDto>> findByClient(
-            @PathVariable Integer clientId,
-            @RequestHeader(value = "X-Id-Entreprise", required = false, defaultValue = "1") Integer identreprise) {
-        return ResponseEntity.ok(avoirService.findByClientId(clientId, identreprise));
+            @PathVariable Integer clientId) {
+        return ResponseEntity.ok(avoirService.findByClientId(clientId, getCurrentEntrepriseId()));
     }
 
     @GetMapping("/vente/{venteId}")
     @Operation(summary = "Avoirs d'une vente")
     public ResponseEntity<List<AvoirDto>> findByVente(
-            @PathVariable Integer venteId,
-            @RequestHeader(value = "X-Id-Entreprise", required = false, defaultValue = "1") Integer identreprise) {
-        return ResponseEntity.ok(avoirService.findByVenteId(venteId, identreprise));
+            @PathVariable Integer venteId) {
+        return ResponseEntity.ok(avoirService.findByVenteId(venteId, getCurrentEntrepriseId()));
     }
 
     @GetMapping("/etat/{etat}")
     @Operation(summary = "Avoirs par etat (EN_ATTENTE, VALIDE, ANNULE)")
     public ResponseEntity<List<AvoirDto>> findByEtat(
-            @PathVariable String etat,
-            @RequestHeader(value = "X-Id-Entreprise", required = false, defaultValue = "1") Integer identreprise) {
-        return ResponseEntity.ok(avoirService.findByEtat(etat, identreprise));
+            @PathVariable String etat) {
+        return ResponseEntity.ok(avoirService.findByEtat(etat, getCurrentEntrepriseId()));
     }
 
     @GetMapping("/date-range")
     @Operation(summary = "Avoirs par periode")
     public ResponseEntity<List<AvoirDto>> findByDateRange(
             @RequestParam Instant debut,
-            @RequestParam Instant fin,
-            @RequestHeader(value = "X-Id-Entreprise", required = false, defaultValue = "1") Integer identreprise) {
-        return ResponseEntity.ok(avoirService.findByDateRange(debut, fin, identreprise));
+            @RequestParam Instant fin) {
+        return ResponseEntity.ok(avoirService.findByDateRange(debut, fin, getCurrentEntrepriseId()));
     }
 
     @GetMapping("/all")
     @Operation(summary = "Tous les avoirs")
-    public ResponseEntity<List<AvoirDto>> findAll(
-            @RequestHeader(value = "X-Id-Entreprise", required = false, defaultValue = "1") Integer identreprise) {
-        return ResponseEntity.ok(avoirService.findAll(identreprise));
+    public ResponseEntity<List<AvoirDto>> findAll() {
+        return ResponseEntity.ok(avoirService.findAll(getCurrentEntrepriseId()));
     }
 
     @DeleteMapping("/delete/{id}")
