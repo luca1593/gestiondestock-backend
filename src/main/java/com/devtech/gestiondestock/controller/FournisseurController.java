@@ -4,20 +4,18 @@ import com.devtech.gestiondestock.controller.api.FournisseurApi;
 import com.devtech.gestiondestock.dto.FournisseurDto;
 import com.devtech.gestiondestock.services.FournisseurService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * @author luca
- */
 @RestController
 public class FournisseurController implements FournisseurApi {
 
-    private FournisseurService fournisseurService;
+    private final FournisseurService fournisseurService;
 
     @Autowired
-    public FournisseurController(FournisseurService fournisseurService){
+    public FournisseurController(FournisseurService fournisseurService) {
         this.fournisseurService = fournisseurService;
     }
 
@@ -47,6 +45,7 @@ public class FournisseurController implements FournisseurApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public void delete(Integer id) {
         this.fournisseurService.delete(id);
     }

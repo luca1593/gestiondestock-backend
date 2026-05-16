@@ -26,10 +26,6 @@ public class UtilisateurValidator {
         if (!StringUtils.hasLength(utilisateurDto.getPrenom())){
             errors.add("Veuillez renseigner le prenom d'utilisateur");
         }
-        if (!StringUtils.hasLength(utilisateurDto.getMotDePasse())){
-            errors.add("Veuillez renseigner le mot de passe d'utilisateur");
-        }
-
         errors.addAll(AdresseValidator.validate(utilisateurDto.getAdresse()));
 
         if (utilisateurDto.getDateDeNaissance() == null){

@@ -8,19 +8,17 @@ import com.devtech.gestiondestock.model.EtatCommande;
 import com.devtech.gestiondestock.services.CommandeClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
-/**
- * @author luca
- */
 @RestController
 public class CommandeClientController implements CommandeClientApi {
 
-    private CommandeClientService commandeClientService;
+    private final CommandeClientService commandeClientService;
 
     @Autowired
     public CommandeClientController(CommandeClientService commandeClientService) {
@@ -35,6 +33,7 @@ public class CommandeClientController implements CommandeClientApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public ResponseEntity<CommandeClientDto> updateEtatCommande(Integer id, EtatCommande etatCommande) {
         return ResponseEntity.ok(this.commandeClientService.updateEtatCommande(id, etatCommande));
     }
@@ -93,11 +92,12 @@ public class CommandeClientController implements CommandeClientApi {
     }
 
     @Override
-    public ResponseEntity<List<CommandeClientDto>> findAllByClient(ClientDto dto){
+    public ResponseEntity<List<CommandeClientDto>> findAllByClient(ClientDto dto) {
         return ResponseEntity.ok(this.commandeClientService.findAllByClientDto(dto));
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public ResponseEntity delete(Integer id) {
         this.commandeClientService.delete(id);
         return ResponseEntity.ok().build();

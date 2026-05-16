@@ -7,19 +7,17 @@ import com.devtech.gestiondestock.dto.LigneCommandeFournisseurDto;
 import com.devtech.gestiondestock.dto.LigneVenteDto;
 import com.devtech.gestiondestock.services.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * @author luca
- */
 @RestController
 public class ArticleController implements ArticleApi {
-    private ArticleService articleService;
+    private final ArticleService articleService;
 
     @Autowired
-    public ArticleController(ArticleService articleService){
+    public ArticleController(ArticleService articleService) {
         this.articleService = articleService;
     }
 
@@ -64,6 +62,7 @@ public class ArticleController implements ArticleApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public void delete(Integer id) {
         this.articleService.delete(id);
     }
