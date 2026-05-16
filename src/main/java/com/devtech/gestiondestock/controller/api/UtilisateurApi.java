@@ -75,7 +75,7 @@ public interface UtilisateurApi {
     })
     UtilisateurDto changerMotDePasse(@RequestBody ChangerMotDePasseUtilisateurDto dto);
 
-    @DeleteMapping(value = APP_ROOT + "/utilisateur/detele/{idUtilisateur}")
+    @DeleteMapping(value = APP_ROOT + "/utilisateur/delete/{idUtilisateur}")
     @Operation(summary = "Supprimer un utilisateur", description = "Cette methode permet de supprimer un utilisateur par son ID")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Utilisateur supprimer avec success")})
     void delete(@PathVariable("idUtilisateur") Integer id);
