@@ -79,6 +79,22 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     }
 
     @Override
+    public UtilisateurDto findByIdWithPassword(Integer id) {
+        if (id == null){
+            log.error("Utilisateur ID is null");
+            return null;
+        }
+        return utilisateurRepository.findById(id)
+                .map(UtilisateurDto::fromEntity)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Aucun utilisateur trouver avec l'id = " + id + " dans la BDD",
+                                ErrorsCode.UTILISATEUR_NOT_FOUND
+                        )
+                );
+    }
+
+    @Override
     public UtilisateurDto findByNomUtilisateur(String nom) {
         if (!StringUtils.hasLength(nom)){
             log.error("Utilisateur nom is null");

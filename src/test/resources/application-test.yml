@@ -53,11 +53,10 @@ springdoc:
     path: /swagger-ui.html
     enabled: true
 
-flickr:
+cloudinary:
+  cloudName: testcloud
   apiKey: testkey
   apiSecret: testsecret
-  appKey: testappkey
-  appSecret: testappsecret
 
 jwt:
   secret: testSecretKeyForUnitTestsOnlyDoNotUseInProductionEnvironment1234567890

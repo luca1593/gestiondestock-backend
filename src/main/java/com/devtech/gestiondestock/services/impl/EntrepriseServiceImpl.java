@@ -45,20 +45,23 @@ public class EntrepriseServiceImpl implements EntrepriseService {
             log.error("Entreprise is invalid: {}", dto);
             throw new InvalidEntityException("L'entreprise n'est pas valide", ErrorsCode.ENTREPRISE_NOT_VALID, errors);
         }
+        boolean isNew = dto.getId() == null;
         EntrepriseDto savedEntreprise =  EntrepriseDto.fromEntity(
                 this.entrepriseRepository.save(EntrepriseDto.toEntity(dto))
         );
 
-        UtilisateurDto utilisateur = fromEntreprise(savedEntreprise);
-        utilisateur.setEntreprise(savedEntreprise);
-        UtilisateurDto savedUtilisateur = this.utilisateurService.save(utilisateur);
+        if (isNew) {
+            UtilisateurDto utilisateur = fromEntreprise(savedEntreprise);
+            utilisateur.setEntreprise(savedEntreprise);
+            UtilisateurDto savedUtilisateur = this.utilisateurService.save(utilisateur);
 
-        RoleDto roleDto = RoleDto.builder()
-                .roleNom("Admin")
-                .utilisateur(savedUtilisateur)
-                .build();
+            RoleDto roleDto = RoleDto.builder()
+                    .roleNom("Admin")
+                    .utilisateur(savedUtilisateur)
+                    .build();
 
-        this.roleRepository.save(RoleDto.toEntity(roleDto));
+            this.roleRepository.save(RoleDto.toEntity(roleDto));
+        }
 
         return savedEntreprise;
     }

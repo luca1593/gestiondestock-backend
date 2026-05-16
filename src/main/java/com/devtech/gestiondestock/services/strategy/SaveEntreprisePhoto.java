@@ -4,8 +4,7 @@ import com.devtech.gestiondestock.dto.EntrepriseDto;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.services.EntrepriseService;
-import com.devtech.gestiondestock.services.FlickrService;
-import com.flickr4java.flickr.FlickrException;
+import com.devtech.gestiondestock.services.CloudinaryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,18 +17,18 @@ import java.io.InputStream;
 public class SaveEntreprisePhoto implements Strategy<EntrepriseDto> {
 
     private final EntrepriseService entrepriseService;
-    private final FlickrService flickrService;
+    private final CloudinaryService cloudinaryService;
 
     @Autowired
-    public SaveEntreprisePhoto(EntrepriseService entrepriseService, FlickrService flickrService) {
+    public SaveEntreprisePhoto(EntrepriseService entrepriseService, CloudinaryService cloudinaryService) {
         this.entrepriseService = entrepriseService;
-        this.flickrService = flickrService;
+        this.cloudinaryService = cloudinaryService;
     }
 
     @Override
-    public EntrepriseDto savePhoto(Integer id, InputStream photo, String titre) throws FlickrException {
+    public EntrepriseDto savePhoto(Integer id, InputStream photo, String titre) throws Exception {
         EntrepriseDto entreprise = this.entrepriseService.findById(id);
-        String urlPhoto = this.flickrService.savePhoto(photo, titre, id);
+        String urlPhoto = this.cloudinaryService.savePhoto(photo, titre, id);
         if (!StringUtils.hasLength(urlPhoto)) {
             throw new InvalidOpperatioException("Impossible de mettre a jour la photo de l'entreprise",
                     ErrorsCode.UPDATE_PHOTO_EXEPTION);
