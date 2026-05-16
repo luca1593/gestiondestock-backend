@@ -38,10 +38,14 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     @Override
     public UtilisateurDto save(UtilisateurDto dto) {
         List<String> errors = UtilisateurValidator.validate(dto);
+        if (dto.getId() == null && !StringUtils.hasLength(dto.getMotDePasse())) {
+            errors.add("Veuillez renseigner le mot de passe d'utilisateur");
+        }
         if (!errors.isEmpty()){
             log.error("Utilisateur is invalid: {}", dto);
             throw new InvalidEntityException("L'utilisateur n'est pas valide", ErrorsCode.UTILISATEUR_NOT_VALID, errors);
         }
+        String existingPassword = null;
         if (dto.getId() != null) {
             Utilisateur existing = utilisateurRepository.findById(dto.getId())
                     .orElseThrow(() -> new EntityNotFoundException(
@@ -54,9 +58,14 @@ public class UtilisateurServiceImpl implements UtilisateurService {
                 throw new InvalidEntityException("L'email ne peut pas etre modifie apres la creation",
                         ErrorsCode.UTILISATEUR_NOT_VALID);
             }
+            existingPassword = existing.getMotDePasse();
         }
         Utilisateur entity = UtilisateurDto.toEntity(dto);
-        entity.setMotDePasse(generateEncodedPassword(dto.getMotDePasse()));
+        if (dto.getId() != null && !StringUtils.hasLength(dto.getMotDePasse())) {
+            entity.setMotDePasse(existingPassword);
+        } else {
+            entity.setMotDePasse(generateEncodedPassword(dto.getMotDePasse()));
+        }
         return UtilisateurDto.fromEntity(
                 utilisateurRepository.save(entity)
         );
