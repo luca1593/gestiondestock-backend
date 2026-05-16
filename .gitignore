@@ -42,6 +42,7 @@ build/
 
 ### Production ###
 .env
+.env.example
 backups/
 nginx/ssl/
 nginx/logs/
