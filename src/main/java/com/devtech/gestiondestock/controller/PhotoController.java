@@ -3,6 +3,8 @@ package com.devtech.gestiondestock.controller;
 import com.devtech.gestiondestock.controller.api.PhotoApi;
 import com.devtech.gestiondestock.services.strategy.StrategyProtoContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,10 +23,10 @@ public class PhotoController implements PhotoApi {
 
     @Override
     public Object savePhoto(
-            String context,
-            Integer id,
-            String title,
-            MultipartFile photo) throws Exception {
+            @PathVariable("context") String context,
+            @PathVariable("id") Integer id,
+            @PathVariable("title") String title,
+            @RequestPart("file") MultipartFile photo) throws Exception {
         return this.strategyProtoContext.savePhoto(
                 context, id, title, photo.getInputStream());
     }
