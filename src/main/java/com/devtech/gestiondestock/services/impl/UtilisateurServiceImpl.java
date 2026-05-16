@@ -63,6 +63,8 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         Utilisateur entity = UtilisateurDto.toEntity(dto);
         if (dto.getId() != null && !StringUtils.hasLength(dto.getMotDePasse())) {
             entity.setMotDePasse(existingPassword);
+        } else if (dto.getId() != null && dto.getMotDePasse() != null && dto.getMotDePasse().startsWith("$2")) {
+            entity.setMotDePasse(dto.getMotDePasse());
         } else {
             entity.setMotDePasse(generateEncodedPassword(dto.getMotDePasse()));
         }
