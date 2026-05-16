@@ -2,6 +2,8 @@ package com.devtech.gestiondestock.repository;
 
 import com.devtech.gestiondestock.model.Article;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,4 +21,7 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
     List<Article> findByCodeArticleContainingIgnoreCase(String code);
 
     List<Article> findByDesignationContainingIgnoreCaseOrCodeArticleContainingIgnoreCase(String designation, String code);
+
+    @Query("SELECT a FROM Article a WHERE a.entreprise.id = :idEntreprise")
+    List<Article> findAllByIdentreprise(@Param("idEntreprise") Integer idEntreprise);
 }

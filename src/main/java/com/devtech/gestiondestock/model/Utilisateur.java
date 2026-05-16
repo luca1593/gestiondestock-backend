@@ -23,7 +23,7 @@ public class Utilisateur extends AbstractEntity{
     private String nom;
     @Column(name = "prenom")
     private String prenom;
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
     @Column(name = "dateDeNaissance")
     private Instant dateDeNaissance;
@@ -34,7 +34,7 @@ public class Utilisateur extends AbstractEntity{
     @Column(name = "photo")
     private String photo;
     @ManyToOne
-    @JoinColumn(name = "identreprise")
+    @JoinColumn(name = "identreprise", nullable = false)
     private Entreprise entreprise;
     @OneToMany(mappedBy = "utilisateur", fetch = FetchType.EAGER)
     private List<Role> roles;

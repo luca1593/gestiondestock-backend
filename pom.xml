@@ -33,6 +33,15 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-mysql</artifactId>
+		</dependency>
+
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web-services -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -59,11 +68,24 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.github.fabienbarbero/flickr-api -->
+		<!-- Micrometer Prometheus registry for /actuator/prometheus -->
 		<dependency>
-			<groupId>com.flickr4java</groupId>
-			<artifactId>flickr4java</artifactId>
-			<version>3.0.6</version>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+
+		<!-- Spring Boot Admin Client -->
+		<dependency>
+			<groupId>de.codecentric</groupId>
+			<artifactId>spring-boot-admin-starter-client</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+
+        <!-- Cloudinary for photo upload -->
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http44</artifactId>
+			<version>1.38.0</version>
 		</dependency>
 
 		<!-- Swgger -->

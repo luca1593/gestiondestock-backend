@@ -4,20 +4,18 @@ import com.devtech.gestiondestock.controller.api.CategoryApi;
 import com.devtech.gestiondestock.dto.CategoryDto;
 import com.devtech.gestiondestock.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * @author luca
- */
 @RestController
 public class CategoryController implements CategoryApi {
 
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @Autowired
-    public CategoryController(CategoryService categoryService){
+    public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
@@ -42,6 +40,7 @@ public class CategoryController implements CategoryApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public void delete(Integer id) {
         this.categoryService.delete(id);
     }

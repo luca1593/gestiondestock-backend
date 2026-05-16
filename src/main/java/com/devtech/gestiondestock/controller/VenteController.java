@@ -5,21 +5,19 @@ import com.devtech.gestiondestock.dto.LigneVenteDto;
 import com.devtech.gestiondestock.dto.VenteDto;
 import com.devtech.gestiondestock.services.VenteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 import java.util.List;
 
-/**
- * @author luca
- */
 @RestController
 public class VenteController implements VenteApi {
 
-    private VenteService venteService;
+    private final VenteService venteService;
 
     @Autowired
-    public VenteController(VenteService venteService){
+    public VenteController(VenteService venteService) {
         this.venteService = venteService;
     }
 
@@ -49,6 +47,7 @@ public class VenteController implements VenteApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public void delete(Integer id) {
         this.venteService.delete(id);
     }

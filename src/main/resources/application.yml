@@ -1,6 +1,14 @@
 spring:
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+    date-format: dd/MM/yyyy HH:mm:ss
+    time-zone: UTC
+
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:gestiondestock}?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    url: jdbc:mysql://${DB_HOST:12.24.5.100}:${DB_PORT:3306}/${DB_NAME:gestiondestock}?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: ${DB_USERNAME:luca}
     password: ${DB_PASSWORD:luca1593}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -11,10 +19,20 @@ spring:
     database: MYSQL
     show-sql: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MariaDBDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -23,8 +41,8 @@ spring:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    username: ${MAIL_USERNAME:dummy@example.com}
+    password: ${MAIL_PASSWORD:dummy}
     properties:
       mail:
         smtp:
@@ -49,12 +67,18 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus,loggers,env,beans,heapdump
   endpoint:
     health:
       show-details: ${SHOW_HEALTH_DETAILS:when_authorized}
       probes:
         enabled: true
+
+spring.boot.admin:
+  client:
+    url: ${SPRING_BOOT_ADMIN_URL:http://localhost:8084}
+    instance:
+      name: ${spring.application.name:gestiondestock}
 
 springdoc:
   api-docs:
@@ -63,18 +87,18 @@ springdoc:
     path: /swagger-ui.html
     enabled: ${SWAGGER_ENABLED:true}
 
-flickr:
-  apiKey: ${FLICKR_API_KEY}
-  apiSecret: ${FLICKR_API_SECRET}
-  appKey: ${FLICKR_APP_KEY}
-  appSecret: ${FLICKR_APP_SECRET}
+cloudinary:
+  cloudName: ${CLOUDINARY_CLOUD_NAME:dummy}
+  apiKey: ${CLOUDINARY_API_KEY:dummy}
+  apiSecret: ${CLOUDINARY_API_SECRET:dummy}
 
 jwt:
-  secret: ${JWT_SECRET_KEY}
+  secret: ${JWT_SECRET_KEY:a3f8b2c7d1e9f4a5b6c8d2e7f3a9b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0}
 
 logging:
   level:
     root: INFO
-    com.devtech.gestiondestock: INFO
+    com.devtech.gestiondestock: DEBUG
+    com.devtech.gestiondestock.interceptor: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

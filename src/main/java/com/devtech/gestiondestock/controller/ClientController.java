@@ -4,20 +4,18 @@ import com.devtech.gestiondestock.controller.api.ClientApi;
 import com.devtech.gestiondestock.dto.ClientDto;
 import com.devtech.gestiondestock.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * @author luca
- */
 @RestController
 public class ClientController implements ClientApi {
 
-    private ClientService clientService;
+    private final ClientService clientService;
 
     @Autowired
-    public ClientController(ClientService clientService){
+    public ClientController(ClientService clientService) {
         this.clientService = clientService;
     }
 
@@ -47,6 +45,7 @@ public class ClientController implements ClientApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public void delete(Integer id) {
         this.clientService.delete(id);
     }

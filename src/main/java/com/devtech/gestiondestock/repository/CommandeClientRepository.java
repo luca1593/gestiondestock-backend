@@ -18,4 +18,6 @@ public interface CommandeClientRepository extends JpaRepository<CommandeClient, 
     List<CommandeClient> findByCodeContainingIgnoreCase(String code);
 
     List<CommandeClient> findByDateCommandeBetween(Instant debut, Instant fin);
+
+    List<CommandeClient> findAllByIdentreprise(Integer identreprise);
 }

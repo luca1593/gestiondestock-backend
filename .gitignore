@@ -47,3 +47,4 @@ nginx/ssl/
 nginx/logs/
 *.log
 deploy-*.log
+logs/

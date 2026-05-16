@@ -4,18 +4,16 @@ import com.devtech.gestiondestock.controller.api.MvtStkApi;
 import com.devtech.gestiondestock.dto.MvtStkDto;
 import com.devtech.gestiondestock.services.MvtStkService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
-/**
- * @author luca
- */
 @RestController
 public class MvtStkController implements MvtStkApi {
-    private MvtStkService mvtStkService;
+    private final MvtStkService mvtStkService;
 
     @Autowired
     public MvtStkController(MvtStkService mvtStkService) {
@@ -58,6 +56,7 @@ public class MvtStkController implements MvtStkApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public MvtStkDto entreMvtStk(MvtStkDto dto) {
         return this.mvtStkService.entreMvtStk(dto);
     }
@@ -68,16 +67,19 @@ public class MvtStkController implements MvtStkApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public MvtStkDto correctionMvtStkPos(MvtStkDto dto) {
         return this.mvtStkService.correctionMvtStkPos(dto);
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public MvtStkDto correctionMvtStkNeg(MvtStkDto dto) {
         return this.mvtStkService.correctionMvtStkNeg(dto);
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public void delete(Integer id) {
         this.mvtStkService.delete(id);
     }

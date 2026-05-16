@@ -22,8 +22,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
     @Autowired
@@ -45,7 +48,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(
                                 "/**/authenticate", "/**/entreprise/create",
-                                "/v2/api-docs", "/v3/api-docs/**",
+                                "/v2/api-docs", "/v3/api-docs/**", "/api-docs/**",
                                 "/swagger-resources/**", "/swagger-ui/**", "/swagger-ui.html",
                                 "/webjars/**",
                                 "/actuator/**", "/health/**",

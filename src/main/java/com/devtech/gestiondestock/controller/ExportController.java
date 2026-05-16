@@ -4,6 +4,7 @@ import com.devtech.gestiondestock.services.ExportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,48 +20,50 @@ public class ExportController {
 
     private final ExportService exportService;
 
+    private Integer getCurrentEntrepriseId() {
+        String idEntreprise = MDC.get("idEntreprise");
+        if (idEntreprise == null) {
+            throw new IllegalStateException("idEntreprise not set in MDC - user not authenticated");
+        }
+        return Integer.parseInt(idEntreprise);
+    }
+
     @GetMapping("/excel/articles")
     @Operation(summary = "Exporter les articles en Excel")
-    public void exportArticles(HttpServletResponse response,
-            @RequestHeader(value = "X-Id-Entreprise", required = false, defaultValue = "1") Integer identreprise) {
-        exportService.exportArticlesToExcel(response, identreprise);
+    public void exportArticles(HttpServletResponse response) {
+        exportService.exportArticlesToExcel(response, getCurrentEntrepriseId());
     }
 
     @GetMapping("/excel/clients")
     @Operation(summary = "Exporter les clients en Excel")
-    public void exportClients(HttpServletResponse response,
-            @RequestHeader(value = "X-Id-Entreprise", required = false, defaultValue = "1") Integer identreprise) {
-        exportService.exportClientsToExcel(response, identreprise);
+    public void exportClients(HttpServletResponse response) {
+        exportService.exportClientsToExcel(response, getCurrentEntrepriseId());
     }
 
     @GetMapping("/excel/fournisseurs")
     @Operation(summary = "Exporter les fournisseurs en Excel")
-    public void exportFournisseurs(HttpServletResponse response,
-            @RequestHeader(value = "X-Id-Entreprise", required = false, defaultValue = "1") Integer identreprise) {
-        exportService.exportFournisseursToExcel(response, identreprise);
+    public void exportFournisseurs(HttpServletResponse response) {
+        exportService.exportFournisseursToExcel(response, getCurrentEntrepriseId());
     }
 
     @GetMapping("/excel/ventes")
     @Operation(summary = "Exporter les ventes en Excel")
     public void exportVentes(HttpServletResponse response,
-            @RequestHeader(value = "X-Id-Entreprise", required = false, defaultValue = "1") Integer identreprise,
             @RequestParam Instant debut,
             @RequestParam Instant fin) {
-        exportService.exportVentesToExcel(response, identreprise, debut, fin);
+        exportService.exportVentesToExcel(response, getCurrentEntrepriseId(), debut, fin);
     }
 
     @GetMapping("/excel/commandes-client")
     @Operation(summary = "Exporter les commandes client en Excel")
-    public void exportCommandesClient(HttpServletResponse response,
-            @RequestHeader(value = "X-Id-Entreprise", required = false, defaultValue = "1") Integer identreprise) {
-        exportService.exportCommandesClientToExcel(response, identreprise);
+    public void exportCommandesClient(HttpServletResponse response) {
+        exportService.exportCommandesClientToExcel(response, getCurrentEntrepriseId());
     }
 
     @GetMapping("/excel/stock")
     @Operation(summary = "Exporter l'état du stock en Excel")
-    public void exportStock(HttpServletResponse response,
-            @RequestHeader(value = "X-Id-Entreprise", required = false, defaultValue = "1") Integer identreprise) {
-        exportService.exportStockToExcel(response, identreprise);
+    public void exportStock(HttpServletResponse response) {
+        exportService.exportStockToExcel(response, getCurrentEntrepriseId());
     }
 
     @GetMapping("/pdf/avoir/{id}")

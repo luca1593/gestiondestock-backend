@@ -1,6 +1,8 @@
 package com.devtech.gestiondestock.interceptor;
 
 import org.hibernate.resource.jdbc.spi.StatementInspector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -16,6 +18,8 @@ import java.util.regex.Pattern;
  */
 @Component
 public class Interceptor implements StatementInspector {
+
+    private static final Logger log = LoggerFactory.getLogger(Interceptor.class);
 
     private static final Set<String> EXCLUDED_TABLES = new HashSet<>();
     
@@ -37,7 +41,7 @@ public class Interceptor implements StatementInspector {
     );
 
     private static final Pattern IDENTREPRISE_PATTERN = Pattern.compile(
-        "(?i)\\.identreprise\\s*=\\s*\\d+",
+        "(?i)\\.identreprise\\s*=\\s*(\\?|\\d+)",
         Pattern.CASE_INSENSITIVE
     );
 
@@ -59,13 +63,18 @@ public class Interceptor implements StatementInspector {
 
         String idEntreprise = MDC.get("idEntreprise");
         if (!StringUtils.hasLength(idEntreprise)) {
+            log.error("INTERCEPTOR: idEntreprise NOT SET IN MDC - SQL returned WITHOUT filter! SQL: {}", sql);
             return sql;
         }
+        
+        log.debug("INTERCEPTOR: idEntreprise={} | SQL: {}", idEntreprise, sql);
 
         int idEntrepriseValue;
         try {
             idEntrepriseValue = Integer.parseInt(idEntreprise);
+            log.debug("Parsed idEntreprise: {}", idEntrepriseValue);
         } catch (NumberFormatException e) {
+            log.error("INTERCEPTOR: Failed to parse idEntreprise '{}' - SQL returned WITHOUT filter! SQL: {}", idEntreprise, sql);
             return sql;
         }
 
@@ -84,17 +93,25 @@ public class Interceptor implements StatementInspector {
         }
 
         String aliasOrTable = tableInfo.alias != null ? tableInfo.alias : tableInfo.tableName;
-        String filterCondition = aliasOrTable + ".identreprise = " + idEntrepriseValue;
+        String filterCondition = "(" + aliasOrTable + ".identreprise = " + idEntrepriseValue + " OR " + aliasOrTable + ".identreprise IS NULL)";
         
-        if (WHERE_PATTERN.matcher(sql).find()) {
-            return sql + " AND " + filterCondition;
+        String result;
+        boolean hasWhere = WHERE_PATTERN.matcher(sql).find();
+        log.debug("HAS WHERE: {}, fromIndex calculation...", hasWhere);
+        
+        if (hasWhere) {
+            result = sql + " AND " + filterCondition;
         } else {
-            int fromIndex = findMainFromIndex(sql);
-            if (fromIndex > 0) {
-                return sql.substring(0, fromIndex) + " WHERE " + filterCondition + " " + sql.substring(fromIndex);
+            int insertPos = findEndOfFromClause(sql);
+            log.debug("insertPos={} for SQL: {}", insertPos, sql);
+            if (insertPos > 0) {
+                result = sql.substring(0, insertPos) + " WHERE " + filterCondition + " " + sql.substring(insertPos);
+            } else {
+                result = sql + " WHERE " + filterCondition;
             }
-            return sql + " WHERE " + filterCondition;
         }
+        log.debug("INTERCEPTOR MODIFIED: {}", result);
+        return result;
     }
 
     private static class TableInfo {
@@ -119,9 +136,11 @@ public class Interceptor implements StatementInspector {
         if (matcher.find()) {
             String tableName = matcher.group(1);
             String alias = matcher.group(2);
+            log.debug("EXTRACTED TABLE: {} alias: {} from SQL: {}", tableName, alias, sql);
             return new TableInfo(tableName, alias);
         }
         
+        log.error("INTERCEPTOR: Could not extract table info from SQL: {}", sql);
         return new TableInfo(null, null);
     }
 
@@ -196,16 +215,29 @@ public class Interceptor implements StatementInspector {
         Pattern pattern = Pattern.compile("(?i)\\bfrom\\b", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(sql);
         
-        int subqueryCount = 0;
         while (matcher.find()) {
             int pos = matcher.start();
+            if (pos <= 6) {
+                return pos;
+            }
             String before = sql.substring(Math.max(0, pos - 7), pos).toLowerCase();
             
-            if (!before.contains("select") || subqueryCount == 0) {
+            if (!before.contains("select")) {
                 return pos;
             }
         }
         
         return -1;
+    }
+    
+    private int findEndOfFromClause(String sql) {
+        Pattern pattern = Pattern.compile("(?i)\\bfrom\\s+[a-zA-Z_][a-zA-Z0-9_]*(?:\\s+(?:as\\s+)?[a-zA-Z_][a-zA-Z0-9_]*)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(sql);
+        
+        if (matcher.find()) {
+            return matcher.end();
+        }
+        
+        return sql.toLowerCase().indexOf(" from ");
     }
 }

@@ -12,6 +12,7 @@ import com.devtech.gestiondestock.repository.UtilisateurRepository;
 import com.devtech.gestiondestock.services.UtilisateurService;
 import com.devtech.gestiondestock.validator.UtilisateurValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,12 +38,36 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     @Override
     public UtilisateurDto save(UtilisateurDto dto) {
         List<String> errors = UtilisateurValidator.validate(dto);
+        if (dto.getId() == null && !StringUtils.hasLength(dto.getMotDePasse())) {
+            errors.add("Veuillez renseigner le mot de passe d'utilisateur");
+        }
         if (!errors.isEmpty()){
             log.error("Utilisateur is invalid: {}", dto);
             throw new InvalidEntityException("L'utilisateur n'est pas valide", ErrorsCode.UTILISATEUR_NOT_VALID, errors);
         }
+        String existingPassword = null;
+        if (dto.getId() != null) {
+            Utilisateur existing = utilisateurRepository.findById(dto.getId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Aucun utilisateur trouver avec l'id = " + dto.getId() + " dans la BDD",
+                            ErrorsCode.UTILISATEUR_NOT_FOUND
+                    ));
+            if (!existing.getEmail().equals(dto.getEmail())) {
+                log.error("Tentative de modification de l'email de l'utilisateur {}: {} -> {}",
+                        dto.getId(), existing.getEmail(), dto.getEmail());
+                throw new InvalidEntityException("L'email ne peut pas etre modifie apres la creation",
+                        ErrorsCode.UTILISATEUR_NOT_VALID);
+            }
+            existingPassword = existing.getMotDePasse();
+        }
+        Utilisateur entity = UtilisateurDto.toEntity(dto);
+        if (dto.getId() != null && !StringUtils.hasLength(dto.getMotDePasse())) {
+            entity.setMotDePasse(existingPassword);
+        } else {
+            entity.setMotDePasse(generateEncodedPassword(dto.getMotDePasse()));
+        }
         return UtilisateurDto.fromEntity(
-                utilisateurRepository.save(UtilisateurDto.toEntity(dto))
+                utilisateurRepository.save(entity)
         );
     }
 
@@ -52,13 +77,30 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             log.error("Utilisateur ID is null");
             return null;
         }
-        Optional<Utilisateur> utilisateur = utilisateurRepository.findById(id);
-        return Optional.of(UtilisateurDto.fromEntity(utilisateur.get())).orElseThrow(() ->
-                new EntityNotFoundException(
-                        "Aucun utilisateur trouver avec l'id = " + id + " dans la BDD",
-                        ErrorsCode.UTILISATEUR_NOT_FOUND
-                )
-        );
+        return utilisateurRepository.findById(id)
+                .map(u -> sansMotDePasse(UtilisateurDto.fromEntity(u)))
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Aucun utilisateur trouver avec l'id = " + id + " dans la BDD",
+                                ErrorsCode.UTILISATEUR_NOT_FOUND
+                        )
+                );
+    }
+
+    @Override
+    public UtilisateurDto findByIdWithPassword(Integer id) {
+        if (id == null){
+            log.error("Utilisateur ID is null");
+            return null;
+        }
+        return utilisateurRepository.findById(id)
+                .map(UtilisateurDto::fromEntity)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Aucun utilisateur trouver avec l'id = " + id + " dans la BDD",
+                                ErrorsCode.UTILISATEUR_NOT_FOUND
+                        )
+                );
     }
 
     @Override
@@ -68,7 +110,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             return null;
         }
         Optional<Utilisateur> utilisateur = utilisateurRepository.findUtilisateurByNom(nom);
-        return Optional.of(UtilisateurDto.fromEntity(utilisateur.get())).orElseThrow(() ->
+        return Optional.of(sansMotDePasse(UtilisateurDto.fromEntity(utilisateur.get()))).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucun Utilisateur trouver avec le nom  = " + nom + " dans la BDD",
                         ErrorsCode.UTILISATEUR_NOT_FOUND
@@ -78,6 +120,22 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     @Override
     public UtilisateurDto findByEmailUtilisateur(String email) {
+        if (!StringUtils.hasLength(email)){
+            log.error("Utilisateur email is null");
+            return null;
+        }
+        return utilisateurRepository.findUtilisateurByEmail(email)
+                        .map(UtilisateurDto::fromEntity)
+                        .map(this::sansMotDePasse).orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Aucun Utilisateur trouver avec l'email  = " + email + " dans la BDD",
+                                ErrorsCode.UTILISATEUR_NOT_FOUND
+                        )
+                );
+    }
+
+    @Override
+    public UtilisateurDto findByEmailForAuthentication(String email) {
         if (!StringUtils.hasLength(email)){
             log.error("Utilisateur email is null");
             return null;
@@ -95,6 +153,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     public List<UtilisateurDto> findAll() {
         return utilisateurRepository.findAll().stream()
                 .map(UtilisateurDto::fromEntity)
+                .map(this::sansMotDePasse)
                 .collect(Collectors.toList());
     }
 
@@ -160,5 +219,12 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     private String generateEncodedPassword(String motDePasse){
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         return bCryptPasswordEncoder.encode(motDePasse);
+    }
+
+    private UtilisateurDto sansMotDePasse(UtilisateurDto dto) {
+        if (dto != null) {
+            dto.setMotDePasse(null);
+        }
+        return dto;
     }
 }

@@ -34,19 +34,19 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public DashboardStatsDto getGlobalStats(Integer identreprise) {
-        List<Article> articles = articleRepository.findAll();
-        List<Client> clients = clientRepository.findAll();
-        List<Fournisseur> fournisseurs = fournisseurRepository.findAll();
-        List<CommandeClient> commandesClient = commandeClientRepository.findAll();
-        List<CommandeFournisseur> commandesFournisseur = commandeFournisseurRepository.findAll();
-        List<Vente> ventes = venteRepository.findAll();
+        List<Article> articles = articleRepository.findAllByIdentreprise(identreprise);
+        List<Client> clients = clientRepository.findAllByIdentreprise(identreprise);
+        List<Fournisseur> fournisseurs = fournisseurRepository.findAllByIdentreprise(identreprise);
+        List<CommandeClient> commandesClient = commandeClientRepository.findAllByIdentreprise(identreprise);
+        List<CommandeFournisseur> commandesFournisseur = commandeFournisseurRepository.findAllByIdentreprise(identreprise);
+        List<Vente> ventes = venteRepository.findAllByIdentreprise(identreprise);
 
         BigDecimal valeurStock = articles.stream()
                 .map(a -> Optional.ofNullable(a.getPrixUnitaireht()).orElse(BigDecimal.ZERO)
                         .multiply(Optional.ofNullable(a.getStock()).orElse(BigDecimal.ZERO)))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal chiffreAffaires = ligneVenteRepository.findAll().stream()
+        BigDecimal chiffreAffaires = ligneVenteRepository.findAllByIdentreprise(identreprise).stream()
                 .map(lv -> Optional.ofNullable(lv.getQuantite()).orElse(BigDecimal.ZERO)
                         .multiply(Optional.ofNullable(lv.getPrixUnitaire()).orElse(BigDecimal.ZERO)))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -76,9 +76,9 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public List<ArticleStatsDto> getTopArticles(Integer identreprise, int limit) {
-        List<Article> articles = articleRepository.findAll();
-        List<LigneVente> lignesVente = ligneVenteRepository.findAll();
-        List<LigneCommandeClient> lignesCC = ligneCommandeClientRepository.findAll();
+        List<Article> articles = articleRepository.findAllByIdentreprise(identreprise);
+        List<LigneVente> lignesVente = ligneVenteRepository.findAllByIdentreprise(identreprise);
+        List<LigneCommandeClient> lignesCC = ligneCommandeClientRepository.findAllByIdentreprise(identreprise);
 
         return articles.stream()
                 .map(article -> {
@@ -103,13 +103,13 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public List<VenteStatsDto> getVentesParPeriode(Integer identreprise, Instant debut, Instant fin) {
-        List<Vente> ventes = venteRepository.findAll().stream()
+        List<Vente> ventes = venteRepository.findAllByIdentreprise(identreprise).stream()
                 .filter(v -> v.getDateVente() != null && !v.getDateVente().isBefore(debut) && !v.getDateVente().isAfter(fin))
                 .collect(Collectors.toList());
 
         Map<String, List<Vente>> groupedByDate = ventes.stream()
                 .collect(Collectors.groupingBy(v -> {
-                    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
                             .withZone(ZoneId.systemDefault());
                     return fmt.format(v.getDateVente());
                 }));
@@ -136,7 +136,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public List<VenteStatsDto> getChiffreAffairesParMois(Integer identreprise, Integer annee) {
-        List<Vente> ventes = venteRepository.findAll().stream()
+        List<Vente> ventes = venteRepository.findAllByIdentreprise(identreprise).stream()
                 .filter(v -> v.getDateVente() != null)
                 .filter(v -> {
                     int year = v.getDateVente().atZone(ZoneId.systemDefault()).getYear();
@@ -146,7 +146,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         Map<String, List<Vente>> groupedByMonth = ventes.stream()
                 .collect(Collectors.groupingBy(v -> {
-                    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM")
+                    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
                             .withZone(ZoneId.systemDefault());
                     return fmt.format(v.getDateVente());
                 }));

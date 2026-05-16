@@ -1,6 +1,14 @@
+version: '3.8'
+
 volumes:
   mysql_data:
     name: db_gstk
+  app_logs:
+    name: app_gstk_logs
+  prometheus_data:
+    name: prometheus_gstk_data
+  grafana_data:
+    name: grafana_gstk_data
 
 networks:
   app-network:  # Réseau unique pour tous les services
@@ -10,12 +18,13 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/16
+  api-front-network:
+    external: true
 
 services:
   mysql:
     image: mysql:lts
     container_name: gestiondestock-mysql
-    # ... autres configurations
     dns:
       - 8.8.8.8
       - 1.1.1.1
@@ -26,11 +35,11 @@ services:
       MYSQL_USER: ${DB_USERNAME:-luca}
       MYSQL_PASSWORD: ${DB_PASSWORD:-luca1593}
     ports:
-      - "3307:3306"  # Port hôte:3307, conteneur:3306
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - app-network # Réseau unique
+      - app-network
     deploy:
       resources:
         limits:
@@ -54,14 +63,13 @@ services:
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: gestiondestock-phpmyadmin
-    # ... autres configurations
     dns:
       - 8.8.8.8
       - 1.1.1.1
     restart: unless-stopped
     environment:
       PMA_HOST: mysql
-      PMA_PORT: 3306  # Port interne du conteneur MySQL
+      PMA_PORT: 3306
       PMA_USER: ${DB_USERNAME:-luca}
       PMA_PASSWORD: ${DB_PASSWORD:-luca1593}
       UPLOAD_LIMIT: 50M
@@ -91,7 +99,6 @@ services:
         BUILD_DATE: ${BUILD_DATE:-latest}
         BUILD_VERSION: ${BUILD_VERSION:-latest}
     container_name: gestiondestock-backend
-    # ... autres configurations
     dns:
       - 8.8.8.8
       - 1.1.1.1
@@ -106,16 +113,16 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SPRING_JPA_SHOW_SQL=true
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
-      
+
       # Configuration JWT
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-a3f8b2c7d1e9f4a5b6c8d2e7f3a9b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0}
 
-      # Flickr (OBLIGATOIRES)
-      - FLICKR_API_KEY=${FLICKR_API_KEY:-abc11f1e268d908eeee176297269c001}
-      - FLICKR_API_SECRET=${FLICKR_API_SECRET:-50a8ae15b4224302}
-      - FLICKR_APP_KEY=${FLICKR_APP_KEY:-72157720855398857-f67e55f056acdd0d}
-      - FLICKR_APP_SECRET=${FLICKR_APP_SECRET:-2ba345379070ffc8}
+      # Cloudinary
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME:-dyx1wjvwc}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY:-175456673429688}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET:-W3WkZgiE1gHDOqfKTqfiNVGiLOE}
 
+      # Mail
       - MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
       - MAIL_PORT=${MAIL_PORT:-587}
       - MAIL_USERNAME=${MAIL_USERNAME:-mpiasaorange@gmail.com}
@@ -127,16 +134,20 @@ services:
       - SPRINGDOC_SWAGGER_UI_ENABLED=true
       - SPRINGDOC_API_DOCS_ENABLED=true
       - SHOW_HEALTH_DETAILS=NEVER
-      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:4200,http://localhost:8085}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:4200,http://localhost:8085,http://localhost:8086,http://12.24.5.100:8086}
       - SERVER_PORT=8080
       - SERVER_ADDRESS=0.0.0.0
+      - LOG_PATH=/app/logs
     ports:
       - "8085:8080"
+    volumes:
+      - app_logs:/app/logs
     depends_on:
       mysql:
         condition: service_healthy
     networks:
-      - app-network # Réseau unique
+      - app-network
+      - api-front-network
     deploy:
       resources:
         limits:
@@ -146,7 +157,7 @@ services:
           cpus: '1.0'
           memory: 1G
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]  # Port 8080 interne
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -157,30 +168,74 @@ services:
         max-size: "50m"
         max-file: "10"
 
-  nginx:
-    image: nginx:alpine
-    container_name: gestiondestock-nginx
-    restart: always
-    ports:
-      - "93:93"
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: gestiondestock-prometheus
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    restart: unless-stopped
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./nginx/logs:/var/log/nginx
-      - ./nginx/html:/usr/share/nginx/html:ro
-    depends_on:
-      - backend
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--storage.tsdb.retention.time=15d'
+    ports:
+      - "9090:9090"
     networks:
-      - app-network # Réseau unique
+      - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: gestiondestock-grafana
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin123}
+      - GF_SERVER_HTTP_PORT=3000
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_INSTALL_PLUGINS=
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - app-network
     deploy:
       resources:
         limits:
           cpus: '0.5'
-          memory: 128M
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     logging:
       driver: "json-file"
       options:
-        max-size: "20m"
-        max-file: "5"
+        max-size: "10m"
+        max-file: "3"
 
   watchtower:
     image: containrrr/watchtower:latest

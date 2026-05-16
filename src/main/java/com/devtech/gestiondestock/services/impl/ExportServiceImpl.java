@@ -32,25 +32,25 @@ public class ExportServiceImpl implements ExportService {
 
     @Override
     public void exportArticlesToExcel(HttpServletResponse response, Integer identreprise) {
-        List<Article> articles = articleRepository.findAll();
+        List<Article> articles = articleRepository.findAllByIdentreprise(identreprise);
         writeArticlesToExcel(response, articles);
     }
 
     @Override
     public void exportClientsToExcel(HttpServletResponse response, Integer identreprise) {
-        List<Client> clients = clientRepository.findAll();
+        List<Client> clients = clientRepository.findAllByIdentreprise(identreprise);
         writeClientsToExcel(response, clients);
     }
 
     @Override
     public void exportFournisseursToExcel(HttpServletResponse response, Integer identreprise) {
-        List<Fournisseur> fournisseurs = fournisseurRepository.findAll();
+        List<Fournisseur> fournisseurs = fournisseurRepository.findAllByIdentreprise(identreprise);
         writeFournisseursToExcel(response, fournisseurs);
     }
 
     @Override
     public void exportVentesToExcel(HttpServletResponse response, Integer identreprise, Instant debut, Instant fin) {
-        List<Vente> ventes = venteRepository.findAll().stream()
+        List<Vente> ventes = venteRepository.findAllByIdentreprise(identreprise).stream()
                 .filter(v -> v.getDateVente() != null && !v.getDateVente().isBefore(debut) && !v.getDateVente().isAfter(fin))
                 .toList();
         writeVentesToExcel(response, ventes);
@@ -58,13 +58,13 @@ public class ExportServiceImpl implements ExportService {
 
     @Override
     public void exportCommandesClientToExcel(HttpServletResponse response, Integer identreprise) {
-        List<CommandeClient> commandes = commandeClientRepository.findAll();
+        List<CommandeClient> commandes = commandeClientRepository.findAllByIdentreprise(identreprise);
         writeCommandesClientToExcel(response, commandes);
     }
 
     @Override
     public void exportStockToExcel(HttpServletResponse response, Integer identreprise) {
-        List<Article> articles = articleRepository.findAll();
+        List<Article> articles = articleRepository.findAllByIdentreprise(identreprise);
         writeStockToExcel(response, articles);
     }
 
@@ -178,7 +178,7 @@ public class ExportServiceImpl implements ExportService {
             }
 
             int rowNum = 1;
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.systemDefault());
             for (Vente vente : ventes) {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(vente.getId());
@@ -214,7 +214,7 @@ public class ExportServiceImpl implements ExportService {
             }
 
             int rowNum = 1;
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.systemDefault());
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.systemDefault());
             for (CommandeClient cc : commandes) {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(cc.getId());
