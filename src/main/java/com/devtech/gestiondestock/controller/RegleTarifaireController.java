@@ -4,6 +4,7 @@ import com.devtech.gestiondestock.controller.api.RegleTarifaireApi;
 import com.devtech.gestiondestock.dto.RegleTarifaireDto;
 import com.devtech.gestiondestock.services.RegleTarifaireService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class RegleTarifaireController implements RegleTarifaireApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public RegleTarifaireDto save(RegleTarifaireDto dto) {
         return regleTarifaireService.save(dto);
     }
@@ -47,6 +49,7 @@ public class RegleTarifaireController implements RegleTarifaireApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public void delete(Integer id) {
         regleTarifaireService.delete(id);
     }

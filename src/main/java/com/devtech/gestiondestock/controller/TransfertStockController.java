@@ -5,6 +5,7 @@ import com.devtech.gestiondestock.dto.TransfertStockDto;
 import com.devtech.gestiondestock.model.TransfertStock;
 import com.devtech.gestiondestock.services.TransfertStockService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class TransfertStockController implements TransfertStockApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public void delete(Integer id) {
         transfertStockService.delete(id);
     }

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -79,6 +80,7 @@ public class AvoirController {
 
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Supprimer un avoir")
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         avoirService.delete(id);
         return ResponseEntity.ok().build();

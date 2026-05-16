@@ -5,6 +5,7 @@ import com.devtech.gestiondestock.dto.InventaireDto;
 import com.devtech.gestiondestock.model.Inventaire;
 import com.devtech.gestiondestock.services.InventaireService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
@@ -48,6 +49,7 @@ public class InventaireController implements InventaireApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public void delete(Integer id) {
         inventaireService.delete(id);
     }

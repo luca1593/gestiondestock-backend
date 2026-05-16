@@ -7,19 +7,17 @@ import com.devtech.gestiondestock.dto.LigneCommandeFournisseurDto;
 import com.devtech.gestiondestock.model.EtatCommande;
 import com.devtech.gestiondestock.services.CommandeFournisseurService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
-/**
- * @author luca
- */
 @RestController
 public class CommandeFournisseurController implements CommandeFournisseurApi {
 
-    private CommandeFournisseurService commandeFournisseurService;
+    private final CommandeFournisseurService commandeFournisseurService;
 
     @Autowired
     public CommandeFournisseurController(CommandeFournisseurService commandeFournisseurService) {
@@ -44,6 +42,7 @@ public class CommandeFournisseurController implements CommandeFournisseurApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public CommandeFournisseurDto updateEtatCommande(Integer id, EtatCommande etatCommande) {
         return this.commandeFournisseurService.updateEtatCommande(id, etatCommande);
     }
@@ -89,6 +88,7 @@ public class CommandeFournisseurController implements CommandeFournisseurApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public void delete(Integer id) {
         this.commandeFournisseurService.delete(id);
     }

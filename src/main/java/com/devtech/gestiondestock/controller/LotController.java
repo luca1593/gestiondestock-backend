@@ -4,6 +4,7 @@ import com.devtech.gestiondestock.controller.api.LotApi;
 import com.devtech.gestiondestock.dto.LotDto;
 import com.devtech.gestiondestock.services.LotService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
@@ -47,6 +48,7 @@ public class LotController implements LotApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")
     public void delete(Integer id) {
         lotService.delete(id);
     }
