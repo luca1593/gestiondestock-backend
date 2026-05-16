@@ -154,7 +154,8 @@ public class VenteServiceImpl implements VenteService {
         Optional<Article> article = this.articleRepository.findById(ligneVente.getArticle().getId());
         if(article.isPresent()){
             Article art = article.get();
-            BigDecimal newStock = art.getStock().subtract(ligneVente.getQuantite());
+            BigDecimal currentStock = art.getStock() != null ? art.getStock() : BigDecimal.ZERO;
+            BigDecimal newStock = currentStock.subtract(ligneVente.getQuantite());
             art.setStock(newStock);
             this.articleRepository.save(art);
         }
@@ -162,10 +163,12 @@ public class VenteServiceImpl implements VenteService {
     }
 
     private void checkIdVenteBeforeDelete(Integer idVente){
-        VenteDto dto = findById(idVente);
-        if (!CollectionUtils.isEmpty(dto.getLigneVentes())) {
+        List<LigneVente> ligneVentes = this.ligneVenteRepository.findAllByVenteId(idVente);
+        if (!CollectionUtils.isEmpty(ligneVentes)) {
             log.error("Vente already used");
-            throw new InvalidOpperatioException("Operation impossible : une ou plusieurs lignes de vente existent deja pour cette vente",
+            throw new InvalidOpperatioException(
+                    "Suppression impossible : la vente possede des lignes de vente et des mouvements de stock. " +
+                    "Annulez la vente ou creez un avoir a la place.",
                     ErrorsCode.VENTE_NOT_VALID
             );
         }

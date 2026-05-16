@@ -78,7 +78,7 @@ public interface ClientApi {
     })
     List<ClientDto> findAll();
 
-    @DeleteMapping(value = APP_ROOT + "/client/detele/{idClient}")
+    @DeleteMapping(value = APP_ROOT + "/client/delete/{idClient}")
     @Operation(summary = "Supprimer un client",
             description = "Cette methode permet de supprimer un client par son ID"
     )
