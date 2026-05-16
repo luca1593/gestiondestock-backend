@@ -3,9 +3,8 @@ package com.devtech.gestiondestock.services.strategy;
 import com.devtech.gestiondestock.dto.UtilisateurDto;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
-import com.devtech.gestiondestock.services.FlickrService;
+import com.devtech.gestiondestock.services.CloudinaryService;
 import com.devtech.gestiondestock.services.UtilisateurService;
-import com.flickr4java.flickr.FlickrException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,18 +17,18 @@ import java.io.InputStream;
 public class SaveUtilisateurPhoto implements Strategy<UtilisateurDto> {
 
     private final UtilisateurService utilisateurService;
-    private final FlickrService flickrService;
+    private final CloudinaryService cloudinaryService;
 
     @Autowired
-    public SaveUtilisateurPhoto(UtilisateurService utilisateurService, FlickrService flickrService) {
+    public SaveUtilisateurPhoto(UtilisateurService utilisateurService, CloudinaryService cloudinaryService) {
         this.utilisateurService = utilisateurService;
-        this.flickrService = flickrService;
+        this.cloudinaryService = cloudinaryService;
     }
 
     @Override
-    public UtilisateurDto savePhoto(Integer id, InputStream photo, String titre) throws FlickrException {
+    public UtilisateurDto savePhoto(Integer id, InputStream photo, String titre) throws Exception {
         UtilisateurDto utilisateur = this.utilisateurService.findById(id);
-        String urlPhoto = this.flickrService.savePhoto(photo, titre, id);
+        String urlPhoto = this.cloudinaryService.savePhoto(photo, titre, id);
         if (!StringUtils.hasLength(urlPhoto)) {
             throw new InvalidOpperatioException("Impossible de mettre a jour la photo de l'utilisateur",
                     ErrorsCode.UPDATE_PHOTO_EXEPTION);

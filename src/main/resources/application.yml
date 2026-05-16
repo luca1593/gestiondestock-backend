@@ -82,11 +82,10 @@ springdoc:
     path: /swagger-ui.html
     enabled: ${SWAGGER_ENABLED:true}
 
-flickr:
-  apiKey: ${FLICKR_API_KEY:dummy}
-  apiSecret: ${FLICKR_API_SECRET:dummy}
-  appKey: ${FLICKR_APP_KEY:dummy}
-  appSecret: ${FLICKR_APP_SECRET:dummy}
+cloudinary:
+  cloudName: ${CLOUDINARY_CLOUD_NAME:dummy}
+  apiKey: ${CLOUDINARY_API_KEY:dummy}
+  apiSecret: ${CLOUDINARY_API_SECRET:dummy}
 
 jwt:
   secret: ${JWT_SECRET_KEY:a3f8b2c7d1e9f4a5b6c8d2e7f3a9b1c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0}

@@ -8,7 +8,7 @@
   * correction -
   * 
 ### Utilisateur
-* Reinitia;iser mot de passe **x**
+* Reinitialiser mot de passe **x**
 
 ### Validator
 * Finaliser les validator **x**
