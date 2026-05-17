@@ -4,6 +4,8 @@ import com.devtech.gestiondestock.model.CommandeFournisseur;
 import com.devtech.gestiondestock.model.Fournisseur;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
@@ -14,5 +16,6 @@ public interface CommandeFournisseurRepository extends JpaRepository<CommandeFou
     List<CommandeFournisseur> findCommandeFournisseurByDateCommande(Instant dateCommade);
     List<CommandeFournisseur> findAllByFournisseur(Fournisseur fournisseur);
 
-    List<CommandeFournisseur> findAllByIdentreprise(Integer identreprise);
+    @Query("SELECT cf FROM CommandeFournisseur cf WHERE cf.identreprise = :identreprise")
+    List<CommandeFournisseur> findAllByIdentreprise(@Param("identreprise") Integer identreprise);
 }

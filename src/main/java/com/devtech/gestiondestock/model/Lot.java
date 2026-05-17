@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@AttributeOverride(name = "identreprise", column = @Column(name = "identreprise"))
 @Entity
 @Table(name = "lot")
 public class Lot extends AbstractEntity {
@@ -42,10 +41,9 @@ public class Lot extends AbstractEntity {
     @JoinColumn(name = "entrepot_id")
     private Entrepot entrepot;
     
-    @ManyToOne
-    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
-    private Entreprise entreprise;
-    
     @Column(name = "estCompletementUtilise")
     private Boolean estCompletementUtilise = false;
+    @ManyToOne
+    @JoinColumn(name = "entreprise_id")
+    private Entreprise entreprise;
 }

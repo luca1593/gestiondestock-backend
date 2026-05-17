@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@AttributeOverride(name = "identreprise", column = @Column(name = "identreprise"))
 @Entity
 @Table(name = "transfert_stock")
 public class TransfertStock extends AbstractEntity {
@@ -26,17 +25,16 @@ public class TransfertStock extends AbstractEntity {
     private StatutTransfert statut;
     
     @ManyToOne
-    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
-    private Entreprise entreprise;
-    
-    @ManyToOne
     @JoinColumn(name = "entrepotSource_id")
     private Entrepot entrepotSource;
     
     @ManyToOne
     @JoinColumn(name = "entrepotDestination_id")
     private Entrepot entrepotDestination;
-    
+    @ManyToOne
+    @JoinColumn(name = "entreprise_id")
+    private Entreprise entreprise;
+
     public enum StatutTransfert {
         EN_ATTENTE, EN_TRANSIT, RECU, ANNULE
     }

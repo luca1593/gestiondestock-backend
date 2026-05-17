@@ -90,6 +90,8 @@ class RbacIntegrationTest {
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
+        MDC.put("idEntreprise", entAId.toString());
+
         Utilisateur adminUser = new Utilisateur();
         adminUser.setNom("Admin");
         adminUser.setPrenom("Super");
@@ -122,6 +124,8 @@ class RbacIntegrationTest {
         roleRepository.save(userRoleA);
         userAId = userA.getId();
 
+        MDC.put("idEntreprise", "1");
+
         EntrepriseDto entB = entrepriseService.save(EntrepriseDto.builder()
                 .nom("RBAC Enterprise B")
                 .description("Enterprise B for RBAC testing")
@@ -134,6 +138,8 @@ class RbacIntegrationTest {
                         .build())
                 .build());
         entBId = entB.getId();
+
+        MDC.put("idEntreprise", entBId.toString());
 
         Utilisateur userB = new Utilisateur();
         userB.setNom("User");
