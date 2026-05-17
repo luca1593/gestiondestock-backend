@@ -8,7 +8,7 @@ import java.util.List;
 import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 
 public interface RegleTarifaireApi {
-    @PostMapping(value = APP_ROOT + "/regles-tarifaires/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = APP_ROOT + "/regles-tarifaires/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     RegleTarifaireDto save(@RequestBody RegleTarifaireDto dto);
 
     @GetMapping(value = APP_ROOT + "/regles-tarifaires/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

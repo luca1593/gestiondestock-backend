@@ -78,6 +78,12 @@ public class AvoirController {
         return ResponseEntity.ok(avoirService.findAll(getCurrentEntrepriseId()));
     }
 
+    @PutMapping("/etat/{id}")
+    @Operation(summary = "Mettre a jour l'etat d'un avoir (EN_ATTENTE, VALIDE, ANNULE)")
+    public ResponseEntity<AvoirDto> updateEtat(@PathVariable Integer id, @RequestParam String etat) {
+        return ResponseEntity.ok(avoirService.updateEtat(id, etat));
+    }
+
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Supprimer un avoir")
     @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN', 'Manager', 'ROLE_Manager', 'MANAGER')")

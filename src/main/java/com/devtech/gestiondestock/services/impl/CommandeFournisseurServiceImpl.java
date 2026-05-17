@@ -116,8 +116,8 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
                 ligneCommandeFournisseur.setCommandeFournisseur(cmdtFrs);
                 ligneCommandeFournisseur.setIdentreprise(dto.getIdentreprise());
                 this.ligneCommandeFournisseurRepository.save(ligneCommandeFournisseur);
-                updateMvtStk(cmdtFrs.getId());
             });
+            updateMvtStk(cmdtFrs.getId());
         }
         return CommandeFournisseurDto.fromEntity(cmdtFrs);
     }

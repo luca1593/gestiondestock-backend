@@ -9,6 +9,7 @@ import com.devtech.gestiondestock.services.CommandeFournisseurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -25,7 +26,7 @@ public class CommandeFournisseurController implements CommandeFournisseurApi {
     }
 
     @Override
-    public CommandeFournisseurDto save(CommandeFournisseurDto dto, Long dateCommandeFournisseur) {
+    public CommandeFournisseurDto save(@RequestBody CommandeFournisseurDto dto, Long dateCommandeFournisseur) {
         Instant dateCmd = Instant.ofEpochMilli(dateCommandeFournisseur);
         dto.setDateCommande(dateCmd);
         return this.commandeFournisseurService.save(dto);

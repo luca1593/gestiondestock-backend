@@ -6,6 +6,7 @@ import com.devtech.gestiondestock.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class CategoryController implements CategoryApi {
     }
 
     @Override
-    public CategoryDto save(CategoryDto dto) {
+    public CategoryDto save(@RequestBody CategoryDto dto) {
         return this.categoryService.save(dto);
     }
 

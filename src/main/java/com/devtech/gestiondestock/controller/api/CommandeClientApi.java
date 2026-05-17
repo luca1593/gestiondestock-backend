@@ -25,7 +25,7 @@ import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
  */ //@Api(APP_ROOT + "/commande-client")
 public interface CommandeClientApi {
         @PostMapping(value = APP_ROOT
-                + "/commande-client/create/{dateCommandeClient}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+                + "/commande-client/save/{dateCommandeClient}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
         @Operation(summary = "Enregistrement d'une commande client", description = "Cette methode permet d'enregidtre ou de modifier une commande client")
         @ApiResponses(value = {
                 @ApiResponse(responseCode = "200", description = "L'objet commande client creer ou modifier",

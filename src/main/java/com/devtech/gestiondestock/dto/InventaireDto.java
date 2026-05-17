@@ -4,6 +4,9 @@ import com.devtech.gestiondestock.model.Inventaire;
 import lombok.Builder;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @Data
@@ -18,6 +21,7 @@ public class InventaireDto {
     private String entrepriseNom;
     private Integer entrepotId;
     private String entrepotNom;
+    private List<InventaireLigneDto> lignes;
 
     public static InventaireDto fromEntity(Inventaire inventaire) {
         if (inventaire == null) return null;
@@ -32,6 +36,9 @@ public class InventaireDto {
                 .entrepriseNom(inventaire.getEntreprise() != null ? inventaire.getEntreprise().getNom() : null)
                 .entrepotId(inventaire.getEntrepot() != null ? inventaire.getEntrepot().getId() : null)
                 .entrepotNom(inventaire.getEntrepot() != null ? inventaire.getEntrepot().getNom() : null)
+                .lignes(inventaire.getLignes() != null
+                        ? inventaire.getLignes().stream().map(InventaireLigneDto::fromEntity).collect(Collectors.toList())
+                        : Collections.emptyList())
                 .build();
     }
 

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@AttributeOverride(name = "identreprise", column = @Column(name = "identreprise"))
 @Entity
 @Table(name = "facture")
 public class Facture extends AbstractEntity {
@@ -48,7 +49,7 @@ public class Facture extends AbstractEntity {
     private Client client;
     
     @ManyToOne
-    @JoinColumn(name = "identreprise")
+    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
     private Entreprise entreprise;
     
     public enum StatutFacture {

@@ -8,7 +8,7 @@ import java.util.List;
 import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 
 public interface TransfertStockApi {
-    @PostMapping(value = APP_ROOT + "/transferts/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = APP_ROOT + "/transferts/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     TransfertStockDto save(@RequestBody TransfertStockDto dto);
 
     @GetMapping(value = APP_ROOT + "/transferts/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

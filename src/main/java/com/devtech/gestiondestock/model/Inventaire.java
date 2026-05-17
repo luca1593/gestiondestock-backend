@@ -6,11 +6,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@AttributeOverride(name = "identreprise", column = @Column(name = "identreprise"))
 @Entity
 @Table(name = "inventaire")
 public class Inventaire extends AbstractEntity {
@@ -31,13 +33,16 @@ public class Inventaire extends AbstractEntity {
     private Statut statut;
     
     @ManyToOne
-    @JoinColumn(name = "identreprise")
+    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
     private Entreprise entreprise;
     
     @ManyToOne
     @JoinColumn(name = "entrepot_id")
     private Entrepot entrepot;
-    
+
+    @OneToMany(mappedBy = "inventaire", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InventaireLigne> lignes;
+
     public enum Statut {
         EN_COURS, TERMINE, ANNULE
     }

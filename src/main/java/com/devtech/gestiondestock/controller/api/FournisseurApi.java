@@ -19,7 +19,7 @@ import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
  */
 public interface FournisseurApi {
 
-    @PostMapping(value = APP_ROOT + "/fournisseur/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = APP_ROOT + "/fournisseur/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Enregistrement d'un fournisseur", description = "Cette methode permet d'enregidtre ou de modifier un fournisseur")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "L'objet fournisseur creer ou modifier",

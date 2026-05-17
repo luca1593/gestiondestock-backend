@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@AttributeOverride(name = "identreprise", column = @Column(name = "identreprise"))
 @Entity
 @Table(name = "utilisateur")
 public class Utilisateur extends AbstractEntity{
@@ -34,7 +35,7 @@ public class Utilisateur extends AbstractEntity{
     @Column(name = "photo")
     private String photo;
     @ManyToOne
-    @JoinColumn(name = "identreprise", nullable = false)
+    @JoinColumn(name = "identreprise", insertable = false, updatable = false, nullable = false)
     private Entreprise entreprise;
     @OneToMany(mappedBy = "utilisateur", fetch = FetchType.EAGER)
     private List<Role> roles;

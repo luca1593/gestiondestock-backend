@@ -2,16 +2,16 @@ package com.devtech.gestiondestock.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.slf4j.MDC;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.time.Instant;
 
-/**
- * @author luca
- */
 @Data
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -27,4 +27,28 @@ public class AbstractEntity implements Serializable {
     @LastModifiedDate
     @Column(name = "lastModifiedDate")
     private Instant lastModifiedDate;
+
+    @CreatedBy
+    @Column(name = "createdBy", updatable = false)
+    private String createdBy;
+
+    @LastModifiedBy
+    @Column(name = "lastModifiedBy")
+    private String lastModifiedBy;
+
+    @Column(name = "identreprise")
+    private Integer identreprise;
+
+    @PrePersist
+    public void prePersist() {
+        if (identreprise == null) {
+            String id = MDC.get("idEntreprise");
+            if (id != null) {
+                try {
+                    this.identreprise = Integer.parseInt(id);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+    }
 }
