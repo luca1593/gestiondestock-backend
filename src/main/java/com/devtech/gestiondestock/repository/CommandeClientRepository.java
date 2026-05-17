@@ -3,6 +3,8 @@ package com.devtech.gestiondestock.repository;
 import com.devtech.gestiondestock.model.Client;
 import com.devtech.gestiondestock.model.CommandeClient;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
@@ -19,5 +21,6 @@ public interface CommandeClientRepository extends JpaRepository<CommandeClient, 
 
     List<CommandeClient> findByDateCommandeBetween(Instant debut, Instant fin);
 
-    List<CommandeClient> findAllByIdentreprise(Integer identreprise);
+    @Query("SELECT cc FROM CommandeClient cc WHERE cc.identreprise = :identreprise")
+    List<CommandeClient> findAllByIdentreprise(@Param("identreprise") Integer identreprise);
 }
