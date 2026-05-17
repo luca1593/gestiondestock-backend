@@ -7,6 +7,7 @@ import com.devtech.gestiondestock.services.EntrepriseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class EntrepriseController implements EntrepriseApi {
     }
 
     @Override
-    public EntrepriseDto save(EntrepriseDto dto) {
+    public EntrepriseDto save(@RequestBody EntrepriseDto dto) {
         return this.entrepriseService.save(dto);
     }
 

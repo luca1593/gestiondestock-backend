@@ -8,5 +8,8 @@ public enum SourceMvtStk {
     COMMANDE_CLIENT,
     COMMANDE_FOURNISSEUR,
     VENTE,
-    CORRECTION_STOCK;
+    CORRECTION_STOCK,
+    LOT,
+    AVOIR,
+    INVENTAIRE;
 }

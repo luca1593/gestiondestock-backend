@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@AttributeOverride(name = "identreprise", column = @Column(name = "identreprise"))
 @Entity
 @Table(name = "regle_tarifaire")
 public class RegleTarifaire extends AbstractEntity {
@@ -47,7 +48,7 @@ public class RegleTarifaire extends AbstractEntity {
     private BigDecimal montantMinimal;
     
     @ManyToOne
-    @JoinColumn(name = "identreprise")
+    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
     private Entreprise entreprise;
     
     @ManyToOne

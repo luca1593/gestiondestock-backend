@@ -13,5 +13,6 @@ public interface AvoirService {
     List<AvoirDto> findByEtat(String etat, Integer identreprise);
     List<AvoirDto> findByDateRange(Instant debut, Instant fin, Integer identreprise);
     List<AvoirDto> findAll(Integer identreprise);
+    AvoirDto updateEtat(Integer id, String etat);
     void delete(Integer id);
 }

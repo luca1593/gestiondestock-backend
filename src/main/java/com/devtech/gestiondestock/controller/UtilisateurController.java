@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class UtilisateurController implements UtilisateurApi {
 
     @Override
     @PreAuthorize("hasAnyAuthority('Admin', 'ROLE_Admin', 'ADMIN')")
-    public UtilisateurDto save(UtilisateurDto dto) {
+    public UtilisateurDto save(@RequestBody UtilisateurDto dto) {
         return this.utilisateurService.save(dto);
     }
 

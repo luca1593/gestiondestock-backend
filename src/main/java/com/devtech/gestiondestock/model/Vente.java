@@ -30,6 +30,5 @@ public class Vente extends AbstractEntity{
     private String commentaire;
     @OneToMany(mappedBy = "vente")
     private List<LigneVente> ligneVentes;
-    @Column(name = "identreprise")
-    private Integer identreprise;
+
 }

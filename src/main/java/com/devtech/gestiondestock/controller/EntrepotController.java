@@ -6,6 +6,7 @@ import com.devtech.gestiondestock.services.EntrepotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,7 @@ public class EntrepotController implements EntrepotApi {
     }
 
     @Override
-    public EntrepotDto save(EntrepotDto dto) {
+    public EntrepotDto save(@RequestBody EntrepotDto dto) {
         return entrepotService.save(dto);
     }
 

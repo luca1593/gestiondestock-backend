@@ -6,6 +6,7 @@ import com.devtech.gestiondestock.services.FournisseurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class FournisseurController implements FournisseurApi {
     }
 
     @Override
-    public FournisseurDto save(FournisseurDto dto) {
+    public FournisseurDto save(@RequestBody FournisseurDto dto) {
         return this.fournisseurService.save(dto);
     }
 

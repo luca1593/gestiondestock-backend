@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -26,7 +27,7 @@ public class CommandeClientController implements CommandeClientApi {
     }
 
     @Override
-    public ResponseEntity<CommandeClientDto> save(CommandeClientDto dto, Long dateCommandeClient) {
+    public ResponseEntity<CommandeClientDto> save(@RequestBody CommandeClientDto dto, Long dateCommandeClient) {
         Instant dateCmd = Instant.ofEpochMilli(dateCommandeClient);
         dto.setDateCommande(dateCmd);
         return ResponseEntity.ok(this.commandeClientService.save(dto));

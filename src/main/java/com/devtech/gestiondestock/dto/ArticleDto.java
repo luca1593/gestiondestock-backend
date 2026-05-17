@@ -32,6 +32,9 @@ public class ArticleDto {
     @JsonIgnore
     private List<MvtStkDto> mvtStks;
     private EntrepriseDto entreprise;
+    private String createdBy;
+    private String lastModifiedBy;
+    private Integer identreprise;
 
 
     public static ArticleDto fromEntity(Article article){
@@ -51,6 +54,9 @@ public class ArticleDto {
                 .lastModifiedDate(article.getLastModifiedDate())
                 .category(CategoryDto.fromEntity(article.getCategory()))
                 .entreprise(EntrepriseDto.fromEntity(article.getEntreprise()))
+                .createdBy(article.getCreatedBy())
+                .lastModifiedBy(article.getLastModifiedBy())
+                .identreprise(article.getIdentreprise())
                 .build();
     }
 

@@ -22,7 +22,7 @@ public class MvtStkController implements MvtStkApi {
     }
 
     @Override
-    public MvtStkDto save(MvtStkDto dto) {
+    public MvtStkDto save(@RequestBody MvtStkDto dto) {
         return this.mvtStkService.save(dto);
     }
 

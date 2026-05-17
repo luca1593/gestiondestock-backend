@@ -7,6 +7,7 @@ import com.devtech.gestiondestock.services.VenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.Instant;
 import java.util.List;
@@ -22,7 +23,7 @@ public class VenteController implements VenteApi {
     }
 
     @Override
-    public VenteDto save(VenteDto dto) {
+    public VenteDto save(@RequestBody VenteDto dto) {
         return this.venteService.save(dto);
     }
 

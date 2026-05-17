@@ -9,6 +9,7 @@ import com.devtech.gestiondestock.model.MvtStk;
 import com.devtech.gestiondestock.model.TypeMvt;
 import com.devtech.gestiondestock.repository.ArticleRepository;
 import com.devtech.gestiondestock.repository.MvtStkRepository;
+import com.devtech.gestiondestock.services.AlertStockService;
 import com.devtech.gestiondestock.services.ArticleService;
 import com.devtech.gestiondestock.services.MvtStkService;
 import com.devtech.gestiondestock.validator.MvtStkValidator;
@@ -30,12 +31,14 @@ public class MvtStkServiceImpl implements MvtStkService {
     private final MvtStkRepository mvtStkRepository;
     private final ArticleService articleService;
     private final ArticleRepository articleRepository;
+    private final AlertStockService alertStockService;
 
     @Autowired
-    public MvtStkServiceImpl(MvtStkRepository mvtStkRepository, ArticleService articleService, ArticleRepository articleRepository) {
+    public MvtStkServiceImpl(MvtStkRepository mvtStkRepository, ArticleService articleService, ArticleRepository articleRepository, AlertStockService alertStockService) {
         this.mvtStkRepository = mvtStkRepository;
         this.articleService = articleService;
         this.articleRepository = articleRepository;
+        this.alertStockService = alertStockService;
     }
 
     @Override
@@ -181,6 +184,9 @@ public class MvtStkServiceImpl implements MvtStkService {
                 article.setStock(currentStock.add(BigDecimal.valueOf(quantite)));
                 this.articleRepository.save(article);
             });
+            if (dto.getIdentreprise() != null) {
+                this.alertStockService.checkAndCreateAlerts(dto.getIdentreprise());
+            }
         }
         return saved;
     }
