@@ -8,7 +8,7 @@ import java.util.List;
 import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 
 public interface InventaireApi {
-    @PostMapping(value = APP_ROOT + "/inventaires/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = APP_ROOT + "/inventaires/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     InventaireDto save(@RequestBody InventaireDto dto);
 
     @GetMapping(value = APP_ROOT + "/inventaires/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

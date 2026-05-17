@@ -2,7 +2,7 @@ package com.devtech.gestiondestock.utils;
 
 public interface Constants {
     String APP_ROOT = "v1";
-    String CREATE_ENDPOINT = "/create";
+    String CREATE_ENDPOINT = "/save";
     String CODE_ENDPOINT = "/code/";
     String DATE_ENDPOINT = "/date/";
     String ALL_ENDPOINT = "/all";

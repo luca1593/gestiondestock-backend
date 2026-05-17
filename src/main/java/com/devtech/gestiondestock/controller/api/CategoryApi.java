@@ -16,7 +16,7 @@ import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 
 public interface CategoryApi {
 
-    @PostMapping(value = APP_ROOT + "/category/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = APP_ROOT + "/category/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Enregistrement d'une categorie",
             description = "Cette methode permet d'enregidtre ou de modifier une categorie"
     )

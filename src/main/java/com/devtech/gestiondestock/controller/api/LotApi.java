@@ -7,7 +7,7 @@ import java.util.List;
 import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 
 public interface LotApi {
-    @PostMapping(value = APP_ROOT + "/lots/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = APP_ROOT + "/lots/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     LotDto save(@RequestBody LotDto dto);
 
     @GetMapping(value = APP_ROOT + "/lots/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

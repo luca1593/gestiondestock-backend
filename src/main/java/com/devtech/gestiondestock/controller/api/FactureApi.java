@@ -8,7 +8,7 @@ import java.util.List;
 import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 
 public interface FactureApi {
-    @PostMapping(value = APP_ROOT + "/factures/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = APP_ROOT + "/factures/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     FactureDto save(@RequestBody FactureDto dto);
 
     @GetMapping(value = APP_ROOT + "/factures/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

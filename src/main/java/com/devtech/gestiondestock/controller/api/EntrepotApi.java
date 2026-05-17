@@ -7,7 +7,7 @@ import java.util.List;
 import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 
 public interface EntrepotApi {
-    @PostMapping(value = APP_ROOT + "/entrepots/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = APP_ROOT + "/entrepots/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     EntrepotDto save(@RequestBody EntrepotDto dto);
     
     @GetMapping(value = APP_ROOT + "/entrepots/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

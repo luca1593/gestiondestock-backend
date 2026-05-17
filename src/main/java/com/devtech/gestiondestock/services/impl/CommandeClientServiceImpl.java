@@ -126,8 +126,8 @@ public class CommandeClientServiceImpl implements CommandeClientService {
             ligneCommandeClient.setCommandeClient(cmdtClt);
             ligneCommandeClient.setIdentreprise(dto.getIdentreprise());
             this.ligneCommandeClientRepository.save(ligneCommandeClient);
-            updateMvtStk(cmdtClt.getId());
         });
+        updateMvtStk(cmdtClt.getId());
     }
 
     return CommandeClientDto.fromEntity(cmdtClt);

@@ -2,7 +2,9 @@ package com.devtech.gestiondestock.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -27,4 +29,12 @@ public class AbstractEntity implements Serializable {
     @LastModifiedDate
     @Column(name = "lastModifiedDate")
     private Instant lastModifiedDate;
+
+    @CreatedBy
+    @Column(name = "createdBy", updatable = false)
+    private String createdBy;
+
+    @LastModifiedBy
+    @Column(name = "lastModifiedBy")
+    private String lastModifiedBy;
 }

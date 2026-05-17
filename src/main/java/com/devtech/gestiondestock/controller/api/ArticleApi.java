@@ -21,7 +21,7 @@ import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
  * @author luca
  */
 public interface ArticleApi {
-    @PostMapping(value = APP_ROOT + "/articles/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = APP_ROOT + "/articles/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Enregistrement d'un article",
             description = "Cette methode permet d'enregidtre ou de modifier un article"
     )

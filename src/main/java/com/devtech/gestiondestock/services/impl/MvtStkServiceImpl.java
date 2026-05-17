@@ -4,8 +4,10 @@ import com.devtech.gestiondestock.dto.MvtStkDto;
 import com.devtech.gestiondestock.exception.EntityNotFoundException;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
+import com.devtech.gestiondestock.model.Article;
 import com.devtech.gestiondestock.model.MvtStk;
 import com.devtech.gestiondestock.model.TypeMvt;
+import com.devtech.gestiondestock.repository.ArticleRepository;
 import com.devtech.gestiondestock.repository.MvtStkRepository;
 import com.devtech.gestiondestock.services.ArticleService;
 import com.devtech.gestiondestock.services.MvtStkService;
@@ -27,11 +29,13 @@ public class MvtStkServiceImpl implements MvtStkService {
 
     private final MvtStkRepository mvtStkRepository;
     private final ArticleService articleService;
+    private final ArticleRepository articleRepository;
 
     @Autowired
-    public MvtStkServiceImpl(MvtStkRepository mvtStkRepository, ArticleService articleService) {
+    public MvtStkServiceImpl(MvtStkRepository mvtStkRepository, ArticleService articleService, ArticleRepository articleRepository) {
         this.mvtStkRepository = mvtStkRepository;
         this.articleService = articleService;
+        this.articleRepository = articleRepository;
     }
 
     @Override
@@ -160,6 +164,7 @@ public class MvtStkServiceImpl implements MvtStkService {
     }
 
     private MvtStkDto getMvtStkDto(MvtStkDto dto, double quantite, TypeMvt typeMvt, ErrorsCode errorsCode) {
+        dto.setTypeMvt(typeMvt);
         List<String> errors = MvtStkValidator.validate(dto);
         if (!errors.isEmpty()){
             log.error("Mouvement de stock is not valid: {}", dto);
@@ -167,9 +172,16 @@ public class MvtStkServiceImpl implements MvtStkService {
                     errorsCode, errors);
         }
         dto.setQuantite(BigDecimal.valueOf(quantite));
-        dto.setTypeMvt(typeMvt);
-        return MvtStkDto.fromEntity(
+        MvtStkDto saved = MvtStkDto.fromEntity(
                 this.mvtStkRepository.save(MvtStkDto.toEntity(dto))
         );
+        if (dto.getArticle() != null && dto.getArticle().getId() != null) {
+            this.articleRepository.findById(dto.getArticle().getId()).ifPresent(article -> {
+                BigDecimal currentStock = article.getStock() != null ? article.getStock() : BigDecimal.ZERO;
+                article.setStock(currentStock.add(BigDecimal.valueOf(quantite)));
+                this.articleRepository.save(article);
+            });
+        }
+        return saved;
     }
 }
