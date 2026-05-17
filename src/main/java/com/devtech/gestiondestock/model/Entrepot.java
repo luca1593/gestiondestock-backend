@@ -11,7 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@AttributeOverride(name = "identreprise", column = @Column(name = "identreprise"))
 @Entity
 @Table(name = "entrepot")
 public class Entrepot extends AbstractEntity {
@@ -29,8 +28,7 @@ public class Entrepot extends AbstractEntity {
     
     @Column(name = "estPrincipal")
     private Boolean estPrincipal = false;
-    
     @ManyToOne
-    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
+    @JoinColumn(name = "entreprise_id")
     private Entreprise entreprise;
 }

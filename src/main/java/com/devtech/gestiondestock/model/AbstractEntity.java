@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.time.Instant;
 
 @Data
@@ -42,13 +43,34 @@ public class AbstractEntity implements Serializable {
     @PrePersist
     public void prePersist() {
         if (identreprise == null) {
-            String id = MDC.get("idEntreprise");
-            if (id != null) {
-                try {
-                    this.identreprise = Integer.parseInt(id);
-                } catch (NumberFormatException ignored) {
-                }
+            Integer entrepriseId = resolveEntrepriseId();
+            if (entrepriseId != null) {
+                this.identreprise = entrepriseId;
             }
         }
+    }
+
+    private Integer resolveEntrepriseId() {
+        try {
+            for (Field f : getClass().getDeclaredFields()) {
+                if ("entreprise".equals(f.getName()) && Entreprise.class.isAssignableFrom(f.getType())) {
+                    f.setAccessible(true);
+                    Object value = f.get(this);
+                    if (value instanceof Entreprise) {
+                        return ((Entreprise) value).getId();
+                    }
+                    break;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        String mdcVal = MDC.get("idEntreprise");
+        if (mdcVal != null) {
+            try {
+                return Integer.parseInt(mdcVal);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return null;
     }
 }

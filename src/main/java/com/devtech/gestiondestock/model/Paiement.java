@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@AttributeOverride(name = "identreprise", column = @Column(name = "identreprise"))
 @Entity
 @Table(name = "paiement")
 public class Paiement extends AbstractEntity {
@@ -35,11 +34,10 @@ public class Paiement extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "facture_id")
     private Facture facture;
-    
     @ManyToOne
-    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
+    @JoinColumn(name = "entreprise_id")
     private Entreprise entreprise;
-    
+
     public enum ModePaiement {
         ESPECES, CHEQUE, VIREMENT_BANCAIRE, CARTE_BANCAIRE, MOBILE_MONEY, AUTRE
     }

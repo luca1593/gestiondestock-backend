@@ -75,6 +75,8 @@ class MultiTenantIsolationTest {
                 .build());
         entCId = entC.getId();
 
+        MDC.put("idEntreprise", entBId.toString());
+
         utilisateurService.save(UtilisateurDto.builder()
                 .nom("Admin B")
                 .prenom("User")
@@ -87,6 +89,8 @@ class MultiTenantIsolationTest {
                         .build())
                 .entreprise(EntrepriseDto.builder().id(entBId).build())
                 .build());
+
+        MDC.put("idEntreprise", entCId.toString());
 
         utilisateurService.save(UtilisateurDto.builder()
                 .nom("Admin C")
@@ -184,7 +188,7 @@ class MultiTenantIsolationTest {
         List<UtilisateurDto> usersA = utilisateurService.findAll();
         assertFalse(usersA.isEmpty());
         for (UtilisateurDto u : usersA) {
-            assertEquals(entAId, u.getEntreprise().getId());
+            assertEquals(entAId, u.getIdentreprise());
             assertNull(u.getMotDePasse());
         }
 
@@ -192,7 +196,7 @@ class MultiTenantIsolationTest {
         List<UtilisateurDto> usersB = utilisateurService.findAll();
         assertFalse(usersB.isEmpty());
         for (UtilisateurDto u : usersB) {
-            assertEquals(entBId, u.getEntreprise().getId());
+            assertEquals(entBId, u.getIdentreprise());
             assertNull(u.getMotDePasse());
         }
 
@@ -200,7 +204,7 @@ class MultiTenantIsolationTest {
         List<UtilisateurDto> usersC = utilisateurService.findAll();
         assertFalse(usersC.isEmpty());
         for (UtilisateurDto u : usersC) {
-            assertEquals(entCId, u.getEntreprise().getId());
+            assertEquals(entCId, u.getIdentreprise());
             assertNull(u.getMotDePasse());
         }
     }
@@ -228,7 +232,7 @@ class MultiTenantIsolationTest {
 
         UtilisateurDto found = utilisateurService.findById(usersB.get(0).getId());
         assertNotNull(found);
-        assertEquals(entBId, found.getEntreprise().getId());
+        assertEquals(entBId, found.getIdentreprise());
         assertNull(found.getMotDePasse());
     }
 
