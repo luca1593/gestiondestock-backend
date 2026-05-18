@@ -168,10 +168,14 @@ pipeline {
                     fi
                     sleep 5
                 done
-                # Supprimer l'historique Flyway pour forcer une migration propre
-                echo "🔧 Suppression historique Flyway..."
-                docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -e "DROP TABLE IF EXISTS flyway_schema_history;" 2>/dev/null || true
-                echo "✅ Historique supprimé"
+                # Fix AUTO_INCREMENT sur toutes les tables (perdu par les anciens ddl-auto=update)
+                echo "🔧 Fix AUTO_INCREMENT..."
+                TABLES=$(docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -NBe "SELECT TABLE_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'gestiondestock' AND COLUMN_NAME = 'id' AND COLUMN_TYPE LIKE '%int%' AND EXTRA NOT LIKE '%auto_increment%';" 2>/dev/null)
+                for table in $TABLES; do
+                    echo "  → $table"
+                    docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -e "SET FOREIGN_KEY_CHECKS=0; ALTER TABLE $table MODIFY id BIGINT NOT NULL AUTO_INCREMENT;" 2>/dev/null || true
+                done
+                echo "✅ AUTO_INCREMENT fix appliqué sur $(echo $TABLES | wc -w) tables"
                 # Démarrer le backend
                 docker compose -f docker-compose.prod.yml up -d --build --force-recreate backend
                 '''
