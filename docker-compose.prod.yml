@@ -110,7 +110,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DB_USERNAME:-luca}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-luca1593}
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
       - SPRING_JPA_SHOW_SQL=true
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.MySQL8Dialect
 
@@ -130,7 +130,6 @@ services:
       - MANAGEMENT_HEALTH_MAIL_ENABLED=false
 
       # Autres configurations
-      - SPRING_FLYWAY_ENABLED=false
       - SWAGGER_ENABLED=true
       - SPRINGDOC_SWAGGER_UI_ENABLED=true
       - SPRINGDOC_API_DOCS_ENABLED=true
