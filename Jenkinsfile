@@ -158,26 +158,7 @@ pipeline {
             steps {
                 sh '''
                 docker compose -f docker-compose.prod.yml down --remove-orphans || true
-                # Démarrer MySQL en premier
-                docker compose -f docker-compose.prod.yml up -d mysql
-                echo "⏳ Attente de MySQL..."
-                for i in 1 2 3 4 5 6 7 8 9 10; do
-                    if docker exec gestiondestock-mysql mysqladmin ping -h localhost -u root -prootpassword 2>/dev/null; then
-                        echo "✅ MySQL prêt"
-                        break
-                    fi
-                    sleep 5
-                done
-                # Fix AUTO_INCREMENT sur toutes les tables (perdu par les anciens ddl-auto=update)
-                echo "🔧 Fix AUTO_INCREMENT..."
-                TABLES=$(docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -NBe "SELECT TABLE_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'gestiondestock' AND COLUMN_NAME = 'id' AND COLUMN_TYPE LIKE '%int%' AND EXTRA NOT LIKE '%auto_increment%';" 2>/dev/null)
-                for table in $TABLES; do
-                    echo "  → $table"
-                    docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -e "SET FOREIGN_KEY_CHECKS=0; ALTER TABLE $table MODIFY id BIGINT NOT NULL AUTO_INCREMENT;" 2>/dev/null || true
-                done
-                echo "✅ AUTO_INCREMENT fix appliqué sur $(echo $TABLES | wc -w) tables"
-                # Démarrer le backend
-                docker compose -f docker-compose.prod.yml up -d --build --force-recreate backend
+                docker compose -f docker-compose.prod.yml up -d --build --force-recreate
                 '''
             }
         }
