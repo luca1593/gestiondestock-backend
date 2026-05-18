@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.time.Instant;
 import java.util.List;
 
@@ -77,20 +79,24 @@ public class DataInitializer implements CommandLineRunner {
 
     private void fixAutoIncrement() {
         try {
-            jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS=0");
             List<String> tables = jdbcTemplate.queryForList(
                 "SELECT TABLE_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'gestiondestock' AND COLUMN_NAME = 'id' AND COLUMN_TYPE LIKE '%int%' AND EXTRA NOT LIKE '%auto_increment%'",
                 String.class
             );
-            if (!tables.isEmpty()) {
-                log.info("Fixing AUTO_INCREMENT on {} tables: {}", tables.size(), tables);
-                for (String table : tables) {
-                    jdbcTemplate.execute("ALTER TABLE " + table + " MODIFY id INT NOT NULL AUTO_INCREMENT");
+            if (tables.isEmpty()) return;
+            log.info("Fixing AUTO_INCREMENT on {} tables: {}", tables.size(), tables);
+            jdbcTemplate.execute((Connection con) -> {
+                try (Statement stmt = con.createStatement()) {
+                    stmt.execute("SET FOREIGN_KEY_CHECKS=0");
+                    for (String t : tables) {
+                        stmt.execute("ALTER TABLE " + t + " MODIFY id INT NOT NULL AUTO_INCREMENT");
+                    }
+                    stmt.execute("SET FOREIGN_KEY_CHECKS=1");
                 }
-            }
-            jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS=1");
+                return null;
+            });
         } catch (Exception e) {
-            log.warn("Could not fix AUTO_INCREMENT (non-critical): {}", e.getMessage());
+            log.warn("Could not fix AUTO_INCREMENT: {}", e.getMessage());
         }
     }
 }
