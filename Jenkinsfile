@@ -168,9 +168,9 @@ pipeline {
                     fi
                     sleep 5
                 done
-                # Réparer l'historique Flyway (supprimer les migrations échouées)
-                echo "🔧 Réparation de l'historique Flyway..."
-                docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -e "DELETE FROM flyway_schema_history WHERE success=0;" 2>/dev/null && echo "✅ Réparation effectuée" || echo "ℹ️  Aucune réparation nécessaire"
+                # Supprimer l'historique Flyway pour forcer une migration propre
+                echo "🔧 Suppression de l'historique Flyway..."
+                docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -e "DROP TABLE IF EXISTS flyway_schema_history;" 2>/dev/null && echo "✅ Historique supprimé" || echo "ℹ️  Aucun historique à supprimer"
                 # Démarrer le backend
                 docker compose -f docker-compose.prod.yml up -d --build --force-recreate backend
                 '''
