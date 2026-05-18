@@ -158,22 +158,7 @@ pipeline {
             steps {
                 sh '''
                 docker compose -f docker-compose.prod.yml down --remove-orphans || true
-                # Démarrer MySQL en premier
-                docker compose -f docker-compose.prod.yml up -d mysql
-                echo "⏳ Attente de MySQL..."
-                for i in 1 2 3 4 5 6 7 8 9 10; do
-                    if docker exec gestiondestock-mysql mysqladmin ping -h localhost -u root -prootpassword 2>/dev/null; then
-                        echo "✅ MySQL prêt"
-                        break
-                    fi
-                    sleep 5
-                done
-                # Supprimer l'historique Flyway pour forcer une migration propre
-                echo "🔧 Suppression historique Flyway..."
-                docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -e "DROP TABLE IF EXISTS flyway_schema_history;" 2>/dev/null || true
-                echo "✅ Historique supprimé"
-                # Démarrer le backend
-                docker compose -f docker-compose.prod.yml up -d --build --force-recreate backend
+                docker compose -f docker-compose.prod.yml up -d --build --force-recreate
                 '''
             }
         }
