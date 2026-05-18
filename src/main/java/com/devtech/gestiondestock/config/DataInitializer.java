@@ -85,7 +85,7 @@ public class DataInitializer implements CommandLineRunner {
             if (!tables.isEmpty()) {
                 log.info("Fixing AUTO_INCREMENT on {} tables: {}", tables.size(), tables);
                 for (String table : tables) {
-                    jdbcTemplate.execute("ALTER TABLE " + table + " MODIFY id BIGINT NOT NULL AUTO_INCREMENT");
+                    jdbcTemplate.execute("ALTER TABLE " + table + " MODIFY id INT NOT NULL AUTO_INCREMENT");
                 }
             }
             jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS=1");
