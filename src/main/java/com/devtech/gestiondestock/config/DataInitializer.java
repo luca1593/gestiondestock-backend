@@ -32,21 +32,24 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (utilisateurRepository.count() > 0) {
-            log.info("Database already contains users, skipping initialization");
+        if (utilisateurRepository.findUtilisateurByEmail("admin@default.com").isPresent()) {
+            log.info("Admin user already exists, skipping initialization");
             return;
         }
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-        Entreprise entreprise = new Entreprise();
-        entreprise.setNom("Default Enterprise");
-        entreprise.setCodeFiscal("DEFAULT001");
-        entreprise.setEmail("admin@default.com");
-        entreprise.setNumTel("0123456789");
-        entreprise.setSiteWeb("https://default.com");
-        entreprise.setAdresse(new Adresse("1 rue de la Paix", "", "Paris", "75001", "France"));
-        entreprise = entrepriseRepository.save(entreprise);
+        Entreprise entreprise = entrepriseRepository.findEntrepriseByEmail("admin@default.com")
+                .orElseGet(() -> {
+                    Entreprise e = new Entreprise();
+                    e.setNom("Default Enterprise");
+                    e.setCodeFiscal("DEFAULT001");
+                    e.setEmail("admin@default.com");
+                    e.setNumTel("0123456789");
+                    e.setSiteWeb("https://default.com");
+                    e.setAdresse(new Adresse("1 rue de la Paix", "", "Paris", "75001", "France"));
+                    return entrepriseRepository.save(e);
+                });
 
         Utilisateur utilisateur = new Utilisateur();
         utilisateur.setNom("Admin");
