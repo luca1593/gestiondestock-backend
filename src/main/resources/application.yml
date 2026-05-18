@@ -24,10 +24,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
   flyway:
-    enabled: true
-    baseline-on-migrate: true
-    baseline-version: 0
-    locations: classpath:db/migration
+    enabled: false
   servlet:
     multipart:
       max-file-size: 10MB
