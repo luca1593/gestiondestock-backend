@@ -130,7 +130,7 @@ services:
       - MANAGEMENT_HEALTH_MAIL_ENABLED=false
 
       # Autres configurations
-      - SPRING_FLYWAY_VALIDATE_ON_MIGRATE=false
+      - SPRING_FLYWAY_ENABLED=false
       - SWAGGER_ENABLED=true
       - SPRINGDOC_SWAGGER_UI_ENABLED=true
       - SPRINGDOC_API_DOCS_ENABLED=true
