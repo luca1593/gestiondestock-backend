@@ -174,7 +174,7 @@ pipeline {
                 TABLES=$(docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -NBe "SELECT TABLE_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'gestiondestock' AND COLUMN_NAME = 'id' AND COLUMN_TYPE LIKE '%int%' AND EXTRA NOT LIKE '%auto_increment%';")
                 for table in $TABLES; do
                     echo "  → $table"
-                    docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -e "SET FOREIGN_KEY_CHECKS=0; ALTER TABLE \`$table\` MODIFY \`id\` BIGINT NOT NULL AUTO_INCREMENT; SET FOREIGN_KEY_CHECKS=1;" 2>/dev/null
+                    docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -e "SET FOREIGN_KEY_CHECKS=0; ALTER TABLE $table MODIFY id BIGINT NOT NULL AUTO_INCREMENT; SET FOREIGN_KEY_CHECKS=1;" 2>/dev/null
                 done
                 echo "✅ AUTO_INCREMENT restauré sur ${TABLES:+$(echo "$TABLES" | wc -l)} tables"
                 # Démarrer le backend
