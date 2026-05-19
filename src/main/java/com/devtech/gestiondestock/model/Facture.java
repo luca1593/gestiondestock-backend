@@ -47,7 +47,7 @@ public class Facture extends AbstractEntity {
     @JoinColumn(name = "idClient")
     private Client client;
     @ManyToOne
-    @JoinColumn(name = "entreprise_id")
+    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
     private Entreprise entreprise;
 
     public enum StatutFacture {

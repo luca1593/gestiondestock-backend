@@ -29,6 +29,6 @@ public class Entrepot extends AbstractEntity {
     @Column(name = "estPrincipal")
     private Boolean estPrincipal = false;
     @ManyToOne
-    @JoinColumn(name = "entreprise_id")
+    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
     private Entreprise entreprise;
 }

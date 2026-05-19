@@ -35,7 +35,7 @@ public class Paiement extends AbstractEntity {
     @JoinColumn(name = "facture_id")
     private Facture facture;
     @ManyToOne
-    @JoinColumn(name = "entreprise_id")
+    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
     private Entreprise entreprise;
 
     public enum ModePaiement {

@@ -32,7 +32,7 @@ public class TransfertStock extends AbstractEntity {
     @JoinColumn(name = "entrepotDestination_id")
     private Entrepot entrepotDestination;
     @ManyToOne
-    @JoinColumn(name = "entreprise_id")
+    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
     private Entreprise entreprise;
 
     public enum StatutTransfert {
