@@ -38,7 +38,7 @@ public class Inventaire extends AbstractEntity {
     @OneToMany(mappedBy = "inventaire", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InventaireLigne> lignes;
     @ManyToOne
-    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
+    @JoinColumn(name = "identreprise")
     private Entreprise entreprise;
 
     public enum Statut {

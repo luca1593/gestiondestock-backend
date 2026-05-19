@@ -54,7 +54,7 @@ public class RegleTarifaire extends AbstractEntity {
     @JoinColumn(name = "idClient")
     private Client client;
     @ManyToOne
-    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
+    @JoinColumn(name = "identreprise")
     private Entreprise entreprise;
 
     public enum TypeRegle {

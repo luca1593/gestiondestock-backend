@@ -38,5 +38,7 @@ public class Avoir extends AbstractEntity {
     @JoinColumn(name = "idvente")
     private Vente vente;
 
+    @Column(name = "identreprise")
+    private Integer identreprise;
 
 }

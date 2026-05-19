@@ -34,5 +34,7 @@ public class AlertStock extends AbstractEntity {
     @Column(name = "active")
     private Boolean active;
 
+    @Column(name = "identreprise")
+    private Integer identreprise;
 
 }
