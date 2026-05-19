@@ -22,19 +22,19 @@ public class AbstractEntity implements Serializable {
     private Integer id;
 
     @CreatedDate
-    @Column(name = "creationDate", nullable = false, updatable = false)
+    @Column(name = "creation_date", nullable = false, updatable = false)
     private Instant creationDate;
 
     @LastModifiedDate
-    @Column(name = "lastModifiedDate")
+    @Column(name = "last_modified_date")
     private Instant lastModifiedDate;
 
     @CreatedBy
-    @Column(name = "createdBy", updatable = false)
+    @Column(name = "created_by", updatable = false)
     private String createdBy;
 
     @LastModifiedBy
-    @Column(name = "lastModifiedBy")
+    @Column(name = "last_modified_by")
     private String lastModifiedBy;
 
     @Column(name = "identreprise")

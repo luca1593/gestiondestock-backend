@@ -140,6 +140,19 @@ pipeline {
                   echo "SET FOREIGN_KEY_CHECKS=1;"
                 } | docker exec -i gestiondestock-mysql mysql -u root -prootpassword gestiondestock 2>/dev/null
                 echo "✅ Fix AUTO_INCREMENT appliqué"
+                echo "🔧 Migration identreprise -> entreprise_id..."
+                docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -NBe "
+                  UPDATE utilisateur SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
+                  UPDATE article SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
+                  UPDATE entrepot SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
+                  UPDATE facture SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
+                  UPDATE inventaire SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
+                  UPDATE lot SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
+                  UPDATE paiement SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
+                  UPDATE regle_tarifaire SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
+                  UPDATE transfert_stock SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
+                " 2>/dev/null
+                echo "✅ Migration identreprise -> entreprise_id terminée"
                 docker compose -f docker-compose.prod.yml up -d --build --force-recreate backend
                 '''
             }

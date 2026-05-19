@@ -44,6 +44,6 @@ public class Lot extends AbstractEntity {
     @Column(name = "estCompletementUtilise")
     private Boolean estCompletementUtilise = false;
     @ManyToOne
-    @JoinColumn(name = "entreprise_id")
+    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
     private Entreprise entreprise;
 }
