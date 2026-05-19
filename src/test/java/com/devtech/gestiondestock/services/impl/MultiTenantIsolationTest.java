@@ -188,7 +188,7 @@ class MultiTenantIsolationTest {
         List<UtilisateurDto> usersA = utilisateurService.findAll();
         assertFalse(usersA.isEmpty());
         for (UtilisateurDto u : usersA) {
-            assertEquals(entAId, u.getIdentreprise());
+            assertEquals(entAId, u.getEntreprise().getId());
             assertNull(u.getMotDePasse());
         }
 
@@ -196,7 +196,7 @@ class MultiTenantIsolationTest {
         List<UtilisateurDto> usersB = utilisateurService.findAll();
         assertFalse(usersB.isEmpty());
         for (UtilisateurDto u : usersB) {
-            assertEquals(entBId, u.getIdentreprise());
+            assertEquals(entBId, u.getEntreprise().getId());
             assertNull(u.getMotDePasse());
         }
 
@@ -204,7 +204,7 @@ class MultiTenantIsolationTest {
         List<UtilisateurDto> usersC = utilisateurService.findAll();
         assertFalse(usersC.isEmpty());
         for (UtilisateurDto u : usersC) {
-            assertEquals(entCId, u.getIdentreprise());
+            assertEquals(entCId, u.getEntreprise().getId());
             assertNull(u.getMotDePasse());
         }
     }
@@ -232,7 +232,7 @@ class MultiTenantIsolationTest {
 
         UtilisateurDto found = utilisateurService.findById(usersB.get(0).getId());
         assertNotNull(found);
-        assertEquals(entBId, found.getIdentreprise());
+        assertEquals(entBId, found.getEntreprise().getId());
         assertNull(found.getMotDePasse());
     }
 

@@ -76,7 +76,41 @@ pipeline {
                         exit 1
                     fi
 
-                    # Vérifier que MySQL est en cours d'exécution
+                    # Vérifier que MySQL est en cours d'exécution avant de faire le backup
+                    if docker ps --format '{{.Names}}' | grep -q "^gestiondestock-mysql$"; then
+                        echo "✅ Container MySQL trouvé, préparation du backup..."
+
+                        # Créer le dossier de backup s'il n'existe pas
+                        mkdir -p ./backup
+                        echo "📁 Dossier de backup créé: ./backup"
+
+                        # Vérifier que la base de données est accessible
+                        if docker exec gestiondestock-mysql mysqladmin ping -h localhost -u luca -pluca1593 2>/dev/null; then
+                            echo "✅ MySQL est accessible, sauvegarde en cours..."
+
+                            # Exporter la base
+                            docker exec gestiondestock-mysql mysqldump -u luca -pluca1593 gestiondestock > ./backup/backup_${IMAGE_TAG}.sql
+
+                            # Vérifier que le backup a été créé
+                            if [ -f "./backup/backup_${IMAGE_TAG}.sql" ] && [ -s "./backup/backup_${IMAGE_TAG}.sql" ]; then
+                                echo "✅ Backup créé avec succès : backup_${IMAGE_TAG}.sql"
+                                # Afficher la taille du backup
+                                ls -lh ./backup/backup_${IMAGE_TAG}.sql
+                            else
+                                echo "⚠️  Le backup est vide ou n'a pas été créé"
+                            fi
+
+                            # Garder seulement les 5 derniers backups
+                            echo "🧹 Nettoyage des anciens backups..."
+                            ls -t ./backup/backup_*.sql 2>/dev/null | tail -n +6 | xargs -r rm
+                            echo "✅ Nettoyage terminé"
+                        else
+                            echo "⚠️  MySQL n'est pas accessible, backup ignoré"
+                        fi
+                    else
+                        echo "⚠️  Container MySQL non trouvé, sauvegarde ignorée"
+                    fi
+
                     echo "=== Arrêt des conteneurs ==="
                     # Vérifier si des conteneurs sont en cours d'exécution
                     if docker compose -f docker-compose.prod.yml ps -q 2>/dev/null | grep -q .; then
@@ -124,36 +158,7 @@ pipeline {
             steps {
                 sh '''
                 docker compose -f docker-compose.prod.yml down --remove-orphans || true
-                docker compose -f docker-compose.prod.yml up -d mysql
-                echo "⏳ Attente de MySQL..."
-                for i in 1 2 3 4 5 6 7 8 9 10; do
-                    if docker exec gestiondestock-mysql mysqladmin ping -h localhost -u root -prootpassword 2>/dev/null; then
-                        echo "✅ MySQL prêt"
-                        break
-                    fi
-                    sleep 5
-                done
-                echo "🔧 Fix AUTO_INCREMENT..."
-                {
-                  echo "SET FOREIGN_KEY_CHECKS=0;"
-                  docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -NBe "SELECT CONCAT('ALTER TABLE ', TABLE_NAME, ' MODIFY id INT NOT NULL AUTO_INCREMENT;') FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'gestiondestock' AND COLUMN_NAME = 'id' AND COLUMN_TYPE LIKE '%int%' AND EXTRA NOT LIKE '%auto_increment%';" 2>/dev/null
-                  echo "SET FOREIGN_KEY_CHECKS=1;"
-                } | docker exec -i gestiondestock-mysql mysql -u root -prootpassword gestiondestock 2>/dev/null
-                echo "✅ Fix AUTO_INCREMENT appliqué"
-                echo "🔧 Migration identreprise -> entreprise_id..."
-                docker exec gestiondestock-mysql mysql -u root -prootpassword gestiondestock -NBe "
-                  UPDATE utilisateur SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
-                  UPDATE article SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
-                  UPDATE entrepot SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
-                  UPDATE facture SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
-                  UPDATE inventaire SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
-                  UPDATE lot SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
-                  UPDATE paiement SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
-                  UPDATE regle_tarifaire SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
-                  UPDATE transfert_stock SET entreprise_id = identreprise WHERE entreprise_id IS NULL AND identreprise IS NOT NULL;
-                " 2>/dev/null
-                echo "✅ Migration identreprise -> entreprise_id terminée"
-                docker compose -f docker-compose.prod.yml up -d --build --force-recreate backend
+                docker compose -f docker-compose.prod.yml up -d --build --force-recreate
                 '''
             }
         }
@@ -174,7 +179,14 @@ pipeline {
                         HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8085/actuator/health || echo "000")
                         if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "503" ]; then
                             echo "✅ Application is responding (HTTP $HTTP_CODE)"
-                            echo "=== Déploiement réussi ==="
+                            echo "=== Restauration de la base de données ==="
+                            # Vérifier si un backup existe
+                            if [ -f ./backup/backup_${IMAGE_TAG}.sql ]; then
+                                docker exec -i gestiondestock-mysql mysql -u luca -pluca1593 gestiondestock < ./backup/backup_${IMAGE_TAG}.sql
+                                echo "✅ Base restaurée depuis backup_${IMAGE_TAG}.sql"
+                            else
+                                echo "⚠️  Aucun backup trouvé"
+                            fi
                             exit 0
                         fi
                         echo "⏳ Waiting for application... attempt $i/15"

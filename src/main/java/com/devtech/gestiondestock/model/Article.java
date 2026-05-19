@@ -46,6 +46,6 @@ public class Article extends AbstractEntity {
     @OneToMany(mappedBy = "article")
     private List<MvtStk> mvtStks;
     @ManyToOne
-    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
+    @JoinColumn(name = "identreprise")
     private Entreprise entreprise;
 }

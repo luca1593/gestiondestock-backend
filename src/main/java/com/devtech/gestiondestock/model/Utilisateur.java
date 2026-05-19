@@ -36,6 +36,6 @@ public class Utilisateur extends AbstractEntity{
     @OneToMany(mappedBy = "utilisateur", fetch = FetchType.EAGER)
     private List<Role> roles;
     @ManyToOne
-    @JoinColumn(name = "identreprise", insertable = false, updatable = false)
+    @JoinColumn(name = "identreprise", nullable = false)
     private Entreprise entreprise;
 }

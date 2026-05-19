@@ -28,4 +28,7 @@ public class InventaireLigne extends AbstractEntity {
 
     @Column(name = "quantite_reelle")
     private BigDecimal quantiteReelle;
+
+    @Column(name = "identreprise")
+    private Integer identreprise;
 }

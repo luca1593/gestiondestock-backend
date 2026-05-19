@@ -21,7 +21,6 @@ public class UtilisateurDto {
     private String photo;
     private EntrepriseDto entreprise;
     private List<RoleDto> roles;
-    private Integer identreprise;
 
     public static UtilisateurDto fromEntity(Utilisateur utilisateur){
         if (utilisateur == null){
@@ -45,7 +44,6 @@ public class UtilisateurDto {
                                         .collect(Collectors.toList()) : null
                 )
                 .entreprise(EntrepriseDto.fromEntity(utilisateur.getEntreprise()))
-                .identreprise(utilisateur.getIdentreprise())
                 .build();
     }
 
