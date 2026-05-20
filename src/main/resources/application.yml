@@ -86,6 +86,8 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     enabled: ${SWAGGER_ENABLED:true}
+    use-root-path: true
+    groups-order: ASC
 
 cloudinary:
   cloudName: ${CLOUDINARY_CLOUD_NAME:dummy}

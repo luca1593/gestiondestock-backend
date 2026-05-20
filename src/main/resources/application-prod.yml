@@ -59,6 +59,7 @@ springdoc:
     enabled: true
     path: /swagger-ui.html
     url: /v3/api-docs
+    groups-order: ASC
 server:
   port: ${SERVER_PORT:8085}
 
