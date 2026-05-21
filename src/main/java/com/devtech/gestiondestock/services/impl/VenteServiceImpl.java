@@ -136,7 +136,6 @@ public class VenteServiceImpl implements VenteService {
 
     @Override
     public List<LigneVenteDto> findAllLigneVenteByVente(Integer idVente) {
-        checkIdVenteBeforeDelete(idVente);
         return this.ligneVenteRepository.findAllByVenteId(idVente) != null ?
                 this.ligneVenteRepository.findAllByVenteId(idVente).stream()
                         .map(LigneVenteDto::fromEntity).collect(Collectors.toList()) :  new ArrayList<>();

@@ -87,11 +87,17 @@ public class MvtStkServiceImpl implements MvtStkService {
             log.error("Mouvement Type is null");
             return null;
         }
-        return this.mvtStkRepository.findMvtStkByTypeMvt(typeMvt) != null ?
-                this.mvtStkRepository.findMvtStkByTypeMvt(typeMvt)
-                        .stream()
-                        .map(MvtStkDto::fromEntity)
-                        .collect(Collectors.toList()) : null;
+        try {
+            TypeMvt type = TypeMvt.valueOf(typeMvt);
+            return this.mvtStkRepository.findMvtStkByTypeMvt(type) != null ?
+                    this.mvtStkRepository.findMvtStkByTypeMvt(type)
+                            .stream()
+                            .map(MvtStkDto::fromEntity)
+                            .collect(Collectors.toList()) : null;
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid movement type: {}", typeMvt);
+            return null;
+        }
     }
 
     @Override
