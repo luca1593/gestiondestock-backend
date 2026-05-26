@@ -2,7 +2,7 @@ package com.devtech.gestiondestock.utils;
 
 public interface Constants {
     String APP_ROOT = "v1";
-    String CREATE_ENDPOINT = "/create";
+    String CREATE_ENDPOINT = "/save";
     String CODE_ENDPOINT = "/code/";
     String DATE_ENDPOINT = "/date/";
     String ALL_ENDPOINT = "/all";
@@ -23,10 +23,10 @@ public interface Constants {
     String ENTREPRISE_ENDPOINT = APP_ROOT + "/entreprise";
     String CREATE_ENTREPRISE_ENDPOINT = ENTREPRISE_ENDPOINT + CREATE_ENDPOINT;
     String FIND_ENTREPRISE_BY_ID_ENDPOINT = ENTREPRISE_ENDPOINT + "/{idEntreprise}";
-    String FIND_ENTREPRISE_BY_NOM_ENDPOINT = ENTREPRISE_ENDPOINT + NOM_ENDPOINT + "{nomEntreprise}";
+    String FIND_ENTREPRISE_BY_NOM_ENDPOINT = ENTREPRISE_ENDPOINT + NOM_ENDPOINT + "/{nomEntreprise}";
     String FIND_ENTREPRISE_BY_MAIL_ENDPOINT = ENTREPRISE_ENDPOINT + MAIL_ENDPOINT + "/{emailEntreprise}";
     String FIND_ALL_ENTREPRISE_ENDPOINT = ENTREPRISE_ENDPOINT + ALL_ENDPOINT;
-    String DELETE_ENTREPRISE_BY_ID_ENDPOINT = ENTREPRISE_ENDPOINT + DELETE_ENDPOINT + "{idEntreprise}";
+    String DELETE_ENTREPRISE_BY_ID_ENDPOINT = ENTREPRISE_ENDPOINT + DELETE_ENDPOINT + "/{idEntreprise}";
     String AUTHENTICATION_ENDPOINT = APP_ROOT + "/auth";
 
 }

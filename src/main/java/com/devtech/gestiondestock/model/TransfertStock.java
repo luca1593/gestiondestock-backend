@@ -25,17 +25,16 @@ public class TransfertStock extends AbstractEntity {
     private StatutTransfert statut;
     
     @ManyToOne
-    @JoinColumn(name = "identreprise")
-    private Entreprise entreprise;
-    
-    @ManyToOne
     @JoinColumn(name = "entrepotSource_id")
     private Entrepot entrepotSource;
     
     @ManyToOne
     @JoinColumn(name = "entrepotDestination_id")
     private Entrepot entrepotDestination;
-    
+    @ManyToOne
+    @JoinColumn(name = "identreprise")
+    private Entreprise entreprise;
+
     public enum StatutTransfert {
         EN_ATTENTE, EN_TRANSIT, RECU, ANNULE
     }

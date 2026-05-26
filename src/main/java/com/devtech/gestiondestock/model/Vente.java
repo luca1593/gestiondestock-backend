@@ -28,8 +28,9 @@ public class Vente extends AbstractEntity{
     private Instant dateVente;
     @Column(name = "commentaire")
     private String commentaire;
-    @OneToMany(mappedBy = "vente")
-    private List<LigneVente> ligneVentes;
     @Column(name = "identreprise")
     private Integer identreprise;
+    @OneToMany(mappedBy = "vente")
+    private List<LigneVente> ligneVentes;
+
 }

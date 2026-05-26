@@ -8,27 +8,27 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-/**
- * @author luca
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "ligneVente")
-public class LigneVente extends AbstractEntity{
+@Table(name = "inventaireLigne")
+public class InventaireLigne extends AbstractEntity {
     @ManyToOne
-    @JoinColumn(name = "idvente")
-    private Vente vente;
+    @JoinColumn(name = "idinventaire")
+    private Inventaire inventaire;
+
     @ManyToOne
     @JoinColumn(name = "idarticle")
     private Article article;
-    @Column(name = "quantite")
-    private BigDecimal quantite;
-    @Column(name = "prixUnitaire")
-    private BigDecimal prixUnitaire;
+
+    @Column(name = "quantite_theorique")
+    private BigDecimal quantiteTheorique;
+
+    @Column(name = "quantite_reelle")
+    private BigDecimal quantiteReelle;
+
     @Column(name = "identreprise")
     private Integer identreprise;
-
 }

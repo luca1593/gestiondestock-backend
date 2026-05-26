@@ -34,11 +34,10 @@ public class Paiement extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "facture_id")
     private Facture facture;
-    
     @ManyToOne
     @JoinColumn(name = "identreprise")
     private Entreprise entreprise;
-    
+
     public enum ModePaiement {
         ESPECES, CHEQUE, VIREMENT_BANCAIRE, CARTE_BANCAIRE, MOBILE_MONEY, AUTRE
     }

@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+
 @Entity
 @Table(name = "article")
 public class Article extends AbstractEntity {

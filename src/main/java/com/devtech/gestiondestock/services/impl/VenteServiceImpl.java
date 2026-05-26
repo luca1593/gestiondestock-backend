@@ -136,7 +136,6 @@ public class VenteServiceImpl implements VenteService {
 
     @Override
     public List<LigneVenteDto> findAllLigneVenteByVente(Integer idVente) {
-        checkIdVenteBeforeDelete(idVente);
         return this.ligneVenteRepository.findAllByVenteId(idVente) != null ?
                 this.ligneVenteRepository.findAllByVenteId(idVente).stream()
                         .map(LigneVenteDto::fromEntity).collect(Collectors.toList()) :  new ArrayList<>();
@@ -151,14 +150,6 @@ public class VenteServiceImpl implements VenteService {
                     .quantite(ligneVente.getQuantite())
                     .identreprise(ligneVente.getIdentreprise())
                     .build();
-        Optional<Article> article = this.articleRepository.findById(ligneVente.getArticle().getId());
-        if(article.isPresent()){
-            Article art = article.get();
-            BigDecimal currentStock = art.getStock() != null ? art.getStock() : BigDecimal.ZERO;
-            BigDecimal newStock = currentStock.subtract(ligneVente.getQuantite());
-            art.setStock(newStock);
-            this.articleRepository.save(art);
-        }
         this.mvtStkService.sortieMvtStk(mvtStkDto);
     }
 

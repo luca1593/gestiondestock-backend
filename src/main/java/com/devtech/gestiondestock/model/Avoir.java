@@ -40,4 +40,5 @@ public class Avoir extends AbstractEntity {
 
     @Column(name = "identreprise")
     private Integer identreprise;
+
 }

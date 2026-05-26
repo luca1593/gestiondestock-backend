@@ -6,7 +6,9 @@ import com.devtech.gestiondestock.exception.EntityNotFoundException;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
+import com.devtech.gestiondestock.model.Entreprise;
 import com.devtech.gestiondestock.model.Utilisateur;
+import com.devtech.gestiondestock.repository.EntrepriseRepository;
 import com.devtech.gestiondestock.repository.RoleRepository;
 import com.devtech.gestiondestock.repository.UtilisateurRepository;
 import com.devtech.gestiondestock.services.UtilisateurService;
@@ -28,11 +30,13 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     private final UtilisateurRepository utilisateurRepository;
     private final RoleRepository roleRepository;
+    private final EntrepriseRepository entrepriseRepository;
 
     @Autowired
-    public UtilisateurServiceImpl(UtilisateurRepository utilisateurRepository, RoleRepository roleRepository){
+    public UtilisateurServiceImpl(UtilisateurRepository utilisateurRepository, RoleRepository roleRepository, EntrepriseRepository entrepriseRepository){
         this.utilisateurRepository = utilisateurRepository;
         this.roleRepository = roleRepository;
+        this.entrepriseRepository = entrepriseRepository;
     }
 
     @Override
@@ -61,6 +65,13 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             existingPassword = existing.getMotDePasse();
         }
         Utilisateur entity = UtilisateurDto.toEntity(dto);
+        if (dto.getId() == null && entity.getEntreprise() == null) {
+            String idEntrepriseStr = MDC.get("idEntreprise");
+            if (idEntrepriseStr != null) {
+                Integer idEntreprise = Integer.parseInt(idEntrepriseStr);
+                entity.setEntreprise(entrepriseRepository.findById(idEntreprise).orElse(null));
+            }
+        }
         if (dto.getId() != null && !StringUtils.hasLength(dto.getMotDePasse())) {
             entity.setMotDePasse(existingPassword);
         } else if (dto.getId() != null && dto.getMotDePasse() != null && dto.getMotDePasse().startsWith("$2")) {

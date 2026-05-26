@@ -8,7 +8,7 @@ import java.util.List;
 import static com.devtech.gestiondestock.utils.Constants.APP_ROOT;
 
 public interface PaiementApi {
-    @PostMapping(value = APP_ROOT + "/paiements/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = APP_ROOT + "/paiements/save", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     PaiementDto save(@RequestBody PaiementDto dto);
 
     @GetMapping(value = APP_ROOT + "/paiements/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

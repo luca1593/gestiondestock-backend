@@ -1,6 +1,8 @@
 package com.devtech.gestiondestock.services.impl;
 
+import com.devtech.gestiondestock.dto.ArticleDto;
 import com.devtech.gestiondestock.dto.LotDto;
+import com.devtech.gestiondestock.dto.MvtStkDto;
 import com.devtech.gestiondestock.exception.EntityNotFoundException;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
@@ -8,12 +10,17 @@ import com.devtech.gestiondestock.model.Article;
 import com.devtech.gestiondestock.model.Entreprise;
 import com.devtech.gestiondestock.model.Entrepot;
 import com.devtech.gestiondestock.model.Lot;
+import com.devtech.gestiondestock.model.SourceMvtStk;
 import com.devtech.gestiondestock.repository.LotRepository;
 import com.devtech.gestiondestock.services.LotService;
+import com.devtech.gestiondestock.services.MvtStkService;
 import com.devtech.gestiondestock.validator.LotValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,12 +29,15 @@ import java.util.stream.Collectors;
 public class LotServiceImpl implements LotService {
     private static final Logger log = LoggerFactory.getLogger(LotServiceImpl.class);
     private final LotRepository lotRepository;
+    private final MvtStkService mvtStkService;
 
-    public LotServiceImpl(LotRepository lotRepository) {
+    public LotServiceImpl(LotRepository lotRepository, MvtStkService mvtStkService) {
         this.lotRepository = lotRepository;
+        this.mvtStkService = mvtStkService;
     }
 
     @Override
+    @Transactional
     public LotDto save(LotDto dto) {
         List<String> errors = LotValidator.validate(dto);
         if (!errors.isEmpty()) {
@@ -39,6 +49,18 @@ public class LotServiceImpl implements LotService {
             Article article = new Article();
             article.setId(dto.getArticleId());
             lot.setArticle(article);
+
+            if (dto.getQuantite() != null && dto.getQuantite().signum() > 0) {
+                MvtStkDto mvtDto = MvtStkDto.builder()
+                        .dateMvt(Instant.now())
+                        .quantite(dto.getQuantite())
+                        .article(ArticleDto.builder().id(dto.getArticleId()).build())
+                        .typeMvt(com.devtech.gestiondestock.model.TypeMvt.ENTRER)
+                        .sourceMvt(SourceMvtStk.LOT)
+                        .identreprise(dto.getEntrepriseId())
+                        .build();
+                mvtStkService.entreMvtStk(mvtDto);
+            }
         }
         if (dto.getEntrepotId() != null) {
             Entrepot entrepot = new Entrepot();

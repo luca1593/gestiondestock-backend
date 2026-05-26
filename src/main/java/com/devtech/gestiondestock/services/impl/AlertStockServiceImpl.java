@@ -10,7 +10,9 @@ import com.devtech.gestiondestock.repository.ArticleRepository;
 import com.devtech.gestiondestock.services.AlertStockService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,6 +28,7 @@ public class AlertStockServiceImpl implements AlertStockService {
     private final ArticleRepository articleRepository;
 
     @Override
+    @Transactional
     public AlertStockDto save(AlertStockDto dto) {
         return AlertStockDto.fromEntity(
                 alertStockRepository.save(toEntity(dto))
@@ -33,6 +36,7 @@ public class AlertStockServiceImpl implements AlertStockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AlertStockDto findById(Integer id) {
         Optional<AlertStock> alert = alertStockRepository.findById(id);
         return alert.map(AlertStockDto::fromEntity).orElseThrow(() ->
@@ -40,12 +44,14 @@ public class AlertStockServiceImpl implements AlertStockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AlertStockDto> findAllByEntreprise(Integer identreprise) {
         return alertStockRepository.findByIdentrepriseAndActiveTrue(identreprise)
                 .stream().map(AlertStockDto::fromEntity).collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public List<AlertStockDto> findAlertesActives(Integer identreprise) {
         checkAndCreateAlerts(identreprise);
         return alertStockRepository.findByIdentrepriseAndActiveTrue(identreprise)
@@ -53,17 +59,20 @@ public class AlertStockServiceImpl implements AlertStockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AlertStockDto> findByNiveauAlerte(String niveauAlerte) {
         return alertStockRepository.findByNiveauAlerte(niveauAlerte)
                 .stream().map(AlertStockDto::fromEntity).collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
         alertStockRepository.deleteById(id);
     }
 
     @Override
+    @Transactional
     public void checkAndCreateAlerts(Integer identreprise) {
         List<Article> articles = articleRepository.findAll();
         for (Article article : articles) {
@@ -78,8 +87,9 @@ public class AlertStockServiceImpl implements AlertStockService {
                     niveau = "MOYEN";
                 }
 
+                List<AlertStock> existantes = alertStockRepository.findByArticleIdAndActive(article.getId());
+
                 if (niveau != null) {
-                    List<AlertStock> existantes = alertStockRepository.findByArticleIdAndActive(article.getId());
                     if (existantes.isEmpty()) {
                         AlertStock alert = new AlertStock();
                         alert.setArticleId(article.getId());
@@ -91,9 +101,34 @@ public class AlertStockServiceImpl implements AlertStockService {
                         alert.setActive(true);
                         alert.setIdentreprise(identreprise);
                         alertStockRepository.save(alert);
+                    } else {
+                        for (AlertStock existing : existantes) {
+                            existing.setStockActuel(stock);
+                            existing.setNiveauAlerte(niveau);
+                            existing.setDesignation(article.getDesignation());
+                            alertStockRepository.save(existing);
+                        }
+                    }
+                } else {
+                    for (AlertStock existing : existantes) {
+                        existing.setActive(false);
+                        alertStockRepository.save(existing);
                     }
                 }
             }
+        }
+    }
+
+    @Scheduled(fixedRate = 300000)
+    @Transactional
+    public void scheduledCheck() {
+        List<Integer> entreprises = articleRepository.findAll().stream()
+                .filter(a -> a.getEntreprise() != null)
+                .map(a -> a.getEntreprise().getId())
+                .distinct()
+                .collect(Collectors.toList());
+        for (Integer id : entreprises) {
+            checkAndCreateAlerts(id);
         }
     }
 

@@ -7,6 +7,7 @@ import com.devtech.gestiondestock.services.InventaireService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @RestController
@@ -19,7 +20,7 @@ public class InventaireController implements InventaireApi {
     }
 
     @Override
-    public InventaireDto save(InventaireDto dto) {
+    public InventaireDto save(@RequestBody InventaireDto dto) {
         return inventaireService.save(dto);
     }
 

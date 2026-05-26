@@ -30,4 +30,5 @@ public class LigneCommandeFournisseur extends AbstractEntity{
     private BigDecimal prixUnitaire;
     @Column(name = "identreprise")
     private Integer identreprise;
+
 }

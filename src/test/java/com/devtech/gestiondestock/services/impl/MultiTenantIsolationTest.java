@@ -75,6 +75,8 @@ class MultiTenantIsolationTest {
                 .build());
         entCId = entC.getId();
 
+        MDC.put("idEntreprise", entBId.toString());
+
         utilisateurService.save(UtilisateurDto.builder()
                 .nom("Admin B")
                 .prenom("User")
@@ -87,6 +89,8 @@ class MultiTenantIsolationTest {
                         .build())
                 .entreprise(EntrepriseDto.builder().id(entBId).build())
                 .build());
+
+        MDC.put("idEntreprise", entCId.toString());
 
         utilisateurService.save(UtilisateurDto.builder()
                 .nom("Admin C")

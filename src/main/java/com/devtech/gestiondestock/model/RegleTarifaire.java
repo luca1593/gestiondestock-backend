@@ -47,17 +47,16 @@ public class RegleTarifaire extends AbstractEntity {
     private BigDecimal montantMinimal;
     
     @ManyToOne
-    @JoinColumn(name = "identreprise")
-    private Entreprise entreprise;
-    
-    @ManyToOne
     @JoinColumn(name = "idCategory")
     private Category categorie;
     
     @ManyToOne
     @JoinColumn(name = "idClient")
     private Client client;
-    
+    @ManyToOne
+    @JoinColumn(name = "identreprise")
+    private Entreprise entreprise;
+
     public enum TypeRegle {
         REMISE_POURCENTAGE, REMISE_MONTANT_FIXE, PRIX_SPECIFIQUE, PROMOTION
     }

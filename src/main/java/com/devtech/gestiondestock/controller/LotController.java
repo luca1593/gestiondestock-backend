@@ -6,6 +6,7 @@ import com.devtech.gestiondestock.services.LotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @RestController
@@ -18,7 +19,7 @@ public class LotController implements LotApi {
     }
 
     @Override
-    public LotDto save(LotDto dto) {
+    public LotDto save(@RequestBody LotDto dto) {
         return lotService.save(dto);
     }
 

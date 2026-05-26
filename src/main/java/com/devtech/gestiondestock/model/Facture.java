@@ -46,11 +46,10 @@ public class Facture extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "idClient")
     private Client client;
-    
     @ManyToOne
     @JoinColumn(name = "identreprise")
     private Entreprise entreprise;
-    
+
     public enum StatutFacture {
         EN_ATTENTE, PARTIELLEMENT_PAYEE, PAYEE, EN_RETARD, ANNULEE
     }

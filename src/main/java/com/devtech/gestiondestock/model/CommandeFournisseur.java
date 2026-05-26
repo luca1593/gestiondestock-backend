@@ -25,11 +25,12 @@ public class CommandeFournisseur extends AbstractEntity{
     private Instant dateCommande;
     @Column(name = "etatcommande")
     private EtatCommande etatcommande;
+    @Column(name = "identreprise")
+    private Integer identreprise;
     @ManyToOne
     @JoinColumn(name = "idfournisseur")
     private Fournisseur fournisseur;
     @OneToMany(mappedBy = "commandeFournisseur")
     private List<LigneCommandeFournisseur> ligneCommandeFournisseurs;
-    @Column(name = "identreprise")
-    private Integer identreprise;
+
 }

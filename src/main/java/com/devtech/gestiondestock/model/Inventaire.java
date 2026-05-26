@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -31,13 +32,15 @@ public class Inventaire extends AbstractEntity {
     private Statut statut;
     
     @ManyToOne
-    @JoinColumn(name = "identreprise")
-    private Entreprise entreprise;
-    
-    @ManyToOne
     @JoinColumn(name = "entrepot_id")
     private Entrepot entrepot;
-    
+
+    @OneToMany(mappedBy = "inventaire", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InventaireLigne> lignes;
+    @ManyToOne
+    @JoinColumn(name = "identreprise")
+    private Entreprise entreprise;
+
     public enum Statut {
         EN_COURS, TERMINE, ANNULE
     }

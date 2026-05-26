@@ -9,6 +9,7 @@ import com.devtech.gestiondestock.services.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class ArticleController implements ArticleApi {
     }
 
     @Override
-    public ArticleDto save(ArticleDto dto) {
+    public ArticleDto save(@RequestBody ArticleDto dto) {
         return this.articleService.save(dto);
     }
 
