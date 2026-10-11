@@ -43,14 +43,42 @@ public class Facture extends AbstractEntity {
     @Column(name = "montantRestant")
     private BigDecimal montantRestant;
     
+    @Enumerated(EnumType.STRING)
+    @Column(name = "typeFacture", nullable = false)
+    private TypeFacture typeFacture = TypeFacture.CLIENT;
+
+    /**
+     * Document source de la facture (lien polymorphe : type + identifiant).
+     * L'integrite est verifiee cote service (pas de contrainte FK).
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sourceType")
+    private SourceDocument sourceType;
+
+    @Column(name = "sourceId")
+    private Integer sourceId;
+
     @ManyToOne
     @JoinColumn(name = "idClient")
     private Client client;
+
+    @ManyToOne
+    @JoinColumn(name = "idfournisseur")
+    private Fournisseur fournisseur;
+
     @ManyToOne
     @JoinColumn(name = "identreprise")
     private Entreprise entreprise;
 
     public enum StatutFacture {
         EN_ATTENTE, PARTIELLEMENT_PAYEE, PAYEE, EN_RETARD, ANNULEE
+    }
+
+    public enum TypeFacture {
+        CLIENT, FOURNISSEUR
+    }
+
+    public enum SourceDocument {
+        VENTE, COMMANDE_CLIENT, COMMANDE_FOURNISSEUR
     }
 }

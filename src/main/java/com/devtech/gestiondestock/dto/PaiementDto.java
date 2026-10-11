@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 public class PaiementDto {
     private Integer id;
     private BigDecimal montant;
+    private BigDecimal montantDonne;
+    private BigDecimal monnaie;
     private LocalDateTime datePaiement;
     private Paiement.ModePaiement modePaiement;
     private String reference;
@@ -25,6 +27,8 @@ public class PaiementDto {
         return PaiementDto.builder()
                 .id(paiement.getId())
                 .montant(paiement.getMontant())
+                .montantDonne(paiement.getMontantDonne())
+                .monnaie(paiement.getMonnaie())
                 .datePaiement(paiement.getDatePaiement())
                 .modePaiement(paiement.getModePaiement())
                 .reference(paiement.getReference())
@@ -41,6 +45,8 @@ public class PaiementDto {
         Paiement paiement = new Paiement();
         paiement.setId(dto.getId());
         paiement.setMontant(dto.getMontant());
+        paiement.setMontantDonne(dto.getMontantDonne());
+        paiement.setMonnaie(dto.getMonnaie());
         paiement.setDatePaiement(dto.getDatePaiement());
         paiement.setModePaiement(dto.getModePaiement());
         paiement.setReference(dto.getReference());
