@@ -158,7 +158,9 @@ pipeline {
             steps {
                 sh '''
                 docker compose -f docker-compose.prod.yml down --remove-orphans || true
-                docker compose -f docker-compose.prod.yml up -d --build --force-recreate
+                # --no-build : réutilise l'image construite à l'étape précédente.
+                # Évite un second "mvn package" qui consomme le CPU pendant l'init de MySQL.
+                docker compose -f docker-compose.prod.yml up -d --no-build --force-recreate
                 '''
             }
         }
@@ -234,8 +236,8 @@ pipeline {
             script {
                 // Nettoyage des anciennes images (optionnel)
                 sh '''
-                # Garder seulement les 2 dernières images
-                docker images ${IMAGE_NAME} --format "table {{.Tag}}" | tail -n +2 | head -n -2 | xargs -r docker rmi || true
+                # Garder les 2 images les plus récentes (docker images trie du plus récent au plus ancien)
+                docker images ${IMAGE_NAME} --format "{{.Tag}}" | tail -n +3 | xargs -r -I{} docker rmi ${IMAGE_NAME}:{} || true
                 '''
             }
          }

@@ -50,10 +50,12 @@ services:
           memory: 1G
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-luca1593}"]
-      interval: 30s
+      # MySQL peut mettre ~3 min à démarrer (récupération InnoDB sur un gros volume).
+      # Marge = start_period + interval * retries = 180s + 10s * 30 = 480s.
+      interval: 10s
       timeout: 10s
-      retries: 5
-      start_period: 60s
+      retries: 30
+      start_period: 180s
     logging:
       driver: "json-file"
       options:
@@ -160,8 +162,8 @@ services:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health || exit 1"]
       interval: 30s
       timeout: 10s
-      retries: 5
-      start_period: 90s
+      retries: 10
+      start_period: 180s
     logging:
       driver: "json-file"
       options:
@@ -247,7 +249,8 @@ services:
       WATCHTOWER_CLEANUP: "true"
       WATCHTOWER_POLL_INTERVAL: 86400
       WATCHTOWER_INCLUDE_RESTARTING: "true"
-      WATCHTOWER_NOTIFICATIONS: "shoutrrr"
+      # Désactivées par défaut : shoutrrr avec une URL vide fait échouer Watchtower au démarrage.
+      WATCHTOWER_NOTIFICATIONS: ${WATCHTOWER_NOTIFICATIONS:-}
       WATCHTOWER_NOTIFICATION_URL: ${WATCHTOWER_NOTIFICATION_URL:-}
     command: --interval 86400 --cleanup
     logging:
