@@ -24,6 +24,11 @@ public class FactureController implements FactureApi {
     }
 
     @Override
+    public FactureDto saveAvecPaiement(FactureDto dto) {
+        return factureService.saveAvecPaiement(dto);
+    }
+
+    @Override
     public FactureDto findById(Integer id) {
         return factureService.findById(id);
     }
@@ -39,6 +44,11 @@ public class FactureController implements FactureApi {
     }
 
     @Override
+    public List<FactureDto> findByFournisseur(Integer fournisseurId) {
+        return factureService.findByFournisseur(fournisseurId);
+    }
+
+    @Override
     public List<FactureDto> findByEntreprise(Integer entrepriseId) {
         return factureService.findByEntreprise(entrepriseId);
     }
@@ -46,6 +56,16 @@ public class FactureController implements FactureApi {
     @Override
     public List<FactureDto> findByStatut(Facture.StatutFacture statut) {
         return factureService.findByStatut(statut);
+    }
+
+    @Override
+    public List<FactureDto> findByType(Facture.TypeFacture typeFacture) {
+        return factureService.findByType(typeFacture);
+    }
+
+    @Override
+    public List<FactureDto> findBySource(Facture.SourceDocument sourceType, Integer sourceId) {
+        return factureService.findBySource(sourceType, sourceId);
     }
 
     @Override

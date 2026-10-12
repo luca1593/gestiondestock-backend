@@ -14,6 +14,9 @@ public class FactureDto {
     private LocalDateTime dateFacture;
     private LocalDateTime dateEcheance;
     private Facture.StatutFacture statut;
+    private Facture.TypeFacture typeFacture;
+    private Facture.SourceDocument sourceType;
+    private Integer sourceId;
     private BigDecimal montantHT;
     private BigDecimal montantTVA;
     private BigDecimal montantTTC;
@@ -21,8 +24,17 @@ public class FactureDto {
     private BigDecimal montantRestant;
     private Integer clientId;
     private String clientNom;
+    private Integer fournisseurId;
+    private String fournisseurNom;
     private Integer entrepriseId;
     private String entrepriseNom;
+
+    /**
+     * Informations de paiement, utilisees uniquement en entree de
+     * POST /v1/factures/save-avec-paiement. Non renseigne en lecture
+     * (utiliser GET /v1/paiements/facture/{id}).
+     */
+    private PaiementDto paiement;
 
     public static FactureDto fromEntity(Facture facture) {
         if (facture == null) return null;
@@ -32,6 +44,9 @@ public class FactureDto {
                 .dateFacture(facture.getDateFacture())
                 .dateEcheance(facture.getDateEcheance())
                 .statut(facture.getStatut())
+                .typeFacture(facture.getTypeFacture())
+                .sourceType(facture.getSourceType())
+                .sourceId(facture.getSourceId())
                 .montantHT(facture.getMontantHT())
                 .montantTVA(facture.getMontantTVA())
                 .montantTTC(facture.getMontantTTC())
@@ -39,6 +54,8 @@ public class FactureDto {
                 .montantRestant(facture.getMontantRestant())
                 .clientId(facture.getClient() != null ? facture.getClient().getId() : null)
                 .clientNom(facture.getClient() != null ? facture.getClient().getNom() : null)
+                .fournisseurId(facture.getFournisseur() != null ? facture.getFournisseur().getId() : null)
+                .fournisseurNom(facture.getFournisseur() != null ? facture.getFournisseur().getNom() : null)
                 .entrepriseId(facture.getEntreprise() != null ? facture.getEntreprise().getId() : null)
                 .entrepriseNom(facture.getEntreprise() != null ? facture.getEntreprise().getNom() : null)
                 .build();
@@ -52,6 +69,9 @@ public class FactureDto {
         facture.setDateFacture(dto.getDateFacture());
         facture.setDateEcheance(dto.getDateEcheance());
         facture.setStatut(dto.getStatut());
+        facture.setTypeFacture(dto.getTypeFacture());
+        facture.setSourceType(dto.getSourceType());
+        facture.setSourceId(dto.getSourceId());
         facture.setMontantHT(dto.getMontantHT());
         facture.setMontantTVA(dto.getMontantTVA());
         facture.setMontantTTC(dto.getMontantTTC());

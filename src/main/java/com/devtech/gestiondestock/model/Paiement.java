@@ -17,7 +17,19 @@ import java.time.LocalDateTime;
 public class Paiement extends AbstractEntity {
     @Column(name = "montant")
     private BigDecimal montant;
-    
+
+    /**
+     * Somme effectivement remise par le payeur (utile pour le paiement en especes).
+     */
+    @Column(name = "montantDonne")
+    private BigDecimal montantDonne;
+
+    /**
+     * Monnaie rendue au payeur. Calculee par le serveur : montantDonne - montant.
+     */
+    @Column(name = "monnaie")
+    private BigDecimal monnaie;
+
     @Column(name = "datePaiement")
     private LocalDateTime datePaiement;
     

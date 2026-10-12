@@ -7,25 +7,35 @@ import com.devtech.gestiondestock.exception.InvalidEntityException;
 import com.devtech.gestiondestock.model.Entreprise;
 import com.devtech.gestiondestock.model.Facture;
 import com.devtech.gestiondestock.model.Paiement;
+import com.devtech.gestiondestock.repository.FactureRepository;
 import com.devtech.gestiondestock.repository.PaiementRepository;
 import com.devtech.gestiondestock.services.PaiementService;
 import com.devtech.gestiondestock.validator.PaiementValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class PaiementServiceImpl implements PaiementService {
-    private static final Logger log = LoggerFactory.getLogger(PaiementServiceImpl.class);
-    private final PaiementRepository paiementRepository;
 
-    public PaiementServiceImpl(PaiementRepository paiementRepository) {
+    private final PaiementRepository paiementRepository;
+    private final FactureRepository factureRepository;
+
+    public PaiementServiceImpl(PaiementRepository paiementRepository, FactureRepository factureRepository) {
         this.paiementRepository = paiementRepository;
+        this.factureRepository = factureRepository;
     }
 
     @Override
+    @Transactional
     public PaiementDto save(PaiementDto dto) {
         List<String> errors = PaiementValidator.validate(dto);
         if (!errors.isEmpty()) {
@@ -33,17 +43,35 @@ public class PaiementServiceImpl implements PaiementService {
             throw new InvalidEntityException("Le paiement n'est pas valide", ErrorsCode.PAIEMENT_NOT_VALID, errors);
         }
         Paiement paiement = PaiementDto.toEntity(dto);
-        if (dto.getFactureId() != null) {
-            Facture facture = new Facture();
-            facture.setId(dto.getFactureId());
-            paiement.setFacture(facture);
+
+        Facture facture = factureRepository.findById(dto.getFactureId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Facture non trouvée avec l'ID " + dto.getFactureId(), ErrorsCode.FACTURE_NOT_FOUND));
+        paiement.setFacture(facture);
+
+        if (paiement.getEntreprise() == null) {
+            Integer entrepriseId = dto.getEntrepriseId() != null ? dto.getEntrepriseId() : facture.getEntreprise() != null
+                    ? facture.getEntreprise().getId() : entrepriseCourante();
+            if (entrepriseId != null) {
+                Entreprise entreprise = new Entreprise();
+                entreprise.setId(entrepriseId);
+                paiement.setEntreprise(entreprise);
+            }
         }
-        if (dto.getEntrepriseId() != null) {
-            Entreprise entreprise = new Entreprise();
-            entreprise.setId(dto.getEntrepriseId());
-            paiement.setEntreprise(entreprise);
+
+        // Monnaie rendue : uniquement pertinente pour un paiement en especes, et
+        // toujours recalculee cote serveur pour rester coherente avec le montant.
+        if (paiement.getModePaiement() == Paiement.ModePaiement.ESPECES
+                && paiement.getMontantDonne() != null
+                && paiement.getMontant() != null) {
+            paiement.setMonnaie(paiement.getMontantDonne().subtract(paiement.getMontant()));
+        } else {
+            paiement.setMonnaie(null);
         }
-        return PaiementDto.fromEntity(paiementRepository.save(paiement));
+
+        Paiement saved = paiementRepository.save(paiement);
+        recalculerFacture(saved.getFacture());
+        return PaiementDto.fromEntity(saved);
     }
 
     @Override
@@ -69,7 +97,56 @@ public class PaiementServiceImpl implements PaiementService {
     }
 
     @Override
+    @Transactional
     public void delete(Integer id) {
+        Paiement paiement = paiementRepository.findById(id).orElse(null);
+        Integer factureId = paiement != null && paiement.getFacture() != null ? paiement.getFacture().getId() : null;
         paiementRepository.deleteById(id);
+        if (factureId != null) {
+            factureRepository.findById(factureId).ifPresent(this::mettreAJourTotaux);
+        }
+    }
+
+    /**
+     * Recalcule le montant paye, le montant restant et le statut de la facture
+     * a partir de l'ensemble de ses paiements.
+     */
+    private void recalculerFacture(Facture facture) {
+        if (facture == null || facture.getId() == null) {
+            return;
+        }
+        factureRepository.findById(facture.getId()).ifPresent(this::mettreAJourTotaux);
+    }
+
+    private void mettreAJourTotaux(Facture facture) {
+        BigDecimal total = paiementRepository.findByFactureId(facture.getId()).stream()
+                .map(Paiement::getMontant)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal montantTTC = facture.getMontantTTC() != null ? facture.getMontantTTC() : BigDecimal.ZERO;
+        facture.setMontantPaye(total);
+        facture.setMontantRestant(montantTTC.subtract(total));
+
+        if (total.compareTo(BigDecimal.ZERO) <= 0) {
+            facture.setStatut(Facture.StatutFacture.EN_ATTENTE);
+        } else if (total.compareTo(montantTTC) >= 0) {
+            facture.setStatut(Facture.StatutFacture.PAYEE);
+        } else {
+            facture.setStatut(Facture.StatutFacture.PARTIELLEMENT_PAYEE);
+        }
+        factureRepository.save(facture);
+    }
+
+    private Integer entrepriseCourante() {
+        String idEntreprise = MDC.get("idEntreprise");
+        if (StringUtils.hasLength(idEntreprise)) {
+            try {
+                return Integer.parseInt(idEntreprise);
+            } catch (NumberFormatException e) {
+                log.warn("Identifiant d'entreprise invalide dans le contexte : {}", idEntreprise);
+            }
+        }
+        return null;
     }
 }

@@ -9,6 +9,9 @@ import java.util.List;
 public interface FactureRepository extends JpaRepository<Facture, Integer> {
     Facture findByNumeroFacture(String numeroFacture);
     List<Facture> findByClientId(Integer clientId);
+    List<Facture> findByFournisseurId(Integer fournisseurId);
     List<Facture> findByEntrepriseId(Integer entrepriseId);
     List<Facture> findByStatut(Facture.StatutFacture statut);
+    List<Facture> findByTypeFacture(Facture.TypeFacture typeFacture);
+    List<Facture> findBySourceTypeAndSourceId(Facture.SourceDocument sourceType, Integer sourceId);
 }
