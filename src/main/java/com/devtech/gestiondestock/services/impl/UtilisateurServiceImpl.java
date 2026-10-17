@@ -123,7 +123,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             return null;
         }
         Optional<Utilisateur> utilisateur = utilisateurRepository.findUtilisateurByNom(nom);
-        return Optional.of(sansMotDePasse(UtilisateurDto.fromEntity(utilisateur.get()))).orElseThrow(() ->
+        return utilisateur.map(u -> sansMotDePasse(UtilisateurDto.fromEntity(u))).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucun Utilisateur trouver avec le nom  = " + nom + " dans la BDD",
                         ErrorsCode.UTILISATEUR_NOT_FOUND

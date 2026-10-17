@@ -65,13 +65,14 @@ public class CategoryServiceImpl implements CategoryService {
             log.error("Category code is null");
             return null;
         }
-        Optional<Category> category = this.categoryRepository.findCategoryByCode(code);
-        return Optional.of(CategoryDto.fromEntity(category.get())).orElseThrow(() ->
-                new EntityNotFoundException(
-                        "Aucun category trouver avec le code = " + code + " dans la BDD",
-                        ErrorsCode.CATEGORY_NOT_FOUND
-                )
-        );
+        return this.categoryRepository.findCategoryByCode(code)
+                .map(CategoryDto::fromEntity)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Aucun category trouver avec le code = " + code + " dans la BDD",
+                                ErrorsCode.CATEGORY_NOT_FOUND
+                        )
+                );
     }
 
     @Override
