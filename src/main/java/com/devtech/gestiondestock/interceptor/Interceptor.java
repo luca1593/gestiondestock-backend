@@ -7,43 +7,51 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * @author luca
- * Intercepteur Hibernate pour filtrer les données par entreprise
+ * Intercepteur Hibernate pour filtrer les données par entreprise.
+ *
+ * <p>Voir {@code docs/adr/ADR-002-filtrage-multi-tenant-fail-closed.md}.
+ * Règle de sécurité : dans un contexte authentifié (MDC {@code userEmail} posé),
+ * une requête ne peut JAMAIS s'exécuter sans filtre — en cas d'entreprise absente
+ * ou invalide, l'intercepteur lève une exception (fail-closed) au lieu de renvoyer
+ * le SQL non filtré. Les contextes système (login, démarrage, tâche planifiée) ne
+ * portent pas de {@code userEmail} et restent volontairement non filtrés.</p>
  */
 @Component
 public class Interceptor implements StatementInspector {
 
     private static final Logger log = LoggerFactory.getLogger(Interceptor.class);
 
-    private static final Set<String> EXCLUDED_TABLES = new HashSet<>();
-    
-    static {
-        EXCLUDED_TABLES.add("entreprise");
-        EXCLUDED_TABLES.add("entreprises");
-        EXCLUDED_TABLES.add("roles");
-        EXCLUDED_TABLES.add("role");
-    }
+    /** Clé MDC posée par ApplicationRequestFilter à partir du JWT. */
+    static final String MDC_TENANT = "idEntreprise";
+    /** Clé MDC posée par ApplicationRequestFilter quand un JWT valide a identifié l'utilisateur. */
+    static final String MDC_USER_EMAIL = "userEmail";
+
+    /** Tables sans colonne {@code identreprise} : jamais filtrées. */
+    private static final Set<String> EXCLUDED_TABLES = Set.of(
+            "entreprise", "entreprises", "roles", "role");
+
+    /** Mots-clés qui terminent, au premier niveau, la clause de filtrage. */
+    private static final Set<String> TRAILING_KEYWORDS_WITH_BY = Set.of("group", "order");
+    private static final Set<String> TRAILING_KEYWORDS_SIMPLE = Set.of(
+            "having", "limit", "offset", "window", "fetch");
+
+    private static final String JOIN_OR_CLAUSE_KEYWORDS =
+            "where|group|order|having|limit|offset|union|for|join|left|right|inner|outer|cross|on|"
+                    + "fetch|window|set|values|using|natural|full|straight_join";
 
     private static final Pattern FROM_PATTERN = Pattern.compile(
-        "(?i)\\bfrom\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s+(as\\s+)?([a-zA-Z_][a-zA-Z0-9_]*)",
-        Pattern.CASE_INSENSITIVE
-    );
-
-    private static final Pattern WHERE_PATTERN = Pattern.compile(
-        "(?i)\\bwhere\\s+",
-        Pattern.CASE_INSENSITIVE
-    );
-
-    private static final Pattern IDENTREPRISE_PATTERN = Pattern.compile(
-        "(?i)\\.identreprise\\s*=\\s*(\\?|\\d+)",
-        Pattern.CASE_INSENSITIVE
-    );
+            "(?i)\\bfrom\\s+([a-zA-Z_][a-zA-Z0-9_]*)"
+                    + "(?:\\s+(?:as\\s+)?(?!(?:" + JOIN_OR_CLAUSE_KEYWORDS + ")\\b)([a-zA-Z_][a-zA-Z0-9_]*))?",
+            Pattern.CASE_INSENSITIVE);
 
     public Interceptor() {
         super();
@@ -56,68 +64,101 @@ public class Interceptor implements StatementInspector {
         }
 
         String trimmedSql = sql.trim();
-        
-        if (!trimmedSql.toLowerCase().startsWith("select")) {
+        if (!trimmedSql.toLowerCase(Locale.ROOT).startsWith("select")) {
             return sql;
         }
 
-        String idEntreprise = MDC.get("idEntreprise");
-        if (!StringUtils.hasLength(idEntreprise)) {
-            log.error("INTERCEPTOR: idEntreprise NOT SET IN MDC - SQL returned WITHOUT filter! SQL: {}", sql);
-            return sql;
-        }
-        
-        log.debug("INTERCEPTOR: idEntreprise={} | SQL: {}", idEntreprise, sql);
-
-        int idEntrepriseValue;
-        try {
-            idEntrepriseValue = Integer.parseInt(idEntreprise);
-            log.debug("Parsed idEntreprise: {}", idEntrepriseValue);
-        } catch (NumberFormatException e) {
-            log.error("INTERCEPTOR: Failed to parse idEntreprise '{}' - SQL returned WITHOUT filter! SQL: {}", idEntreprise, sql);
-            return sql;
-        }
-
-        if (IDENTREPRISE_PATTERN.matcher(sql).find()) {
+        Integer idEntreprise = resolveTenantOrFailClosed();
+        if (idEntreprise == null) {
+            // Contexte système (login, démarrage, tâche planifiée) : pas d'entreprise -> pas de filtre.
+            log.debug("INTERCEPTOR: contexte système sans entreprise - aucune restriction appliquée");
             return sql;
         }
 
         TableInfo tableInfo = extractTableInfo(sql);
         if (tableInfo.tableName == null) {
+            if (containsTopLevelFrom(sql)) {
+                throw new IllegalStateException(
+                        "INTERCEPTOR: table principale introuvable dans une requête authentifiée - "
+                                + "requête refusée par sécurité multi-tenant. SQL: " + sql);
+            }
             return sql;
         }
-
-        if (EXCLUDED_TABLES.contains(tableInfo.tableName.toLowerCase()) || 
-            (tableInfo.alias != null && EXCLUDED_TABLES.contains(tableInfo.alias.toLowerCase()))) {
+        if (EXCLUDED_TABLES.contains(tableInfo.tableName.toLowerCase(Locale.ROOT))) {
             return sql;
         }
 
         String aliasOrTable = tableInfo.alias != null ? tableInfo.alias : tableInfo.tableName;
-        String filterCondition = "(" + aliasOrTable + ".identreprise = " + idEntrepriseValue + " OR " + aliasOrTable + ".identreprise IS NULL)";
-        
-        String result;
-        boolean hasWhere = WHERE_PATTERN.matcher(sql).find();
-        log.debug("HAS WHERE: {}, fromIndex calculation...", hasWhere);
-        
-        if (hasWhere) {
-            result = sql + " AND " + filterCondition;
-        } else {
-            int insertPos = findEndOfFromClause(sql);
-            log.debug("insertPos={} for SQL: {}", insertPos, sql);
-            if (insertPos > 0) {
-                result = sql.substring(0, insertPos) + " WHERE " + filterCondition + " " + sql.substring(insertPos);
-            } else {
-                result = sql + " WHERE " + filterCondition;
-            }
+
+        // Filtre déjà posé sur la table principale (ex. CompteurFacture) : ne pas le dupliquer.
+        if (mainTableAlreadyFiltered(sql, aliasOrTable)) {
+            return sql;
         }
-        log.debug("INTERCEPTOR MODIFIED: {}", result);
+
+        String filterCondition = "(" + aliasOrTable + ".identreprise = " + idEntreprise
+                + " OR " + aliasOrTable + ".identreprise IS NULL)";
+
+        String result = applyTenantFilter(sql, filterCondition);
+        log.debug("INTERCEPTOR MODIFIÉ: {}", result);
         return result;
     }
 
+    private boolean mainTableAlreadyFiltered(String sql, String aliasOrTable) {
+        int whereStart = -1;
+        for (Token token : topLevelTokens(sql)) {
+            if (token.value().equals("where")) {
+                whereStart = token.start();
+                break;
+            }
+        }
+        if (whereStart < 0) {
+            return false;
+        }
+        // On n'examine que la clause WHERE : une condition de JOIN (ex. on a.identreprise = e.id)
+        // n'est pas un filtre de sécurité.
+        String whereClause = sql.substring(whereStart);
+        Pattern alreadyFiltered = Pattern.compile(
+                "(?i)" + Pattern.quote(aliasOrTable) + "\\.identreprise\\s*=");
+        return alreadyFiltered.matcher(whereClause).find();
+    }
+
+    private boolean containsTopLevelFrom(String sql) {
+        return topLevelTokens(sql).stream().anyMatch(t -> t.value().equals("from"));
+    }
+
+    /**
+     * Détermine l'entreprise courante à partir du MDC.
+     *
+     * @return l'id de l'entreprise, ou {@code null} pour un contexte système (non authentifié).
+     * @throws IllegalStateException si un contexte authentifié ne permet pas de résoudre l'entreprise
+     *                               (fail-closed : on refuse d'exécuter une requête non filtrée).
+     */
+    private Integer resolveTenantOrFailClosed() {
+        String raw = MDC.get(MDC_TENANT);
+        if (StringUtils.hasText(raw)) {
+            try {
+                return Integer.valueOf(raw.trim());
+            } catch (NumberFormatException e) {
+                throw new IllegalStateException(
+                        "INTERCEPTOR: idEntreprise invalide dans le contexte ('" + raw
+                                + "') - requête refusée par sécurité multi-tenant");
+            }
+        }
+
+        String userEmail = MDC.get(MDC_USER_EMAIL);
+        if (StringUtils.hasText(userEmail)) {
+            throw new IllegalStateException(
+                    "INTERCEPTOR: utilisateur authentifié (" + userEmail
+                            + ") sans idEntreprise - requête refusée par sécurité multi-tenant");
+        }
+
+        return null;
+    }
+
     private static class TableInfo {
-        String tableName;
-        String alias;
-        
+        final String tableName;
+        final String alias;
+
         TableInfo(String tableName, String alias) {
             this.tableName = tableName;
             this.alias = alias;
@@ -125,45 +166,43 @@ public class Interceptor implements StatementInspector {
     }
 
     private TableInfo extractTableInfo(String sql) {
-        Pattern p = Pattern.compile(
-            "(?i)\\bfrom\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s+(?:as\\s+)?([a-zA-Z_][a-zA-Z0-9_]*)?",
-            Pattern.CASE_INSENSITIVE
-        );
-        
         String normalizedSql = removeSubqueries(sql);
-        Matcher matcher = p.matcher(normalizedSql);
-        
+        Matcher matcher = FROM_PATTERN.matcher(normalizedSql);
+
         if (matcher.find()) {
             String tableName = matcher.group(1);
             String alias = matcher.group(2);
             log.debug("EXTRACTED TABLE: {} alias: {} from SQL: {}", tableName, alias, sql);
             return new TableInfo(tableName, alias);
         }
-        
-        log.error("INTERCEPTOR: Could not extract table info from SQL: {}", sql);
+
+        log.debug("INTERCEPTOR: aucune table principale identifiée dans le SQL: {}", sql);
         return new TableInfo(null, null);
     }
 
+    /**
+     * Neutralise les sous-requêtes afin d'identifier la table principale du FROM.
+     */
     private String removeSubqueries(String sql) {
         StringBuilder result = new StringBuilder();
         int parenthesisCount = 0;
         boolean inSubquery = false;
-        int selectCount = 0;
-        
+
         for (int i = 0; i < sql.length(); i++) {
             char c = sql.charAt(i);
-            
+
             if (c == '(' && !inSubquery) {
-                String beforeParen = sql.substring(Math.max(0, i - 7), i).toLowerCase();
-                if (beforeParen.contains("select")) {
+                int from = Math.max(0, i - 7);
+                if (sql.substring(from, i).toLowerCase(Locale.ROOT).contains("select")) {
                     inSubquery = true;
-                    selectCount++;
+                    parenthesisCount = 0;
                 }
             }
-            
+
             if (inSubquery) {
-                if (c == '(') parenthesisCount++;
-                else if (c == ')') {
+                if (c == '(') {
+                    parenthesisCount++;
+                } else if (c == ')') {
                     parenthesisCount--;
                     if (parenthesisCount == 0) {
                         inSubquery = false;
@@ -173,71 +212,139 @@ public class Interceptor implements StatementInspector {
                 }
                 continue;
             }
-            
+
             result.append(c);
         }
-        
+
         return result.toString();
     }
 
-    private boolean isJoinKeyword(String word) {
-        String lower = word.toLowerCase();
-        return "join".equals(lower) || "from".equals(lower) || "set".equals(lower) || 
-               "values".equals(lower) || "on".equals(lower);
+    /**
+     * Insère la condition de filtrage à un emplacement syntaxiquement valide :
+     * juste avant {@code GROUP BY / ORDER BY / HAVING / LIMIT / OFFSET / WINDOW / FETCH},
+     * ou en fin de requête. {@code AND} est utilisé si un {@code WHERE} de premier niveau
+     * existe déjà, {@code WHERE} sinon.
+     */
+    private String applyTenantFilter(String sql, String filterCondition) {
+        // Isole un éventuel point-virgule final.
+        int end = sql.length();
+        while (end > 0 && Character.isWhitespace(sql.charAt(end - 1))) {
+            end--;
+        }
+        String terminator = "";
+        if (end > 0 && sql.charAt(end - 1) == ';') {
+            terminator = ";";
+            end--;
+            while (end > 0 && Character.isWhitespace(sql.charAt(end - 1))) {
+                end--;
+            }
+        }
+        String body = sql.substring(0, end);
+
+        List<Token> tokens = topLevelTokens(body);
+        for (Token token : tokens) {
+            if (token.value().equals("union")) {
+                throw new IllegalStateException(
+                        "INTERCEPTOR: requête UNION non supportée par le filtre multi-tenant - "
+                                + "requête refusée par sécurité");
+            }
+        }
+
+        boolean hasWhere = tokens.stream().anyMatch(t -> t.value().equals("where"));
+        int insertPos = findTrailingClauseStart(tokens, body.length());
+
+        String head = body.substring(0, insertPos);
+        String tail = body.substring(insertPos);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(stripTrailingSpaces(head));
+        sb.append(hasWhere ? " AND " : " WHERE ");
+        sb.append(filterCondition);
+        if (!tail.isEmpty()) {
+            sb.append(' ').append(tail);
+        }
+        sb.append(terminator);
+        return sb.toString();
     }
 
-    private String findAliasForFilteredTable(String sql, Set<String> tables) {
-        if (tables.size() == 1) {
-            return tables.iterator().next();
-        }
-        
-        Pattern aliasPattern = Pattern.compile(
-            "(?i)\\bfrom\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s+(?:as\\s+)?([a-zA-Z_][a-zA-Z0-9_]*)",
-            Pattern.CASE_INSENSITIVE
-        );
-        
-        Matcher matcher = aliasPattern.matcher(sql);
-        while (matcher.find()) {
-            String table = matcher.group(1);
-            String alias = matcher.group(2);
-            
-            if (alias != null && !EXCLUDED_TABLES.contains(alias.toLowerCase())) {
-                return alias;
-            } else if (!EXCLUDED_TABLES.contains(table.toLowerCase()) && alias == null) {
-                return table;
+    private int findTrailingClauseStart(List<Token> tokens, int fallback) {
+        for (int i = 0; i < tokens.size(); i++) {
+            String word = tokens.get(i).value();
+            String next = (i + 1 < tokens.size()) ? tokens.get(i + 1).value() : "";
+            boolean isTrailing =
+                    (TRAILING_KEYWORDS_WITH_BY.contains(word) && "by".equals(next))
+                            || (word.equals("for") && "update".equals(next))
+                            || TRAILING_KEYWORDS_SIMPLE.contains(word)
+                            || word.equals("union");
+            if (isTrailing) {
+                return tokens.get(i).start();
             }
         }
-        
-        return tables.iterator().next();
+        return fallback;
     }
 
-    private int findMainFromIndex(String sql) {
-        Pattern pattern = Pattern.compile("(?i)\\bfrom\\b", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(sql);
-        
-        while (matcher.find()) {
-            int pos = matcher.start();
-            if (pos <= 6) {
-                return pos;
-            }
-            String before = sql.substring(Math.max(0, pos - 7), pos).toLowerCase();
-            
-            if (!before.contains("select")) {
-                return pos;
-            }
+    private String stripTrailingSpaces(String value) {
+        int end = value.length();
+        while (end > 0 && Character.isWhitespace(value.charAt(end - 1))) {
+            end--;
         }
-        
-        return -1;
+        return value.substring(0, end);
     }
-    
-    private int findEndOfFromClause(String sql) {
-        Pattern pattern = Pattern.compile("(?i)\\bfrom\\s+[a-zA-Z_][a-zA-Z0-9_]*(?:\\s+(?:as\\s+)?[a-zA-Z_][a-zA-Z0-9_]*)?", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(sql);
-        
-        if (matcher.find()) {
-            return matcher.end();
+
+    /**
+     * Tokenise la requête au premier niveau (hors parenthèses et hors littéraux chaîne).
+     */
+    private List<Token> topLevelTokens(String sql) {
+        List<Token> tokens = new ArrayList<>();
+        int depth = 0;
+        boolean inString = false;
+        int i = 0;
+        int n = sql.length();
+
+        while (i < n) {
+            char c = sql.charAt(i);
+
+            if (inString) {
+                if (c == '\'') {
+                    if (i + 1 < n && sql.charAt(i + 1) == '\'') {
+                        i += 2;
+                        continue;
+                    }
+                    inString = false;
+                }
+                i++;
+                continue;
+            }
+
+            if (c == '\'') {
+                inString = true;
+                i++;
+                continue;
+            }
+            if (c == '(') {
+                depth++;
+                i++;
+                continue;
+            }
+            if (c == ')') {
+                depth = Math.max(0, depth - 1);
+                i++;
+                continue;
+            }
+            if (depth == 0 && (Character.isLetter(c) || c == '_')) {
+                int start = i;
+                while (i < n && (Character.isLetterOrDigit(sql.charAt(i)) || sql.charAt(i) == '_')) {
+                    i++;
+                }
+                tokens.add(new Token(start, sql.substring(start, i).toLowerCase(Locale.ROOT)));
+                continue;
+            }
+            i++;
         }
-        
-        return sql.toLowerCase().indexOf(" from ");
+
+        return tokens;
+    }
+
+    private record Token(int start, String value) {
     }
 }
