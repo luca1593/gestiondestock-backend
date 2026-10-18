@@ -2,20 +2,23 @@ package com.devtech.gestiondestock.services.strategy;
 
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
-import lombok.Setter;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 
+/**
+ * @author luca
+ *
+ * <p>Sélectionne la stratégie d'enregistrement de photo selon le contexte.
+ * La stratégie est résolue localement à chaque appel (aucun état mutable partagé),
+ * ce qui rend le service sûr en environnement concurrent (singleton sans état).</p>
+ */
 @Service
 public class StrategyProtoContext {
 
     private final BeanFactory beanFactory;
-    private Strategy strategy;
-    @Setter
-    private String context;
 
     @Autowired
     public StrategyProtoContext(BeanFactory beanFactory) {
@@ -23,31 +26,29 @@ public class StrategyProtoContext {
     }
 
     public Object savePhoto(String context, Integer id, String title, InputStream photo) throws Exception {
-        determineContext(context);
-        return this.strategy.savePhoto(id, photo, title);
+        return resolveStrategy(context).savePhoto(id, photo, title);
     }
 
-
-    private void determineContext(String context){
-        final String beansname = context + "Strategy";
-        switch (context){
-            case "article" :
-                this.strategy = this.beanFactory.getBean(beansname, SaveArticlePhoto.class);
-                break;
-            case "client" :
-                this.strategy = this.beanFactory.getBean(beansname, SaveClientPhoto.class);
-                break;
-            case "entreprise" :
-                this.strategy = this.beanFactory.getBean(beansname, SaveEntreprisePhoto.class);
-                break;
-            case "fournisseur" :
-                this.strategy = this.beanFactory.getBean(beansname, SaveFournisseurPhoto.class);
-                break;
-            case "utilisateur" :
-                this.strategy = this.beanFactory.getBean(beansname, SaveUtilisateurPhoto.class);
-                break;
-            default: throw new InvalidOpperatioException("Context inconue pour l'enregistrement de la photo",
+    private Strategy resolveStrategy(String context) {
+        if (context == null) {
+            throw new InvalidOpperatioException("Context manquant pour l'enregistrement de la photo",
                     ErrorsCode.UNKNOWN_CONTEXT);
+        }
+        final String beansname = context + "Strategy";
+        switch (context) {
+            case "article":
+                return this.beanFactory.getBean(beansname, SaveArticlePhoto.class);
+            case "client":
+                return this.beanFactory.getBean(beansname, SaveClientPhoto.class);
+            case "entreprise":
+                return this.beanFactory.getBean(beansname, SaveEntreprisePhoto.class);
+            case "fournisseur":
+                return this.beanFactory.getBean(beansname, SaveFournisseurPhoto.class);
+            case "utilisateur":
+                return this.beanFactory.getBean(beansname, SaveUtilisateurPhoto.class);
+            default:
+                throw new InvalidOpperatioException("Context inconue pour l'enregistrement de la photo",
+                        ErrorsCode.UNKNOWN_CONTEXT);
         }
     }
 }

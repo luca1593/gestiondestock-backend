@@ -4,6 +4,8 @@ import com.devtech.gestiondestock.exception.EntityNotFoundException;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,6 +19,7 @@ import java.util.Collections;
 /**
  * @author luca
  */
+@Slf4j
 @RestControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -62,6 +65,25 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 .errorsCode(exception.getErrorsCode())
                 .httpCode(badRequest.value())
                 .message(exception.getMessage())
+                .build();
+        return new ResponseEntity<>(errorsDto, badRequest);
+    }
+
+    /**
+     * Filet de securite : une violation de contrainte d'integrite (typiquement la
+     * suppression d'une entite encore referencee par une cle etrangere) remontait
+     * auparavant en HTTP 500 (page d'erreur + stacktrace). On la traduit en 400
+     * propre et exploitable, comme les autres "operation impossible".
+     * L'incident reste trace en ERROR pour le diagnostic.
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorsDto> handleException(DataIntegrityViolationException exception, WebRequest webRequest){
+        log.error("Violation d'integrite referentielle : {}", exception.getMostSpecificCause().getMessage());
+        final HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        final ErrorsDto errorsDto = ErrorsDto.builder()
+                .errorsCode(ErrorsCode.DATA_INTEGRITY_VIOLATION)
+                .httpCode(badRequest.value())
+                .message("Operation impossible : cet element est encore reference par d'autres donnees")
                 .build();
         return new ResponseEntity<>(errorsDto, badRequest);
     }
