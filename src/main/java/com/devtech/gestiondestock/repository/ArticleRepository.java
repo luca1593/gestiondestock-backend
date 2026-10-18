@@ -14,6 +14,14 @@ import java.util.Optional;
 public interface ArticleRepository extends JpaRepository<Article, Integer> {
     Optional<Article> findArticleByCodeArticle(String code);
 
+    /**
+     * Variante tolerante aux doublons : renvoie toutes les occurrences d'un code
+     * (scopee a l'entreprise par l'intercepteur multi-tenant). A utiliser pour la
+     * verification d'unicite, car {@link #findArticleByCodeArticle(String)} (Optional)
+     * leverait une IncorrectResultSizeDataAccessException s'il existe deja un doublon.
+     */
+    List<Article> findAllByCodeArticle(String codeArticle);
+
     List<Article> findAllByCategoryId(Integer idCategory);
 
     List<Article> findByDesignationContainingIgnoreCase(String designation);

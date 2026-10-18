@@ -34,6 +34,7 @@ public class ArticleServiceImpl implements ArticleService {
     private LigneCommandeClientRepository commandeClientRepository;
     private LigneCommandeFournisseurRepository commandeFournisseurRepository;
     private CategoryRepository categoryRepository;
+    private EntrepriseRepository entrepriseRepository;
 
 
     @Override
@@ -54,9 +55,56 @@ public class ArticleServiceImpl implements ArticleService {
             );
         }
         dto.setCategory(CategoryDto.fromEntity(category.get()));
+        assignerEntrepriseCouranteSiAbsente(dto);
+        checkCodeArticleUniqueDansEntreprise(dto);
         return ArticleDto.fromEntity(
                 this.articleRepository.save(ArticleDto.toEntity(dto))
         );
+    }
+
+    /**
+     * Un article doit toujours porter l'entreprise du demandeur. Sans cela il est
+     * enregistre avec {@code identreprise = NULL} : l'article devient alors visible
+     * de toutes les entreprises et l'unicite du code par entreprise perd tout sens
+     * (un meme code empecherait toutes les entreprises de creer le leur).
+     * On ne force rien si le client fournit deja une entreprise explicite.
+     */
+    private void assignerEntrepriseCouranteSiAbsente(ArticleDto dto) {
+        if (dto.getEntreprise() != null && dto.getEntreprise().getId() != null) {
+            return;
+        }
+        String idEntreprise = MDC.get("idEntreprise");
+        if (!StringUtils.hasText(idEntreprise)) {
+            return;
+        }
+        try {
+            this.entrepriseRepository.findById(Integer.valueOf(idEntreprise.trim()))
+                    .ifPresent(entreprise ->
+                            dto.setEntreprise(EntrepriseDto.fromEntity(entreprise)));
+        } catch (NumberFormatException e) {
+            log.warn("Identifiant d'entreprise invalide dans le contexte : {}", idEntreprise);
+        }
+    }
+
+    /**
+     * Le code article doit etre unique AU SEIN de l'entreprise (deux entreprises
+     * peuvent utiliser le meme code). La requete est automatiquement scopee a
+     * l'entreprise courante par l'intercepteur multi-tenant.
+     * En modification (dto.id renseigne), l'article lui-meme est exclu du controle.
+     */
+    private void checkCodeArticleUniqueDansEntreprise(ArticleDto dto) {
+        List<Article> existants = this.articleRepository.findAllByCodeArticle(dto.getCodeArticle());
+        boolean doublon = existants.stream()
+                .anyMatch(a -> !java.util.Objects.equals(a.getId(), dto.getId()));
+        if (doublon) {
+            log.error("Code article deja utilise dans l'entreprise : {}", dto.getCodeArticle());
+            throw new InvalidEntityException(
+                    "Un article avec le code " + dto.getCodeArticle()
+                            + " existe deja dans votre entreprise",
+                    ErrorsCode.ARTICLE_CODE_ALREADY_EXISTS,
+                    List.of("Le code de l'article doit etre unique dans l'entreprise")
+            );
+        }
     }
 
     @Override
