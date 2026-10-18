@@ -93,8 +93,11 @@ class LotValidatorTest {
     }
 
     @Test
-    @DisplayName("Quantite negative : acceptee (seule la presence est verifiee)")
-    void shouldAcceptNegativeQuantite() {
-        assertTrue(LotValidator.validate(validLot().quantite(new BigDecimal("-5")).build()).isEmpty());
+    @DisplayName("Quantite negative : une erreur (M-3 corrige)")
+    void shouldRejectNegativeQuantite() {
+        List<String> errors = LotValidator.validate(validLot().quantite(new BigDecimal("-5")).build());
+
+        assertEquals(1, errors.size());
+        assertEquals("La quantité du lot ne peut pas être négative", errors.get(0));
     }
 }

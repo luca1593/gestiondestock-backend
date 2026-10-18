@@ -3,6 +3,7 @@ package com.devtech.gestiondestock.validator;
 import com.devtech.gestiondestock.dto.ArticleDto;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,10 @@ public class ArticleValidator {
         }
         if (articleDto.getPrixUnitaireht() == null){
             errors.add("Veuillez renseigner le prix unitaire de l'article");
+        }
+        if (articleDto.getPrixUnitaireht() != null
+                && articleDto.getPrixUnitaireht().compareTo(BigDecimal.ZERO) < 0){
+            errors.add("Le prix unitaire HT ne peut pas etre negatif");
         }
         if (articleDto.getTauxTva() == null){
             errors.add("Veuillez renseigner le code TVA de l'article");
