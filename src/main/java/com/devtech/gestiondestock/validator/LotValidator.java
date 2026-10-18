@@ -3,6 +3,7 @@ package com.devtech.gestiondestock.validator;
 import com.devtech.gestiondestock.dto.LotDto;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,9 @@ public class LotValidator {
         }
         if (dto.getQuantite() == null) {
             errors.add("Veuillez renseigner la quantité du lot");
+        }
+        if (dto.getQuantite() != null && dto.getQuantite().compareTo(BigDecimal.ZERO) < 0) {
+            errors.add("La quantité du lot ne peut pas être négative");
         }
         if (dto.getPrixAchat() == null) {
             errors.add("Veuillez renseigner le prix d'achat du lot");
