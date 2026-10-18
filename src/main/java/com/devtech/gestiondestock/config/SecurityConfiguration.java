@@ -35,6 +35,9 @@ public class SecurityConfiguration {
     @Autowired
     private ApplicationRequestFilter applicationRequestFilter;
 
+    @Autowired
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
     @Value("${cors.allowed-origins:http://localhost:4200,http://localhost:8085,http://gestion-stock.mg}")
     private List<String> allowedOrigins;
 
@@ -56,6 +59,7 @@ public class SecurityConfiguration {
                                 "/error"
                         ).permitAll()
                         .anyRequest().authenticated())
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(restAuthenticationEntryPoint))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(this.applicationRequestFilter, UsernamePasswordAuthenticationFilter.class);
