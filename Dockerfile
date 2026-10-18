@@ -17,12 +17,14 @@ RUN mvn clean package -DskipTests
 # Stage 2: Runtime
 FROM eclipse-temurin:17-jre-alpine
 
-# Configuration DNS pour Alpine
-RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf && \
-    echo "nameserver 1.1.1.1" >> /etc/resolv.conf && \
-    apk update --no-cache && \
-    apk add --no-cache curl ca-certificates && \
-    update-ca-certificates
+# Rien a installer dans cette image : le healthcheck utilise `wget`, fourni par
+# busybox dans Alpine (les healthchecks des docker-compose font deja de meme).
+# `curl` n'est utilise nulle part, ni dans l'image ni par les services.
+#
+# Ne JAMAIS ecrire dans /etc/resolv.conf : certains builders le montent en
+# lecture seule (Render / BuildKit) et le build echoue immediatement avec
+# "/bin/sh: can't create /etc/resolv.conf: Read-only file system".
+# La resolution DNS est du ressort du builder, pas du Dockerfile.
 
 # Variables de build
 ARG BUILD_DATE
@@ -36,10 +38,14 @@ WORKDIR /app
 # Copier le JAR depuis l'étape de build
 COPY --from=build /app/target/*.jar app.jar
 
+# Port d'ecoute par defaut (local, docker-compose, Jenkins : SERVER_PORT=8080/8085).
+# A l'execution, l'application suit l'ordre ${PORT} -> ${SERVER_PORT} -> 8085 :
+# Render injecte PORT (defaut 10000) et scanne ce port pour router le trafic.
 EXPOSE 8080
 
-# Healthcheck
+# Healthcheck : `wget` de busybox (present dans l'image de base), sur le port reel
+# d'ecoute.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:8080/actuator/health || exit 1
+  CMD wget -qO- "http://127.0.0.1:${PORT:-8080}/actuator/health" || exit 1
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

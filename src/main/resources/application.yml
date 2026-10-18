@@ -51,7 +51,9 @@ spring:
             enable: true
 
 server:
-  port: ${SERVER_PORT:8085}
+  # Render injecte PORT (defaut 10000) et route le trafic vers ce port.
+  # SERVER_PORT reste prioritaire en second pour docker-compose/Jenkins.
+  port: ${PORT:${SERVER_PORT:8085}}
   error:
     whitelabel:
       enabled: false
