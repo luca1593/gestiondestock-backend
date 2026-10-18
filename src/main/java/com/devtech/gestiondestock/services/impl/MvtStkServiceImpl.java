@@ -59,13 +59,14 @@ public class MvtStkServiceImpl implements MvtStkService {
             log.error("Mouvement ID is null");
             return null;
         }
-        Optional<MvtStk> mvtStk = this.mvtStkRepository.findById(id);
-        return Optional.of(MvtStkDto.fromEntity(mvtStk.get())).orElseThrow(() ->
-                new EntityNotFoundException(
-                        "Aucun mouvement trouver avec l'id = " + id + " dans la BDD",
-                        ErrorsCode.MOUVEMENT_STOCK_NOT_FOUND
-                )
-        );
+        return this.mvtStkRepository.findById(id)
+                .map(MvtStkDto::fromEntity)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Aucun mouvement trouver avec l'id = " + id + " dans la BDD",
+                                ErrorsCode.MOUVEMENT_STOCK_NOT_FOUND
+                        )
+                );
     }
 
     @Override

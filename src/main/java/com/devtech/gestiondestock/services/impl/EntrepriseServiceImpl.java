@@ -90,7 +90,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
             return null;
         }
         Optional<Entreprise> entreprise = this.entrepriseRepository.findById(id);
-        return Optional.of(EntrepriseDto.fromEntity(entreprise.get())).orElseThrow(() ->
+        return entreprise.map(EntrepriseDto::fromEntity).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucun Entreprise trouver avec l'id = " + id + " dans la BDD",
                         ErrorsCode.ENTREPRISE_NOT_FOUND
@@ -105,7 +105,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
             return null;
         }
         Optional<Entreprise> entreprise = this.entrepriseRepository.findEntrepriseByNom(nom);
-        return Optional.of(EntrepriseDto.fromEntity(entreprise.get())).orElseThrow(() ->
+        return entreprise.map(EntrepriseDto::fromEntity).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucun entreprise trouver avec le nom  = " + nom + " dans la BDD",
                         ErrorsCode.ENTREPRISE_NOT_FOUND
@@ -120,7 +120,7 @@ public class EntrepriseServiceImpl implements EntrepriseService {
             return null;
         }
         Optional<Entreprise> entreprise = this.entrepriseRepository.findEntrepriseByEmail(email);
-        return Optional.of(EntrepriseDto.fromEntity(entreprise.get())).orElseThrow(() ->
+        return entreprise.map(EntrepriseDto::fromEntity).orElseThrow(() ->
                 new EntityNotFoundException(
                         "Aucun entreprise trouver avec l'email  = " + email + " dans la BDD",
                         ErrorsCode.ENTREPRISE_NOT_FOUND
