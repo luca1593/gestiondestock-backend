@@ -363,4 +363,25 @@ class UtilisateurServiceImplTest {
         verify(roleRepository).deleteById(11);
         verify(utilisateurRepository).deleteById(1);
     }
+
+    @Test
+    void delete_quandUtilisateurInexistant_neLevePasDeNpeEtNeSupprimeRien() {
+        when(utilisateurRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertDoesNotThrow(() -> utilisateurService.delete(99));
+
+        verify(utilisateurRepository, never()).deleteById(any());
+        verify(roleRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void delete_quandUtilisateurSansRoles_neLevePasDeNpe() {
+        utilisateur.setRoles(null);
+        when(utilisateurRepository.findById(1)).thenReturn(Optional.of(utilisateur));
+
+        assertDoesNotThrow(() -> utilisateurService.delete(1));
+
+        verify(utilisateurRepository).deleteById(1);
+        verify(roleRepository, never()).deleteById(any());
+    }
 }

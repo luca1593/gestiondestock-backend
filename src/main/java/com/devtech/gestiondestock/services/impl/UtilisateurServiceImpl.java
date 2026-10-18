@@ -196,13 +196,14 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             return;
         }
         Optional<Utilisateur> optional = utilisateurRepository.findById(id);
-        Utilisateur utilisateur = new Utilisateur();
-        if (optional.isPresent()){
-            utilisateur = optional.get();
+        if (optional.isEmpty()) {
+            log.warn("Aucun utilisateur trouvé avec l'ID = {} : rien à supprimer", id);
+            return;
         }
-        utilisateur.getRoles().forEach( r -> {
-            roleRepository.deleteById(r.getId());
-        });
+        Utilisateur utilisateur = optional.get();
+        if (utilisateur.getRoles() != null) {
+            utilisateur.getRoles().forEach(r -> roleRepository.deleteById(r.getId()));
+        }
         utilisateurRepository.deleteById(id);
     }
 
