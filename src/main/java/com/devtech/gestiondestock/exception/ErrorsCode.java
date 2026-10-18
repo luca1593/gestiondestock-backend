@@ -5,9 +5,11 @@ public enum ErrorsCode {
     ARTICLE_NOT_FOUND(1000),
     ARTICLE_NOT_VALID(1001),
     ARTICLE_ALREADY_IN_USE(1002),
+    ARTICLE_CODE_ALREADY_EXISTS(1003),
     CATEGORY_NOT_FOUND(2000),
     CATEGORY_NOT_VALID(2001),
     CATEGORY_ALREADY_IN_USE(2002),
+    CATEGORY_CODE_ALREADY_EXISTS(2003),
     CLIENT_NOT_FOUND(3000),
     CLIENT_NOT_VALID(3001),
     CLIENT_ALREADY_IN_USE(3002),
@@ -56,7 +58,9 @@ public enum ErrorsCode {
     REGLE_TARIFAIRE_NOT_FOUND(23000),
     REGLE_TARIFAIRE_NOT_VALID(23001),
     // Conflit d'integrite referentielle (suppression d'une entite encore referencee).
-    DATA_INTEGRITY_VIOLATION(24000);
+    DATA_INTEGRITY_VIOLATION(24000),
+    // Tentative d'ecriture d'une donnee rattachee a une autre entreprise que celle du jeton.
+    CROSS_TENANT_NOT_ALLOWED(24001);
 
     private final int code;
 

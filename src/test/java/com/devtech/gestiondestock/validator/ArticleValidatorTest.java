@@ -74,4 +74,14 @@ class ArticleValidatorTest {
         assertTrue(errors.contains("Veuillez renseigner le code TVA de l'article"));
         assertTrue(errors.contains("Veuillez renseigner le prix unitaire TTC de l'article"));
     }
+
+    @Test
+    @DisplayName("Prix unitaire HT negatif : une erreur (M-2 corrige)")
+    void shouldRejectNegativePrixUnitaireHt() {
+        List<String> errors = ArticleValidator.validate(
+                validArticle().prixUnitaireht(new BigDecimal("-5.00")).build());
+
+        assertEquals(1, errors.size());
+        assertEquals("Le prix unitaire HT ne peut pas etre negatif", errors.get(0));
+    }
 }

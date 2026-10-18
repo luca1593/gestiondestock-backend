@@ -6,15 +6,18 @@ import com.devtech.gestiondestock.dto.LigneCommandeClientDto;
 import com.devtech.gestiondestock.dto.LigneCommandeFournisseurDto;
 import com.devtech.gestiondestock.dto.LigneVenteDto;
 import com.devtech.gestiondestock.exception.EntityNotFoundException;
+import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.model.Article;
 import com.devtech.gestiondestock.model.Category;
+import com.devtech.gestiondestock.model.Entreprise;
 import com.devtech.gestiondestock.model.LigneCommandeClient;
 import com.devtech.gestiondestock.model.LigneCommandeFournisseur;
 import com.devtech.gestiondestock.model.LigneVente;
 import com.devtech.gestiondestock.repository.ArticleRepository;
 import com.devtech.gestiondestock.repository.CategoryRepository;
+import com.devtech.gestiondestock.repository.EntrepriseRepository;
 import com.devtech.gestiondestock.repository.LigneCommandeClientRepository;
 import com.devtech.gestiondestock.repository.LigneCommandeFournisseurRepository;
 import com.devtech.gestiondestock.repository.LigneVenteRepository;
@@ -24,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.MDC;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -52,6 +56,8 @@ class ArticleServiceImplTest {
     private LigneCommandeFournisseurRepository commandeFournisseurRepository;
     @Mock
     private CategoryRepository categoryRepository;
+    @Mock
+    private EntrepriseRepository entrepriseRepository;
 
     @InjectMocks
     private ArticleServiceImpl articleService;
@@ -134,10 +140,73 @@ class ArticleServiceImplTest {
         verify(articleRepository, times(1)).save(any(Article.class));
     }
 
+    @Test
+    void save_whenCodeArticleDejaExisteDansLEntreprise_shouldThrowInvalidEntityException() {
+        // Creation (id null) d'un article dont le code est deja pris dans l'entreprise
+        ArticleDto dto = articleDtoValide();
+        dto.setId(null);
+        when(categoryRepository.findById(5)).thenReturn(Optional.of(category));
+
+        Article existant = new Article();
+        existant.setId(42);
+        existant.setCodeArticle("ART-001");
+        when(articleRepository.findAllByCodeArticle("ART-001")).thenReturn(List.of(existant));
+
+        InvalidEntityException ex = assertThrows(InvalidEntityException.class, () -> articleService.save(dto));
+
+        assertEquals(ErrorsCode.ARTICLE_CODE_ALREADY_EXISTS, ex.getErrorsCode());
+        assertTrue(ex.getMessage().contains("ART-001"));
+        // L'article ne doit PAS etre persiste si le code est en doublon
+        verify(articleRepository, never()).save(any(Article.class));
+    }
+
+    @Test
+    void save_whenMemeArticleModifieSansChangerLeCode_shouldNotThrow() {
+        // Modification de l'article lui-meme : il ne doit pas etre considere comme son propre doublon
+        ArticleDto dto = articleDtoValide(); // id = 1
+        when(categoryRepository.findById(5)).thenReturn(Optional.of(category));
+
+        Article luiMeme = new Article();
+        luiMeme.setId(1);
+        luiMeme.setCodeArticle("ART-001");
+        when(articleRepository.findAllByCodeArticle("ART-001")).thenReturn(List.of(luiMeme));
+        when(articleRepository.save(any(Article.class))).thenReturn(article);
+
+        ArticleDto result = articleService.save(dto);
+
+        assertNotNull(result);
+        verify(articleRepository, times(1)).save(any(Article.class));
+    }
+
+    @Test
+    void save_sansEntreprise_doitReprendreLentrepriseDuJeton() {
+        // Sans entreprise dans le DTO, l'article doit etre rattache au tenant du jeton
+        // (sinon identreprise = NULL : article visible de toutes les entreprises).
+        MDC.put("idEntreprise", "1");
+        try {
+            ArticleDto dto = articleDtoValide();
+            dto.setId(null);
+            dto.setEntreprise(null);
+            when(categoryRepository.findById(5)).thenReturn(Optional.of(category));
+            when(articleRepository.findAllByCodeArticle("ART-001")).thenReturn(List.of());
+
+            Entreprise entreprise = new Entreprise();
+            entreprise.setId(1);
+            when(entrepriseRepository.findById(1)).thenReturn(Optional.of(entreprise));
+            when(articleRepository.save(any(Article.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            ArticleDto result = articleService.save(dto);
+
+            assertNotNull(result.getEntreprise());
+            assertEquals(1, result.getEntreprise().getId());
+        } finally {
+            MDC.clear();
+        }
+    }
+
     // ------------------------------------------------------------------
     // findById(...)
     // ------------------------------------------------------------------
-
     @Test
     void findById_whenIdNull_shouldThrowEntityNotFoundException() {
         assertThrows(EntityNotFoundException.class, () -> articleService.findById(null));
