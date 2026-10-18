@@ -58,7 +58,9 @@ public enum ErrorsCode {
     REGLE_TARIFAIRE_NOT_FOUND(23000),
     REGLE_TARIFAIRE_NOT_VALID(23001),
     // Conflit d'integrite referentielle (suppression d'une entite encore referencee).
-    DATA_INTEGRITY_VIOLATION(24000);
+    DATA_INTEGRITY_VIOLATION(24000),
+    // Tentative d'ecriture d'une donnee rattachee a une autre entreprise que celle du jeton.
+    CROSS_TENANT_NOT_ALLOWED(24001);
 
     private final int code;
 

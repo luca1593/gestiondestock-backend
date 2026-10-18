@@ -42,7 +42,7 @@ public class CategoryServiceImpl implements CategoryService {
             log.error("Category is not valide {}", dto);
             throw new InvalidEntityException("Le category n'est pas valide", ErrorsCode.CATEGORY_NOT_VALID, errors);
         }
-        assignerEntrepriseCouranteSiAbsente(dto);
+        resoudreEntreprise(dto);
         checkCodeCategoryUniqueDansEntreprise(dto);
         return CategoryDto.fromEntity(
                 this.categoryRepository.save(CategoryDto.toEntity(dto))
@@ -50,23 +50,47 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     /**
-     * Une categorie doit toujours porter l'entreprise du demandeur. Sans cela elle est
-     * enregistree avec {@code identreprise = NULL} (visible de toutes les entreprises)
-     * et l'unicite du code par entreprise devient inoperante. On ne force rien si le
-     * client fournit deja une entreprise explicite.
+     * L'entreprise d'une categorie est determinee cote serveur, jamais par le client :
+     * <ul>
+     *   <li>corps sans entreprise -&gt; on reprend celle du jeton (MDC) ;</li>
+     *   <li>corps avec une entreprise differente de celle du jeton -&gt; <b>400</b>
+     *       ({@code CROSS_TENANT_NOT_ALLOWED}). Sans ce refus, un utilisateur pourrait
+     *       rattacher ses donnees a une autre entreprise (ecriture inter-tenant) et
+     *       contourner la regle d'unicite du code par entreprise.</li>
+     * </ul>
+     * En contexte systeme (pas de jeton, ex. onboarding d'entreprise), aucune contrainte
+     * n'est appliquee : il n'y a pas d'entreprise de reference.
      */
-    private void assignerEntrepriseCouranteSiAbsente(CategoryDto dto) {
-        if (dto.getIdentreprise() != null) {
+    private void resoudreEntreprise(CategoryDto dto) {
+        Integer entrepriseDuJeton = entrepriseCourante();
+        if (entrepriseDuJeton == null) {
             return;
         }
+        if (dto.getIdentreprise() == null) {
+            dto.setIdentreprise(entrepriseDuJeton);
+            return;
+        }
+        if (!entrepriseDuJeton.equals(dto.getIdentreprise())) {
+            log.error("Ecriture inter-entreprise refusee : entreprise du jeton = {}, corps = {}",
+                    entrepriseDuJeton, dto.getIdentreprise());
+            throw new InvalidOpperatioException(
+                    "La categorie doit appartenir a votre entreprise",
+                    ErrorsCode.CROSS_TENANT_NOT_ALLOWED
+            );
+        }
+    }
+
+    /** Entreprise du jeton authentifie, ou {@code null} en contexte systeme. */
+    private Integer entrepriseCourante() {
         String idEntreprise = MDC.get("idEntreprise");
         if (!StringUtils.hasText(idEntreprise)) {
-            return;
+            return null;
         }
         try {
-            dto.setIdentreprise(Integer.valueOf(idEntreprise.trim()));
+            return Integer.valueOf(idEntreprise.trim());
         } catch (NumberFormatException e) {
             log.warn("Identifiant d'entreprise invalide dans le contexte : {}", idEntreprise);
+            return null;
         }
     }
 

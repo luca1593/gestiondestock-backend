@@ -3,6 +3,7 @@ package com.devtech.gestiondestock.services.impl;
 import com.devtech.gestiondestock.dto.CategoryDto;
 import com.devtech.gestiondestock.exception.ErrorsCode;
 import com.devtech.gestiondestock.exception.InvalidEntityException;
+import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import com.devtech.gestiondestock.model.Category;
 import com.devtech.gestiondestock.repository.ArticleRepository;
 import com.devtech.gestiondestock.repository.CategoryRepository;
@@ -123,6 +124,43 @@ class CategoryServiceImplTest {
             CategoryDto result = categoryService.save(dto);
 
             assertEquals(7, result.getIdentreprise());
+        } finally {
+            MDC.clear();
+        }
+    }
+
+    @Test
+    void save_avecEntrepriseDifferenteDuJeton_doitRefuser() {
+        MDC.put("idEntreprise", "1");
+        try {
+            CategoryDto dto = categoryDto();
+            dto.setIdentreprise(2); // tentative d'ecriture inter-entreprise
+
+            InvalidOpperatioException ex = assertThrows(InvalidOpperatioException.class,
+                    () -> categoryService.save(dto));
+
+            assertEquals(ErrorsCode.CROSS_TENANT_NOT_ALLOWED, ex.getErrorsCode());
+            verify(categoryRepository, never()).save(any(Category.class));
+        } finally {
+            MDC.clear();
+        }
+    }
+
+    @Test
+    void save_avecEntrepriseDuJeton_doitAccepter() {
+        MDC.put("idEntreprise", "1");
+        try {
+            CategoryDto dto = categoryDto(); // identreprise = 1
+            Category enregistree = new Category();
+            enregistree.setId(12);
+            enregistree.setCode("CAT-001");
+            enregistree.setIdentreprise(1);
+            when(categoryRepository.findAllByCode("CAT-001")).thenReturn(List.of());
+            when(categoryRepository.save(any(Category.class))).thenReturn(enregistree);
+
+            CategoryDto result = categoryService.save(dto);
+
+            assertEquals(1, result.getIdentreprise());
         } finally {
             MDC.clear();
         }
