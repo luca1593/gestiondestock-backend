@@ -54,7 +54,9 @@ public enum ErrorsCode {
     PAIEMENT_NOT_FOUND(22000),
     PAIEMENT_NOT_VALID(22001),
     REGLE_TARIFAIRE_NOT_FOUND(23000),
-    REGLE_TARIFAIRE_NOT_VALID(23001);
+    REGLE_TARIFAIRE_NOT_VALID(23001),
+    // Conflit d'integrite referentielle (suppression d'une entite encore referencee).
+    DATA_INTEGRITY_VIOLATION(24000);
 
     private final int code;
 

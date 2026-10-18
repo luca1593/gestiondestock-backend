@@ -6,10 +6,12 @@ import com.devtech.gestiondestock.exception.InvalidEntityException;
 import com.devtech.gestiondestock.exception.InvalidOpperatioException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -86,5 +88,23 @@ class RestExceptionHandlerTest {
         assertEquals(ErrorsCode.BAD_CREDENTIALS, body.getErrorsCode());
         assertEquals(1, body.getErrors().size());
         assertEquals("Login et / ou mot de passe incorrecte", body.getErrors().get(0));
+    }
+
+    @Test
+    @DisplayName("DataIntegrityViolationException -> 400 (et non 500) avec un message exploitable")
+    void shouldMapDataIntegrityViolationTo400() {
+        DataIntegrityViolationException exception = new DataIntegrityViolationException(
+                "could not execute statement",
+                new SQLIntegrityConstraintViolationException(
+                        "Cannot delete or update a parent row: a foreign key constraint fails"));
+
+        ResponseEntity<ErrorsDto> response = handler.handleException(exception, null);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        ErrorsDto body = response.getBody();
+        assertNotNull(body);
+        assertEquals(400, body.getHttpCode());
+        assertEquals(ErrorsCode.DATA_INTEGRITY_VIOLATION, body.getErrorsCode());
+        assertNotNull(body.getMessage());
     }
 }
